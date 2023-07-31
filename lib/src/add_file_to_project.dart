@@ -11,10 +11,9 @@ class AddFile {
     final dir = Directory(path(filePath));
     if (!dir.existsSync()) {
       dir.createSync();
+      final file = File(filePath);
+      file.writeAsStringSync(content);
     }
-    final file = File(filePath);
-
-    file.writeAsStringSync(content);
   }
 
   static String path(String fileName) {

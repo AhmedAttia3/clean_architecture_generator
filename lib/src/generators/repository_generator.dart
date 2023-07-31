@@ -78,7 +78,7 @@ class RepositoryGenerator extends GeneratorForAnnotation<RepositoryAnnotation> {
       content.writeln('return await api<$type>(');
 
       content.writeln(
-          'apiCall: $clientService.${method.name}(${methodFormat.passingParameters(method.parameters)}));');
+          'apiCall: $clientService.${method.name}(${methodFormat.passingParameters(method.parameters)}),);');
       content.writeln('}\n');
 
       ///[cache save or get implement]
