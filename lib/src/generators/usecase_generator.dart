@@ -31,7 +31,8 @@ class UseCaseGenerator extends GeneratorForAnnotation<UseCaseAnnotation> {
       final requestName = '${names.firstUpper(method.name)}Request';
       final methodName = names.firstLower(method.name);
       final type = methodFormat.returnType(method.type);
-      content.writeln(imports(repositoryName: repositoryName));
+      content.writeln(
+          imports(repositoryName: repositoryName, requestName: requestName));
       content.writeln('///[$useCaseName implementation]');
       content.writeln('@injectable');
       content.writeln(
@@ -96,10 +97,14 @@ class UseCaseGenerator extends GeneratorForAnnotation<UseCaseAnnotation> {
     return classBuffer.toString();
   }
 
-  String imports({String repositoryName = ''}) {
+  String imports({String repositoryName = '', String requestName = ''}) {
     String data = "import 'dart:convert';\n";
     data += "import 'package:eitherx/eitherx.dart';\n";
     data += "import 'package:injectable/injectable.dart';\n";
+    if (requestName.isNotEmpty) {
+      data +=
+          "import '../requests/${names.camelCaseToUnderscore(requestName)}.dart';\n";
+    }
     if (repositoryName.isNotEmpty) {
       data +=
           "import '../repository/${names.camelCaseToUnderscore(repositoryName)}.dart';\n";
