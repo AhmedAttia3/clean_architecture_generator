@@ -53,7 +53,7 @@ class CubitGenerator extends GeneratorForAnnotation<CubitAnnotation> {
       content.writeln(
           'final res = await _${names.firstLower(useCaseName)}.execute(');
       content.writeln(
-          "request : ${useCaseName}Request(${methodFormat.passingParameters(method.parameters)}),");
+          "request : ${requestName}Request(${methodFormat.passingParameters(method.parameters)}),");
       content.writeln(');');
       content.writeln('res.left((failure) {');
       content.writeln('emit(ErrorState(');
