@@ -8,6 +8,8 @@ import 'package:generators/src/model_visitor.dart';
 import 'package:source_gen/source_gen.dart';
 
 class UseCaseGenerator extends GeneratorForAnnotation<UseCaseAnnotation> {
+  final names = Names();
+
   @override
   String generateForAnnotatedElement(
     Element element,
@@ -16,7 +18,6 @@ class UseCaseGenerator extends GeneratorForAnnotation<UseCaseAnnotation> {
   ) {
     final path = "${AddFile.path(buildStep.inputId.path)}/use-cases";
     final visitor = ModelVisitor();
-    final names = Names();
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);
 
@@ -30,6 +31,7 @@ class UseCaseGenerator extends GeneratorForAnnotation<UseCaseAnnotation> {
       final requestName = '${names.firstUpper(method.name)}Request';
       final methodName = names.firstLower(method.name);
       final type = methodFormat.returnType(method.type);
+      content.writeln(imports(repositoryName: repositoryName));
       content.writeln('///[$useCaseName implementation]');
       content.writeln('@injectable');
       content.writeln(
@@ -54,6 +56,7 @@ class UseCaseGenerator extends GeneratorForAnnotation<UseCaseAnnotation> {
 
         ///[cache]
         final cacheContent = StringBuffer();
+        content.writeln(imports(repositoryName: repositoryName));
         cacheContent.writeln('///[Cache$useCaseName implementation]');
         cacheContent.writeln('@injectable');
         cacheContent.writeln('class Cache$useCaseName {');
@@ -72,6 +75,7 @@ class UseCaseGenerator extends GeneratorForAnnotation<UseCaseAnnotation> {
 
         ///[get]
         final getContent = StringBuffer();
+        content.writeln(imports(repositoryName: repositoryName));
         getContent.writeln('///[Get$useCaseName implementation]');
         getContent.writeln('@injectable');
         getContent.writeln('class Get$useCaseName {');
@@ -90,5 +94,16 @@ class UseCaseGenerator extends GeneratorForAnnotation<UseCaseAnnotation> {
       classBuffer.write(content);
     }
     return classBuffer.toString();
+  }
+
+  String imports({String repositoryName = ''}) {
+    String data = "import 'dart:convert';";
+    data += "import 'package:eitherx/eitherx.dart';\n";
+    data += "import 'package:injectable/injectable.dart';";
+    if (repositoryName.isNotEmpty) {
+      data +=
+          "import '../repository/${names.camelCaseToUnderscore(repositoryName)}'';";
+    }
+    return data;
   }
 }

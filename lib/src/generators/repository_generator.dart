@@ -9,6 +9,8 @@ import '../add_file_to_project.dart';
 import '../model_visitor.dart';
 
 class RepositoryGenerator extends GeneratorForAnnotation<RepositoryAnnotation> {
+  final names = Names();
+
   @override
   String generateForAnnotatedElement(
     Element element,
@@ -17,7 +19,6 @@ class RepositoryGenerator extends GeneratorForAnnotation<RepositoryAnnotation> {
   ) {
     final path = "${AddFile.path(buildStep.inputId.path)}/repository";
     final visitor = ModelVisitor();
-    final names = Names();
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);
 
@@ -27,6 +28,7 @@ class RepositoryGenerator extends GeneratorForAnnotation<RepositoryAnnotation> {
     final repositoryName = '${names.firstUpper(visitor.className)}Repository';
     final repositoryNameImplement = '${repositoryName}Implement';
 
+    classBuffer.writeln(imports());
     classBuffer.writeln('///[$repositoryName]');
     classBuffer.writeln('abstract class $repositoryName {');
     bool hasCache = false;
@@ -49,6 +51,8 @@ class RepositoryGenerator extends GeneratorForAnnotation<RepositoryAnnotation> {
 
     AddFile.save('$path/$repositoryName', classBuffer.toString());
     final content = StringBuffer();
+    classBuffer
+        .writeln(imports(repositoryName: repositoryName, hasCache: hasCache));
     content.writeln('///[$repositoryName implementation]');
     content.writeln('@Injectable(as:$repositoryName)');
     content
@@ -138,5 +142,18 @@ class RepositoryGenerator extends GeneratorForAnnotation<RepositoryAnnotation> {
       return type.toString();
     }
     return 'dynamic';
+  }
+
+  String imports({String repositoryName = '', bool hasCache = false}) {
+    String data = "import 'dart:convert';";
+    data += "import 'package:eitherx/eitherx.dart';\n";
+    data += "import 'package:injectable/injectable.dart';";
+    if (hasCache) {
+      data += "import 'package:shared_preferences/shared_preferences.dart'";
+    }
+    if (repositoryName.isNotEmpty) {
+      data += "import './${names.camelCaseToUnderscore(repositoryName)}'';";
+    }
+    return data;
   }
 }
