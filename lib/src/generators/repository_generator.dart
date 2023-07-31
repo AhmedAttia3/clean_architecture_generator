@@ -145,14 +145,14 @@ class RepositoryGenerator extends GeneratorForAnnotation<RepositoryAnnotation> {
   }
 
   String imports({String repositoryName = '', bool hasCache = false}) {
-    String data = "import 'dart:convert';";
+    String data = "import 'dart:convert';\n";
     data += "import 'package:eitherx/eitherx.dart';\n";
-    data += "import 'package:injectable/injectable.dart';";
+    data += "import 'package:injectable/injectable.dart';\n";
     if (hasCache) {
-      data += "import 'package:shared_preferences/shared_preferences.dart'";
+      data += "import 'package:shared_preferences/shared_preferences.dart';\n";
     }
     if (repositoryName.isNotEmpty) {
-      data += "import './${names.camelCaseToUnderscore(repositoryName)}'';";
+      data += "import './${names.camelCaseToUnderscore(repositoryName)}';\n";
     }
     return data;
   }

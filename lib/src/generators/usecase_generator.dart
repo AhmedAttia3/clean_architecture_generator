@@ -97,12 +97,12 @@ class UseCaseGenerator extends GeneratorForAnnotation<UseCaseAnnotation> {
   }
 
   String imports({String repositoryName = ''}) {
-    String data = "import 'dart:convert';";
+    String data = "import 'dart:convert';\n";
     data += "import 'package:eitherx/eitherx.dart';\n";
-    data += "import 'package:injectable/injectable.dart';";
+    data += "import 'package:injectable/injectable.dart';\n";
     if (repositoryName.isNotEmpty) {
       data +=
-          "import '../repository/${names.camelCaseToUnderscore(repositoryName)}'';";
+          "import '../repository/${names.camelCaseToUnderscore(repositoryName)}';\n";
     }
     return data;
   }

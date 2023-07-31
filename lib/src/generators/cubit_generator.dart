@@ -124,12 +124,13 @@ class CubitGenerator extends GeneratorForAnnotation<CubitAnnotation> {
     required String useCaseName,
     required String requestName,
   }) {
-    String data = "import 'dart:convert';";
-    data += "import 'package:eitherx/eitherx.dart';";
-    data += "import 'package:injectable/injectable.dart';";
+    String data = "import 'dart:convert';\n";
+    data += "import 'package:eitherx/eitherx.dart';\n";
+    data += "import 'package:injectable/injectable.dart';\n";
     data +=
-        "import './use-cases/${names.camelCaseToUnderscore(useCaseName)}'';";
-    data += "import './requests/${names.camelCaseToUnderscore(requestName)}'';";
+        "import './use-cases/${names.camelCaseToUnderscore(useCaseName)}';\n";
+    data +=
+        "import './requests/${names.camelCaseToUnderscore(requestName)}';\n";
     return data;
   }
 }
