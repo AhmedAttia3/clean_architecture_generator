@@ -11,6 +11,9 @@ class AddFile {
     final dir = Directory(path(filePath));
     if (!dir.existsSync()) {
       dir.createSync();
+    }
+    final fileDir = Directory(filePath);
+    if (!fileDir.existsSync()) {
       final file = File(filePath);
       file.writeAsStringSync(content);
     }
