@@ -152,7 +152,8 @@ class RepositoryGenerator extends GeneratorForAnnotation<RepositoryAnnotation> {
       data += "import 'package:shared_preferences/shared_preferences.dart';\n";
     }
     if (repositoryName.isNotEmpty) {
-      data += "import './${names.camelCaseToUnderscore(repositoryName)}';\n";
+      data +=
+          "import './${names.camelCaseToUnderscore(repositoryName)}.dart';\n";
     }
     return data;
   }

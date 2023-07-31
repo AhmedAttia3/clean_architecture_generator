@@ -128,9 +128,9 @@ class CubitGenerator extends GeneratorForAnnotation<CubitAnnotation> {
     data += "import 'package:eitherx/eitherx.dart';\n";
     data += "import 'package:injectable/injectable.dart';\n";
     data +=
-        "import './use-cases/${names.camelCaseToUnderscore(useCaseName)}';\n";
+        "import '../use-cases/${names.camelCaseToUnderscore(useCaseName)}.dart';\n";
     data +=
-        "import './requests/${names.camelCaseToUnderscore(requestName)}';\n";
+        "import '../requests/${names.camelCaseToUnderscore(requestName)}.dart';\n";
     return data;
   }
 }

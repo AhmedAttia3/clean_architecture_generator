@@ -102,7 +102,7 @@ class UseCaseGenerator extends GeneratorForAnnotation<UseCaseAnnotation> {
     data += "import 'package:injectable/injectable.dart';\n";
     if (repositoryName.isNotEmpty) {
       data +=
-          "import '../repository/${names.camelCaseToUnderscore(repositoryName)}';\n";
+          "import '../repository/${names.camelCaseToUnderscore(repositoryName)}.dart';\n";
     }
     return data;
   }
