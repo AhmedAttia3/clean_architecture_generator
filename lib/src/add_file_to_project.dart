@@ -12,9 +12,9 @@ class AddFile {
     if (!dir.existsSync()) {
       dir.createSync();
     }
-    final fileDir = Directory(filePath);
-    if (!fileDir.existsSync()) {
-      final file = File(filePath);
+
+    final file = File(filePath);
+    if (!file.existsSync()) {
       file.writeAsStringSync(content);
     }
   }
