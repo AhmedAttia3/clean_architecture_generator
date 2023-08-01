@@ -31,6 +31,7 @@ class RepositoryGenerator extends GeneratorForAnnotation<RepositoryAnnotation> {
 
     classBuffer.writeln(imports(baseFilePath: buildStep.inputId.path));
     classBuffer.writeln('///[$repositoryName]');
+    classBuffer.writeln('///[Implementation]');
     classBuffer.writeln('abstract class $repositoryName {');
     bool hasCache = false;
     for (var method in visitor.useCases) {
@@ -58,6 +59,7 @@ class RepositoryGenerator extends GeneratorForAnnotation<RepositoryAnnotation> {
       baseFilePath: buildStep.inputId.path,
     ));
     content.writeln('///[$repositoryNameImplement]');
+    content.writeln('///[Implementation]');
     content.writeln('@Injectable(as:$repositoryName)');
     content
         .writeln('class $repositoryNameImplement implements $repositoryName {');

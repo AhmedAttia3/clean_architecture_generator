@@ -12,7 +12,7 @@ class ReadImports {
           .replaceFirst("import 'package:annotations/annotations.dart';", '')
           .replaceFirst("import 'package:dio/dio.dart';", '')
           .replaceFirst("import 'package:retrofit/http.dart';", '')
-          .replaceAll("../", "../../");
+          .replaceAll("'../", "'../../");
       return content;
     }
     throw Exception('File not exist');

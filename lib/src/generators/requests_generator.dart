@@ -28,16 +28,21 @@ class RequestsGenerator extends GeneratorForAnnotation<RequestsAnnotation> {
       content.writeln(
           "part '${names.camelCaseToUnderscore(requestName)}.g.dart';");
       content.writeln('///[$requestName]');
+      content.writeln('///[Implementation]');
       content.writeln('@JsonSerializable()');
       content.writeln('class $requestName {');
       for (var pram in method.parameters) {
         content.writeln('final ${pram.type} ${pram.name};');
       }
-      content.writeln('const $requestName(');
-      for (var pram in method.parameters) {
-        content.writeln('this.${pram.name},');
+      if (method.parameters.isNotEmpty) {
+        content.writeln('const $requestName({');
+        for (var pram in method.parameters) {
+          content.writeln('required this.${pram.name},');
+        }
+        content.writeln('});\n');
+      } else {
+        content.writeln('const $requestName();\n');
       }
-      content.writeln(');\n');
       content.writeln(
           'factory $requestName.fromJson(Map<String, dynamic> json) => _\$${requestName}FromJson(json);');
       content.writeln(

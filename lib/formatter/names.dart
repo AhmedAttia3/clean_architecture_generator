@@ -18,6 +18,15 @@ class Names {
     return value.split('<').elementAt(1).replaceAll('>', "");
   }
 
+  String baseModelName(String value) {
+    return value
+        .replaceFirst('BaseResponse<', "")
+        .replaceFirst('>', "")
+        .replaceFirst('List<', '')
+        .replaceFirst('>', '')
+        .replaceFirst('?', '');
+  }
+
   String camelCaseToUnderscore(String input) {
     final regex = RegExp('([a-z0-9])([A-Z])');
     return input

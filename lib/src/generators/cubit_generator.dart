@@ -38,6 +38,8 @@ class CubitGenerator extends GeneratorForAnnotation<CubitAnnotation> {
         useCaseName: useCaseName,
         baseFilePath: buildStep.inputId.path,
       ));
+      content.writeln('///[$cubitName]');
+      content.writeln('///[Implementation]');
       content.writeln('@injectable');
       content.writeln('class $cubitName extends Cubit<FlowState> {');
       content.writeln('final $useCaseName _${names.firstLower(useCaseName)};');

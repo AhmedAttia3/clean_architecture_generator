@@ -7,8 +7,8 @@ import 'package:source_gen/source_gen.dart';
 
 import '../../model_visitor.dart';
 
-class UseCaseTestGenerator
-    extends GeneratorForAnnotation<UseCaseTestAnnotation> {
+class RepositoryTestGenerator
+    extends GeneratorForAnnotation<RepositoryTestAnnotation> {
   @override
   String generateForAnnotatedElement(
     Element element,

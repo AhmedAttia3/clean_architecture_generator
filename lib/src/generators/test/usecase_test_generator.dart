@@ -3,12 +3,16 @@ import 'package:annotations/annotations.dart';
 import 'package:build/build.dart';
 import 'package:generators/formatter/method_format.dart';
 import 'package:generators/formatter/names.dart';
+import 'package:generators/src/add_file_to_project.dart';
+import 'package:generators/src/read_imports_file.dart';
 import 'package:source_gen/source_gen.dart';
 
 import '../../model_visitor.dart';
 
 class UseCaseTestGenerator
     extends GeneratorForAnnotation<UseCaseTestAnnotation> {
+  final names = Names();
+
   @override
   String generateForAnnotatedElement(
     Element element,
@@ -16,86 +20,112 @@ class UseCaseTestGenerator
     BuildStep buildStep,
   ) {
     final visitor = ModelVisitor();
-    final names = Names();
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);
 
+    final basePath =
+        AddFile.path(buildStep.inputId.path).replaceFirst('lib', 'test');
     final classBuffer = StringBuffer();
     final remoteDataSourceName = names.firstLower(visitor.className);
     final remoteDataSourceType = names.firstUpper(visitor.className);
 
     for (var method in visitor.useCases) {
+      final path = "$basePath/${visitor.className}";
+      final methodName = method.name;
       final repositoryName = '${names.firstUpper(visitor.className)}Repository';
-      final useCaseUnitTestType = '${names.firstUpper(method.name)}UseCase';
-      final useCaseUnitTestName = '${names.firstLower(method.name)}UseCase';
+      final useCaseType = '${names.firstUpper(method.name)}UseCase';
+      final useCaseName = '${names.firstLower(method.name)}UseCase';
+      final requestName = '${names.firstUpper(method.name)}Request';
       final type = methodFormat.returnType(method.type);
-      classBuffer.writeln('@GenerateNiceMocks([');
-      classBuffer.writeln('MockSpec<$repositoryName>(),');
-      classBuffer.writeln('MockSpec<NetworkInfo>()');
-      classBuffer.writeln('])');
-      classBuffer.writeln('void main() {');
-      classBuffer.writeln('late $useCaseUnitTestType $useCaseUnitTestName;');
-      classBuffer.writeln('late $remoteDataSourceType $remoteDataSourceName;');
-      classBuffer.writeln('late APICall apiCall;');
-      classBuffer.writeln('late NetworkInfo networkInfo;');
-      classBuffer.writeln('late $type successResponse;');
-      classBuffer.writeln('setUp(() {');
-      classBuffer
-          .writeln('$remoteDataSourceName = Mock$remoteDataSourceType();');
-      classBuffer.writeln('networkInfo = MockNetworkInfo();');
-      classBuffer.writeln('apiCall = APICall(networkInfo);');
-      classBuffer.writeln('$useCaseUnitTestName = $useCaseUnitTestType(');
-      classBuffer.writeln('addressesRemoteDataSource,');
-      classBuffer.writeln('apiCall,);');
-      classBuffer.writeln('successResponse = $type(');
-      classBuffer.writeln('success:true,');
-      classBuffer.writeln('message:"message",');
-      if (type.contains('List')) {
-        final modelName = names.modelName(type);
-        classBuffer.writeln("data: List.generate(2, (index) {");
-        classBuffer.writeln(
-            "return $modelName.fromJson(Encode.set('path-of-response-file'));");
-        classBuffer.writeln("}),");
-        classBuffer.writeln(");");
-        classBuffer.writeln("});");
+      final fileName = "${names.camelCaseToUnderscore(useCaseType)}_test";
+      final usecase = StringBuffer();
+
+      usecase.writeln("import 'package:eitherx/eitherx.dart';");
+      usecase.writeln("import 'package:flutter_test/flutter_test.dart';");
+      usecase.writeln("import 'package:mockito/mockito.dart';");
+      usecase.writeln("import 'package:mockito/annotations.dart';");
+      usecase.writeln("import '$fileName.mocks.dart';");
+      usecase.writeln(imports(
+        requestName: requestName,
+        useCaseName: useCaseType,
+        baseFilePath: buildStep.inputId.path,
+      ));
+      usecase.writeln('@GenerateNiceMocks([');
+      usecase.writeln('MockSpec<$repositoryName>(),');
+      usecase.writeln('])');
+      usecase.writeln('void main() {');
+      usecase.writeln('late $useCaseType $useCaseName;');
+      usecase.writeln('late $repositoryName repository;');
+      usecase.writeln('late $type success;');
+      usecase.writeln('late Failure failure;');
+      usecase.writeln('setUp(() {');
+      usecase.writeln('repository = Mock$repositoryName();');
+      usecase.writeln('useCaseName = $useCaseType(repository);');
+      usecase.writeln("failure = Failure(1, 'message');");
+      usecase.writeln("success = $type(");
+      usecase.writeln("message: 'message',");
+      usecase.writeln("success: true,");
+      if (type.contains('BaseResponse<dynamic>')) {
+        usecase.writeln("data: null,);");
       } else {
-        classBuffer.writeln("data: null,);");
-        classBuffer.writeln("});");
+        final model = names.baseModelName(type);
+        final expectedModel = "expected_${names.camelCaseToUnderscore(model)}";
+        if (type.contains('List')) {
+          usecase.writeln("data: List.generate(");
+          usecase.writeln("2,");
+          usecase.writeln("(index) =>");
+          usecase.writeln("$model.fromJson(Encode.set('$expectedModel'))),");
+          usecase.writeln(");");
+          usecase.writeln("});");
+        } else {
+          usecase.writeln(
+              "data: $model.fromJson(Encode.set('$expectedModel')),);");
+        }
       }
-      classBuffer.writeln("webService() =>");
-      classBuffer.writeln("$remoteDataSourceName.execute(");
-      classBuffer.writeln(
-          "${methodFormat.passingParametersWithInitValues(method.parameters)});");
+      final request =
+          "$requestName(${methodFormat.passingParametersWithInitValues(method.parameters)})";
+      usecase.writeln("webService() => repository.$methodName();");
+      usecase.writeln("group('$useCaseType ', () {");
+      usecase.writeln("test('$methodName FAILURE', () async {");
+      usecase.writeln(
+          "when(webService()).thenAnswer((realInvocation) async => Left(failure));");
+      usecase.writeln("final res = await $useCaseName.execute(");
+      usecase.writeln("request: $request);");
+      usecase.writeln("expect(res.left((data) {}), failure);");
+      usecase.writeln("expect(res.left((data) {}), failure);");
+      usecase.writeln("verify(webService());");
+      usecase.writeln("verifyNoMoreInteractions(repository);");
+      usecase.writeln("});\n\n");
+      usecase.writeln("test('$methodName SUCCESS', () async {");
+      usecase.writeln(
+          "when(webService()).thenAnswer((realInvocation) async => Right(success));");
+      usecase.writeln("final res = await $useCaseName.execute(");
+      usecase.writeln("request: $request);");
+      usecase.writeln("expect(res.right((data) {}), success);");
+      usecase.writeln("verify(webService());");
+      usecase.writeln("verifyNoMoreInteractions(repository);");
+      usecase.writeln("});");
+      usecase.writeln("});");
+      usecase.writeln("}");
 
-      classBuffer
-          .writeln("group('${names.firstUpper(method.name)} USECASE', () {");
-      classBuffer.writeln("test('No Internet', () async {");
-      classBuffer.writeln(
-          "when(networkInfo.isConnected).thenAnswer((realInvocation) async => false);");
-      classBuffer.writeln(
-          "final res = await $useCaseUnitTestName.execute(${methodFormat.passingParametersWithInitValues(method.parameters)});");
-      classBuffer.writeln('expect(res.left((data) {}), isA<Failure>());');
-      classBuffer.writeln('verify(networkInfo.isConnected);');
-      classBuffer.writeln('verifyNoMoreInteractions(networkInfo);');
-      classBuffer.writeln('});');
-      classBuffer
-          .writeln("test('${names.firstUpper(method.name)}', () async {");
-      classBuffer.writeln(
-          "when(networkInfo.isConnected).thenAnswer((realInvocation) async => true);");
-      classBuffer.writeln(
-          "when(webService()).thenAnswer((realInvocation) async => successResponse);");
-      classBuffer.writeln(
-          "final res = await $useCaseUnitTestName.execute(${methodFormat.passingParametersWithInitValues(method.parameters)});");
-      classBuffer.writeln("expect(res.right((data) {}), successResponse);");
-      classBuffer.writeln("verify(networkInfo.isConnected);");
-      classBuffer.writeln("verify(webService());");
-      classBuffer.writeln("verifyNoMoreInteractions(networkInfo);");
-      classBuffer.writeln("verifyNoMoreInteractions($remoteDataSourceName);");
-      classBuffer.writeln("});");
-      classBuffer.writeln("});");
-
-      classBuffer.writeln('}');
+      AddFile.save("$basePath/$fileName.dart", usecase.toString());
+      classBuffer.writeln(usecase);
     }
     return classBuffer.toString();
+  }
+
+  String imports({
+    required String baseFilePath,
+    required String useCaseName,
+    required String requestName,
+  }) {
+    String data = ReadImports.file(baseFilePath);
+    data += "import 'package:eitherx/eitherx.dart';\n";
+    data += "import 'package:injectable/injectable.dart';\n";
+    data +=
+        "import '../use-cases/${names.camelCaseToUnderscore(useCaseName)}.dart';\n";
+    data +=
+        "import '../requests/${names.camelCaseToUnderscore(requestName)}.dart';\n";
+    return data;
   }
 }

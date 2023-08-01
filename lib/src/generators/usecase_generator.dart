@@ -27,6 +27,8 @@ class UseCaseGenerator extends GeneratorForAnnotation<UseCaseAnnotation> {
 
     ///[BaseUseCase]
     final baseUseCase = StringBuffer();
+    baseUseCase.writeln('///[BaseUseCase]');
+    baseUseCase.writeln('///[Implementation]');
     baseUseCase.writeln("import 'package:eitherx/eitherx.dart';");
     baseUseCase.writeln("abstract class BaseUseCase<RES, POS> {");
     baseUseCase.writeln(
@@ -49,6 +51,7 @@ class UseCaseGenerator extends GeneratorForAnnotation<UseCaseAnnotation> {
         baseFilePath: buildStep.inputId.path,
       ));
       content.writeln('///[$useCaseName]');
+      content.writeln('///[Implementation]');
       content.writeln('@injectable');
       content.writeln(
           'class $useCaseName implements BaseUseCase<$type,$requestName>{');
@@ -78,6 +81,7 @@ class UseCaseGenerator extends GeneratorForAnnotation<UseCaseAnnotation> {
           baseFilePath: buildStep.inputId.path,
         ));
         cacheContent.writeln('///[Cache$useCaseName]');
+        cacheContent.writeln('///[Implementation]');
         cacheContent.writeln('@injectable');
         cacheContent.writeln(
             'class Cache$useCaseName implements BaseUseCase<Unit,$type> {');
@@ -102,6 +106,7 @@ class UseCaseGenerator extends GeneratorForAnnotation<UseCaseAnnotation> {
           baseFilePath: buildStep.inputId.path,
         ));
         getContent.writeln('///[Get$useCaseName]');
+        getContent.writeln('///[Implementation]');
         getContent.writeln('@injectable');
         getContent.writeln('class Get$useCaseName {');
         getContent.writeln('final $repositoryName repository;');

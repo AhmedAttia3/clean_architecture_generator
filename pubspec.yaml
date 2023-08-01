@@ -10,8 +10,6 @@ environment:
 dependencies:
   build:
   source_gen:
-  annotations:
-    git: https://github.com/ibrahimnashat/annotations.git
 #  annotations:
 #    path: ../annotations
 dev_dependencies:
