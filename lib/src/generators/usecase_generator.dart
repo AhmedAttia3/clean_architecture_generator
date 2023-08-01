@@ -129,7 +129,7 @@ class UseCaseGenerator extends GeneratorForAnnotation<UseCaseAnnotation> {
     String data = ReadImports.file(baseFilePath);
     data += "import 'package:eitherx/eitherx.dart';\n";
     data += "import 'package:injectable/injectable.dart';\n";
-    data += "import '../../core/base_use_case.dart';\n";
+    data += "import '/core/base_use_case.dart';\n";
 
     if (requestName.isNotEmpty) {
       data +=
