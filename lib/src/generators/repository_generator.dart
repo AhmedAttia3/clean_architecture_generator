@@ -57,7 +57,7 @@ class RepositoryGenerator extends GeneratorForAnnotation<RepositoryAnnotation> {
       hasCache: hasCache,
       baseFilePath: buildStep.inputId.path,
     ));
-    content.writeln('///[$repositoryName implementation]');
+    content.writeln('///[$repositoryNameImplement]');
     content.writeln('@Injectable(as:$repositoryName)');
     content
         .writeln('class $repositoryNameImplement implements $repositoryName {');

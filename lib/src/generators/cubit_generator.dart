@@ -42,10 +42,12 @@ class CubitGenerator extends GeneratorForAnnotation<CubitAnnotation> {
       content.writeln('class $cubitName extends Cubit<FlowState> {');
       content.writeln('final $useCaseName _${names.firstLower(useCaseName)};');
       if (hasData) {
-        if (type.contains('List')) {
-          content.writeln('$type ${names.subName(method.name)} = [];');
+        final filed =
+            type.replaceFirst('BaseResponse<', '').replaceFirst('>', '');
+        if (filed.contains('List')) {
+          content.writeln('$filed ${names.subName(method.name)} = [];');
         } else {
-          content.writeln('$type? ${names.subName(method.name)};');
+          content.writeln('$filed ${names.subName(method.name)};');
         }
       }
       content.writeln(

@@ -2,6 +2,7 @@ import 'package:analyzer/dart/element/element.dart';
 
 class MethodFormat {
   String space = " " * 15;
+
   String parameters(List<ParameterElement> parameters) {
     String data = '{';
     for (var para in parameters) {
@@ -39,7 +40,10 @@ class MethodFormat {
   }
 
   String returnType(String type) {
-    return type.replaceFirst('Future<', '').replaceFirst('>', '');
+    return type
+        .replaceFirst('Future<', '')
+        .replaceFirst('>', '')
+        .replaceFirst('?>>', '>?>');
   }
 
   dynamic initData(String type, String name) {

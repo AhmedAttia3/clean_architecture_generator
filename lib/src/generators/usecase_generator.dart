@@ -48,7 +48,7 @@ class UseCaseGenerator extends GeneratorForAnnotation<UseCaseAnnotation> {
         requestName: requestName,
         baseFilePath: buildStep.inputId.path,
       ));
-      content.writeln('///[$useCaseName implementation]');
+      content.writeln('///[$useCaseName]');
       content.writeln('@injectable');
       content.writeln(
           'class $useCaseName implements BaseUseCase<$type,$requestName>{');
@@ -77,7 +77,7 @@ class UseCaseGenerator extends GeneratorForAnnotation<UseCaseAnnotation> {
           repositoryName: repositoryName,
           baseFilePath: buildStep.inputId.path,
         ));
-        cacheContent.writeln('///[Cache$useCaseName implementation]');
+        cacheContent.writeln('///[Cache$useCaseName]');
         cacheContent.writeln('@injectable');
         cacheContent.writeln(
             'class Cache$useCaseName implements BaseUseCase<Unit,$type> {');
@@ -101,7 +101,7 @@ class UseCaseGenerator extends GeneratorForAnnotation<UseCaseAnnotation> {
           repositoryName: repositoryName,
           baseFilePath: buildStep.inputId.path,
         ));
-        getContent.writeln('///[Get$useCaseName implementation]');
+        getContent.writeln('///[Get$useCaseName]');
         getContent.writeln('@injectable');
         getContent.writeln('class Get$useCaseName {');
         getContent.writeln('final $repositoryName repository;');
