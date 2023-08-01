@@ -3,98 +3,159 @@ import 'package:annotations/annotations.dart';
 import 'package:build/build.dart';
 import 'package:generators/formatter/method_format.dart';
 import 'package:generators/formatter/names.dart';
+import 'package:generators/src/add_file_to_project.dart';
+import 'package:generators/src/read_imports_file.dart';
 import 'package:source_gen/source_gen.dart';
 
 import '../../model_visitor.dart';
 
 class RepositoryTestGenerator
     extends GeneratorForAnnotation<RepositoryTestAnnotation> {
+  final names = Names();
+
   @override
   String generateForAnnotatedElement(
     Element element,
     ConstantReader annotation,
     BuildStep buildStep,
   ) {
+    final basePath =
+        AddFile.path(buildStep.inputId.path).replaceFirst('lib', 'test');
     final visitor = ModelVisitor();
-    final names = Names();
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);
-
     final classBuffer = StringBuffer();
-    final remoteDataSourceName = names.firstLower(visitor.className);
+
     final remoteDataSourceType = names.firstUpper(visitor.className);
+    final repositoryType = '${remoteDataSourceType}Repository';
+    final repositoryImplementType = '${remoteDataSourceType}RepositoryImpl';
+    final fileName = "${names.camelCaseToUnderscore(repositoryType)}_test";
+    classBuffer.writeln(imports(baseFilePath: buildStep.inputId.path));
+    for (var method in visitor.useCases) {
+      final requestName = names
+          .camelCaseToUnderscore('${names.firstUpper(method.name)}Request');
+      classBuffer.writeln("import '../requests/$requestName.dart';");
+    }
+    classBuffer.writeln("import '$fileName.mocks.dart';");
+    classBuffer.writeln('@GenerateNiceMocks([');
+    classBuffer.writeln('MockSpec<$remoteDataSourceType>(),');
+    classBuffer.writeln('MockSpec<NetworkInfo>(),');
+    classBuffer.writeln('])');
+    classBuffer.writeln('void main() {');
+    classBuffer.writeln('late $remoteDataSourceType dataSource;');
+    classBuffer.writeln('late $repositoryType repository;');
+    classBuffer.writeln('late SafeApi apiCall;');
+    classBuffer.writeln('late NetworkInfo networkInfo;');
+    classBuffer.writeln('late Failure failure;');
 
     for (var method in visitor.useCases) {
-      final useCaseUnitTestType = '${names.firstUpper(method.name)}UseCase';
-      final useCaseUnitTestName = '${names.firstLower(method.name)}UseCase';
+      final methodName = method.name;
       final type = methodFormat.returnType(method.type);
-      classBuffer.writeln('@GenerateNiceMocks([');
-      classBuffer.writeln('MockSpec<$remoteDataSourceType>(),');
-      classBuffer.writeln('MockSpec<NetworkInfo>()');
-      classBuffer.writeln('])');
-      classBuffer.writeln('void main() {');
-      classBuffer.writeln('late $useCaseUnitTestType $useCaseUnitTestName;');
-      classBuffer.writeln('late $remoteDataSourceType $remoteDataSourceName;');
-      classBuffer.writeln('late APICall apiCall;');
-      classBuffer.writeln('late NetworkInfo networkInfo;');
-      classBuffer.writeln('late $type successResponse;');
-      classBuffer.writeln('setUp(() {');
-      classBuffer
-          .writeln('$remoteDataSourceName = Mock$remoteDataSourceType();');
-      classBuffer.writeln('networkInfo = MockNetworkInfo();');
-      classBuffer.writeln('apiCall = APICall(networkInfo);');
-      classBuffer.writeln('$useCaseUnitTestName = $useCaseUnitTestType(');
-      classBuffer.writeln('addressesRemoteDataSource,');
-      classBuffer.writeln('apiCall,);');
-      classBuffer.writeln('successResponse = $type(');
-      classBuffer.writeln('success:true,');
-      classBuffer.writeln('message:"message",');
-      if (type.contains('List')) {
-        final modelName = names.modelName(type);
-        classBuffer.writeln("data: List.generate(2, (index) {");
-        classBuffer.writeln(
-            "return $modelName.fromJson(Encode.set('path-of-response-file'));");
-        classBuffer.writeln("}),");
-        classBuffer.writeln(");");
-        classBuffer.writeln("});");
-      } else {
-        classBuffer.writeln("data: null,);");
-        classBuffer.writeln("});");
-      }
-      classBuffer.writeln("webService() =>");
-      classBuffer.writeln("$remoteDataSourceName.execute(");
-      classBuffer.writeln(
-          "${methodFormat.passingParametersWithInitValues(method.parameters)});");
+      classBuffer.writeln('late $type ${methodName}Response;');
+    }
 
-      classBuffer
-          .writeln("group('${names.firstUpper(method.name)} USECASE', () {");
+    classBuffer.writeln('setUp(() {');
+    classBuffer.writeln('networkInfo = MockNetworkInfo();');
+    classBuffer.writeln('apiCall = SafeApi(networkInfo);');
+    classBuffer.writeln('dataSource = Mock$remoteDataSourceType();');
+    classBuffer.writeln('repository = $repositoryImplementType(');
+    classBuffer.writeln('dataSource,');
+    classBuffer.writeln('apiCall,');
+    classBuffer.writeln(');');
+    classBuffer.writeln("failure = Failure(1, 'message');");
+
+    for (var method in visitor.useCases) {
+      final methodName = method.name;
+      final type = methodFormat.returnType(method.type);
+      classBuffer.writeln("///[${names.firstUpper(methodName)}]");
+      classBuffer.writeln('${methodName}Response = $type(');
+      classBuffer.writeln("message: 'message',");
+      classBuffer.writeln("success: true,");
+      if (type.contains('BaseResponse<dynamic>')) {
+        classBuffer.writeln("data: null,);");
+      } else {
+        final model = names.baseModelName(type);
+        final expectedModel = "expected_${names.camelCaseToUnderscore(model)}";
+        if (type.contains('List')) {
+          classBuffer.writeln("data: List.generate(");
+          classBuffer.writeln("2,");
+          classBuffer.writeln("(index) =>");
+          classBuffer
+              .writeln("$model.fromJson(Encode.set('$expectedModel'))),");
+          classBuffer.writeln(");");
+          classBuffer.writeln("});");
+        } else {
+          classBuffer.writeln(
+              "data: $model.fromJson(Encode.set('$expectedModel')),);");
+        }
+      }
+    }
+    classBuffer.writeln('});');
+
+    for (var method in visitor.useCases) {
+      final methodName = method.name;
+      classBuffer.writeln(
+          "$methodName() => dataSource.$methodName(${methodFormat.parametersWithValues(method.parameters)});");
+    }
+
+    classBuffer.writeln("group('$repositoryType Repository', () {");
+    if (visitor.useCases.isNotEmpty) {
       classBuffer.writeln("test('No Internet', () async {");
       classBuffer.writeln(
           "when(networkInfo.isConnected).thenAnswer((realInvocation) async => false);");
-      classBuffer.writeln(
-          "final res = await $useCaseUnitTestName.execute(${methodFormat.passingParametersWithInitValues(method.parameters)});");
-      classBuffer.writeln('expect(res.left((data) {}), isA<Failure>());');
-      classBuffer.writeln('verify(networkInfo.isConnected);');
-      classBuffer.writeln('verifyNoMoreInteractions(networkInfo);');
-      classBuffer.writeln('});');
-      classBuffer
-          .writeln("test('${names.firstUpper(method.name)}', () async {");
-      classBuffer.writeln(
-          "when(networkInfo.isConnected).thenAnswer((realInvocation) async => true);");
-      classBuffer.writeln(
-          "when(webService()).thenAnswer((realInvocation) async => successResponse);");
-      classBuffer.writeln(
-          "final res = await $useCaseUnitTestName.execute(${methodFormat.passingParametersWithInitValues(method.parameters)});");
-      classBuffer.writeln("expect(res.right((data) {}), successResponse);");
+      final method = visitor.useCases.first;
+      final requestName = '${names.firstUpper(method.name)}Request';
+      if (method.parameters.isNotEmpty) {
+        final request =
+            "$requestName(${methodFormat.parametersWithValues(method.parameters)})";
+        classBuffer.writeln(
+            "final res = await repository.${method.name}(request: $request);");
+      } else {
+        classBuffer.writeln("final res = await repository.${method.name}();");
+      }
+      classBuffer.writeln("expect(res.left((data) {}), isA<Failure>());");
       classBuffer.writeln("verify(networkInfo.isConnected);");
-      classBuffer.writeln("verify(webService());");
       classBuffer.writeln("verifyNoMoreInteractions(networkInfo);");
-      classBuffer.writeln("verifyNoMoreInteractions($remoteDataSourceName);");
-      classBuffer.writeln("});");
       classBuffer.writeln("});");
 
-      classBuffer.writeln('}');
+      for (var method in visitor.useCases) {
+        final methodName = method.name;
+        classBuffer.writeln("test('$methodName', () async {");
+        classBuffer.writeln(
+            "when(networkInfo.isConnected).thenAnswer((realInvocation) async => true);");
+        classBuffer.writeln("when($methodName())");
+        classBuffer.writeln(
+            ".thenAnswer((realInvocation) async => ${methodName}Response);");
+        if (method.parameters.isNotEmpty) {
+          final request =
+              "$requestName(${methodFormat.parametersWithValues(method.parameters)})";
+          classBuffer.writeln(
+              "final res = await repository.$methodName(request: $request);");
+        } else {
+          classBuffer.writeln("final res = await repository.$methodName();");
+        }
+        classBuffer
+            .writeln("expect(res.right((data) {}), ${methodName}Response);");
+        classBuffer.writeln("verify(networkInfo.isConnected);");
+        classBuffer.writeln("verify(getSettings());");
+        classBuffer.writeln("verifyNoMoreInteractions(networkInfo);");
+        classBuffer.writeln("verifyNoMoreInteractions(dataSource);");
+        classBuffer.writeln("});");
+      }
     }
+    classBuffer.writeln("});");
+    classBuffer.writeln("}");
+
+    AddFile.save('$basePath/${repositoryType}Test', classBuffer.toString());
     return classBuffer.toString();
+  }
+
+  String imports({required String baseFilePath}) {
+    String data = ReadImports.file(baseFilePath);
+    data += "import 'package:eitherx/eitherx.dart';\n";
+    data += "import 'package:flutter_test/flutter_test.dart';\n";
+    data += "import 'package:mockito/mockito.dart';\n";
+    data += "import 'package:mockito/annotations.dart\n';";
+    return data;
   }
 }

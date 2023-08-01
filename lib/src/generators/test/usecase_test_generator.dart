@@ -40,16 +40,12 @@ class UseCaseTestGenerator
       final fileName = "${names.camelCaseToUnderscore(useCaseType)}_test";
       final usecase = StringBuffer();
 
-      usecase.writeln("import 'package:eitherx/eitherx.dart';");
-      usecase.writeln("import 'package:flutter_test/flutter_test.dart';");
-      usecase.writeln("import 'package:mockito/mockito.dart';");
-      usecase.writeln("import 'package:mockito/annotations.dart';");
-      usecase.writeln("import '$fileName.mocks.dart';");
       usecase.writeln(imports(
         requestName: requestName,
         useCaseName: useCaseType,
         baseFilePath: buildStep.inputId.path,
       ));
+      usecase.writeln("import '$fileName.mocks.dart';");
       usecase.writeln('@GenerateNiceMocks([');
       usecase.writeln('MockSpec<$repositoryName>(),');
       usecase.writeln('])');
@@ -83,14 +79,18 @@ class UseCaseTestGenerator
         }
       }
       final request =
-          "$requestName(${methodFormat.passingParametersWithInitValues(method.parameters)})";
+          "$requestName(${methodFormat.parametersWithValues(method.parameters)})";
       usecase.writeln("webService() => repository.$methodName();");
       usecase.writeln("group('$useCaseType ', () {");
       usecase.writeln("test('$methodName FAILURE', () async {");
       usecase.writeln(
           "when(webService()).thenAnswer((realInvocation) async => Left(failure));");
       usecase.writeln("final res = await $useCaseName.execute(");
-      usecase.writeln("request: $request);");
+      if (method.parameters.isNotEmpty) {
+        usecase.writeln("request: $request);");
+      } else {
+        usecase.writeln(");");
+      }
       usecase.writeln("expect(res.left((data) {}), failure);");
       usecase.writeln("expect(res.left((data) {}), failure);");
       usecase.writeln("verify(webService());");
@@ -108,7 +108,7 @@ class UseCaseTestGenerator
       usecase.writeln("});");
       usecase.writeln("}");
 
-      AddFile.save("$basePath/$fileName.dart", usecase.toString());
+      AddFile.save("$basePath/${useCaseType}Test", usecase.toString());
       classBuffer.writeln(usecase);
     }
     return classBuffer.toString();
@@ -121,7 +121,9 @@ class UseCaseTestGenerator
   }) {
     String data = ReadImports.file(baseFilePath);
     data += "import 'package:eitherx/eitherx.dart';\n";
-    data += "import 'package:injectable/injectable.dart';\n";
+    data += "import 'package:flutter_test/flutter_test.dart';\n";
+    data += "import 'package:mockito/mockito.dart';\n";
+    data += "import 'package:mockito/annotations.dart\n';";
     data +=
         "import '../use-cases/${names.camelCaseToUnderscore(useCaseName)}.dart';\n";
     data +=

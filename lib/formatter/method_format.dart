@@ -30,7 +30,7 @@ class MethodFormat {
     return data;
   }
 
-  String passingParametersWithInitValues(List<ParameterElement> parameters) {
+  String parametersWithValues(List<ParameterElement> parameters) {
     String data = '';
     for (var para in parameters) {
       data +=
