@@ -5,6 +5,7 @@ import 'package:generators/formatter/method_format.dart';
 import 'package:generators/formatter/names.dart';
 import 'package:generators/src/add_file_to_project.dart';
 import 'package:generators/src/model_visitor.dart';
+import 'package:generators/src/read_imports_file.dart';
 import 'package:source_gen/source_gen.dart';
 
 class UseCaseGenerator extends GeneratorForAnnotation<UseCaseAnnotation> {
@@ -42,8 +43,11 @@ class UseCaseGenerator extends GeneratorForAnnotation<UseCaseAnnotation> {
       final requestName = '${names.firstUpper(method.name)}Request';
       final methodName = names.firstLower(method.name);
       final type = methodFormat.returnType(method.type);
-      content.writeln(
-          imports(repositoryName: repositoryName, requestName: requestName));
+      content.writeln(imports(
+        repositoryName: repositoryName,
+        requestName: requestName,
+        baseFilePath: buildStep.inputId.path,
+      ));
       content.writeln('///[$useCaseName implementation]');
       content.writeln('@injectable');
       content.writeln(
@@ -69,7 +73,10 @@ class UseCaseGenerator extends GeneratorForAnnotation<UseCaseAnnotation> {
 
         ///[cache]
         final cacheContent = StringBuffer();
-        cacheContent.writeln(imports(repositoryName: repositoryName));
+        cacheContent.writeln(imports(
+          repositoryName: repositoryName,
+          baseFilePath: buildStep.inputId.path,
+        ));
         cacheContent.writeln('///[Cache$useCaseName implementation]');
         cacheContent.writeln('@injectable');
         cacheContent.writeln(
@@ -90,7 +97,10 @@ class UseCaseGenerator extends GeneratorForAnnotation<UseCaseAnnotation> {
 
         ///[get]
         final getContent = StringBuffer();
-        getContent.writeln(imports(repositoryName: repositoryName));
+        getContent.writeln(imports(
+          repositoryName: repositoryName,
+          baseFilePath: buildStep.inputId.path,
+        ));
         getContent.writeln('///[Get$useCaseName implementation]');
         getContent.writeln('@injectable');
         getContent.writeln('class Get$useCaseName {');
@@ -112,10 +122,12 @@ class UseCaseGenerator extends GeneratorForAnnotation<UseCaseAnnotation> {
   }
 
   String imports({
+    required String baseFilePath,
     String repositoryName = '',
     String requestName = '',
   }) {
-    String data = "import 'package:eitherx/eitherx.dart';\n";
+    String data = ReadImports.file(baseFilePath);
+    data += "import 'package:eitherx/eitherx.dart';\n";
     data += "import 'package:injectable/injectable.dart';\n";
     data += "import '../../core/base_use_case.dart';\n";
 

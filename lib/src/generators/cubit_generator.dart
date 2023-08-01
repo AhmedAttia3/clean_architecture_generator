@@ -4,6 +4,7 @@ import 'package:build/build.dart';
 import 'package:generators/formatter/method_format.dart';
 import 'package:generators/formatter/names.dart';
 import 'package:generators/src/add_file_to_project.dart';
+import 'package:generators/src/read_imports_file.dart';
 import 'package:source_gen/source_gen.dart';
 
 import '../model_visitor.dart';
@@ -32,8 +33,11 @@ class CubitGenerator extends GeneratorForAnnotation<CubitAnnotation> {
       final requestName = '${names.firstUpper(method.name)}Request';
       final type = methodFormat.returnType(method.type);
       final hasData = !type.contains('BaseResponse<dynamic>');
-      content
-          .writeln(imports(requestName: requestName, useCaseName: useCaseName));
+      content.writeln(imports(
+        requestName: requestName,
+        useCaseName: useCaseName,
+        baseFilePath: buildStep.inputId.path,
+      ));
       content.writeln('@injectable');
       content.writeln('class $cubitName extends Cubit<FlowState> {');
       content.writeln('final $useCaseName _${names.firstLower(useCaseName)};');
@@ -87,8 +91,11 @@ class CubitGenerator extends GeneratorForAnnotation<CubitAnnotation> {
       ///[get cache]
       if (method.comment?.contains('///cache') == true) {
         final getContent = StringBuffer();
-        getContent.writeln(
-            imports(requestName: requestName, useCaseName: useCaseName));
+        getContent.writeln(imports(
+          requestName: requestName,
+          useCaseName: useCaseName,
+          baseFilePath: buildStep.inputId.path,
+        ));
         getContent.writeln('@injectable');
         getContent.writeln('class Get$cubitName extends Cubit<FlowState> {');
         getContent.writeln('final Get$useCaseName _get$useCaseName;');
@@ -121,10 +128,12 @@ class CubitGenerator extends GeneratorForAnnotation<CubitAnnotation> {
   }
 
   String imports({
+    required String baseFilePath,
     required String useCaseName,
     required String requestName,
   }) {
-    String data = "import 'package:eitherx/eitherx.dart';\n";
+    String data = ReadImports.file(baseFilePath);
+    data += "import 'package:eitherx/eitherx.dart';\n";
     data += "import 'package:injectable/injectable.dart';\n";
     data +=
         "import '../use-cases/${names.camelCaseToUnderscore(useCaseName)}.dart';\n";

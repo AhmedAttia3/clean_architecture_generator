@@ -7,6 +7,7 @@ import 'package:source_gen/source_gen.dart';
 
 import '../add_file_to_project.dart';
 import '../model_visitor.dart';
+import '../read_imports_file.dart';
 
 class RepositoryGenerator extends GeneratorForAnnotation<RepositoryAnnotation> {
   final names = Names();
@@ -28,7 +29,7 @@ class RepositoryGenerator extends GeneratorForAnnotation<RepositoryAnnotation> {
     final repositoryName = '${names.firstUpper(visitor.className)}Repository';
     final repositoryNameImplement = '${repositoryName}Implement';
 
-    classBuffer.writeln(imports());
+    classBuffer.writeln(imports(baseFilePath: buildStep.inputId.path));
     classBuffer.writeln('///[$repositoryName]');
     classBuffer.writeln('abstract class $repositoryName {');
     bool hasCache = false;
@@ -51,8 +52,11 @@ class RepositoryGenerator extends GeneratorForAnnotation<RepositoryAnnotation> {
 
     AddFile.save('$path/$repositoryName', classBuffer.toString());
     final content = StringBuffer();
-    content
-        .writeln(imports(repositoryName: repositoryName, hasCache: hasCache));
+    content.writeln(imports(
+      repositoryName: repositoryName,
+      hasCache: hasCache,
+      baseFilePath: buildStep.inputId.path,
+    ));
     content.writeln('///[$repositoryName implementation]');
     content.writeln('@Injectable(as:$repositoryName)');
     content
@@ -144,8 +148,13 @@ class RepositoryGenerator extends GeneratorForAnnotation<RepositoryAnnotation> {
     return 'dynamic';
   }
 
-  String imports({String repositoryName = '', bool hasCache = false}) {
-    String data = "import 'package:eitherx/eitherx.dart';\n";
+  String imports({
+    required String baseFilePath,
+    String repositoryName = '',
+    bool hasCache = false,
+  }) {
+    String data = ReadImports.file(baseFilePath);
+    data += "import 'package:eitherx/eitherx.dart';\n";
     data += "import 'package:injectable/injectable.dart';\n";
     if (hasCache) {
       data += "import 'package:shared_preferences/shared_preferences.dart';\n";
