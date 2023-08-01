@@ -10,9 +10,10 @@ environment:
 dependencies:
   build:
   source_gen:
+#  annotations:
+#    git: https://github.com/ibrahimnashat/annotations.git
   annotations:
-    git: https://github.com/ibrahimnashat/annotations.git
-
+    path: ../annotations
 dev_dependencies:
   flutter_test:
     sdk: flutter

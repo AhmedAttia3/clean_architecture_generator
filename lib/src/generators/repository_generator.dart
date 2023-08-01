@@ -43,7 +43,7 @@ class RepositoryGenerator extends GeneratorForAnnotation<RepositoryAnnotation> {
         hasCache = true;
         final useCaseName = names.firstUpper(method.name);
         classBuffer.writeln(
-            'Future<Either<Failure, Unit>> cache$useCaseName($type data);');
+            'Future<Either<Failure, Unit>> cache$useCaseName({required $type data});');
         classBuffer.writeln('Either<Failure, $type> get$useCaseName();');
       }
     }
@@ -51,7 +51,7 @@ class RepositoryGenerator extends GeneratorForAnnotation<RepositoryAnnotation> {
 
     AddFile.save('$path/$repositoryName', classBuffer.toString());
     final content = StringBuffer();
-    classBuffer
+    content
         .writeln(imports(repositoryName: repositoryName, hasCache: hasCache));
     content.writeln('///[$repositoryName implementation]');
     content.writeln('@Injectable(as:$repositoryName)');
@@ -94,7 +94,7 @@ class RepositoryGenerator extends GeneratorForAnnotation<RepositoryAnnotation> {
         ///[cache]
         content.writeln('@override');
         content.writeln(
-            'Future<Either<Failure, Unit>> cache$useCaseName($type data) async {');
+            'Future<Either<Failure, Unit>> cache$useCaseName({required $type data}) async {');
         content.writeln('try {');
         final cachedType = _cacheType(type);
         final dynamicType = cachedType == 'dynamic';
@@ -145,8 +145,7 @@ class RepositoryGenerator extends GeneratorForAnnotation<RepositoryAnnotation> {
   }
 
   String imports({String repositoryName = '', bool hasCache = false}) {
-    String data = "import 'dart:convert';\n";
-    data += "import 'package:eitherx/eitherx.dart';\n";
+    String data = "import 'package:eitherx/eitherx.dart';\n";
     data += "import 'package:injectable/injectable.dart';\n";
     if (hasCache) {
       data += "import 'package:shared_preferences/shared_preferences.dart';\n";
@@ -154,6 +153,8 @@ class RepositoryGenerator extends GeneratorForAnnotation<RepositoryAnnotation> {
     if (repositoryName.isNotEmpty) {
       data +=
           "import './${names.camelCaseToUnderscore(repositoryName)}.dart';\n";
+      data +=
+          "import '../${names.camelCaseToUnderscore(repositoryName.replaceFirst('Repository', ''))}.dart';\n";
     }
     return data;
   }

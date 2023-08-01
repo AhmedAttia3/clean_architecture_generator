@@ -16,15 +16,26 @@ class UseCaseGenerator extends GeneratorForAnnotation<UseCaseAnnotation> {
     ConstantReader annotation,
     BuildStep buildStep,
   ) {
-    final path = "${AddFile.path(buildStep.inputId.path)}/use-cases";
+    final basePath = AddFile.path(buildStep.inputId.path);
+    final path = "$basePath/use-cases";
     final visitor = ModelVisitor();
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);
 
     final repositoryName = '${names.firstUpper(visitor.className)}Repository';
 
-    final classBuffer = StringBuffer();
+    ///[BaseUseCase]
+    final baseUseCase = StringBuffer();
+    baseUseCase.writeln("import 'package:eitherx/eitherx.dart';");
+    baseUseCase.writeln("abstract class BaseUseCase<RES, POS> {");
+    baseUseCase.writeln(
+        "Future<Either<Failure, RES>> execute({required POS request});");
+    baseUseCase.writeln("}");
 
+    AddFile.save('/lib/core/base_use_case', baseUseCase.toString());
+
+    ///[UseCase]
+    final classBuffer = StringBuffer();
     for (var method in visitor.useCases) {
       final content = StringBuffer();
       final useCaseName = '${names.firstUpper(method.name)}UseCase';
@@ -41,6 +52,7 @@ class UseCaseGenerator extends GeneratorForAnnotation<UseCaseAnnotation> {
       content.writeln('const $useCaseName(');
       content.writeln('this.repository,');
       content.writeln(');\n');
+      content.writeln('@override');
       content.writeln(
           'Future<Either<Failure, $type>> execute({required $requestName request,}) async {');
       content.writeln('return await repository.$methodName');
@@ -57,14 +69,16 @@ class UseCaseGenerator extends GeneratorForAnnotation<UseCaseAnnotation> {
 
         ///[cache]
         final cacheContent = StringBuffer();
-        content.writeln(imports(repositoryName: repositoryName));
+        cacheContent.writeln(imports(repositoryName: repositoryName));
         cacheContent.writeln('///[Cache$useCaseName implementation]');
         cacheContent.writeln('@injectable');
-        cacheContent.writeln('class Cache$useCaseName {');
+        cacheContent.writeln(
+            'class Cache$useCaseName implements BaseUseCase<Unit,$type> {');
         cacheContent.writeln('final $repositoryName repository;');
         cacheContent.writeln('const Cache$useCaseName(');
         cacheContent.writeln('this.repository,');
         cacheContent.writeln(');\n');
+        cacheContent.writeln('@override');
         cacheContent.writeln(
             'Future<Either<Failure, Unit>> execute({required $type data,}) async {');
         cacheContent.writeln('return await repository.cache$methodName');
@@ -76,7 +90,7 @@ class UseCaseGenerator extends GeneratorForAnnotation<UseCaseAnnotation> {
 
         ///[get]
         final getContent = StringBuffer();
-        content.writeln(imports(repositoryName: repositoryName));
+        getContent.writeln(imports(repositoryName: repositoryName));
         getContent.writeln('///[Get$useCaseName implementation]');
         getContent.writeln('@injectable');
         getContent.writeln('class Get$useCaseName {');
@@ -84,8 +98,8 @@ class UseCaseGenerator extends GeneratorForAnnotation<UseCaseAnnotation> {
         getContent.writeln('const Get$useCaseName(');
         getContent.writeln('this.repository,');
         getContent.writeln(');\n');
-        getContent.writeln('Either<Failure, Unit> execute() {');
-        getContent.writeln('return repository.get$methodName;');
+        getContent.writeln('Either<Failure, $type> execute() {');
+        getContent.writeln('return repository.get$methodName();');
         getContent.writeln('}\n');
         getContent.writeln('}\n');
         content.write(getContent);
@@ -97,10 +111,14 @@ class UseCaseGenerator extends GeneratorForAnnotation<UseCaseAnnotation> {
     return classBuffer.toString();
   }
 
-  String imports({String repositoryName = '', String requestName = ''}) {
-    String data = "import 'dart:convert';\n";
-    data += "import 'package:eitherx/eitherx.dart';\n";
+  String imports({
+    String repositoryName = '',
+    String requestName = '',
+  }) {
+    String data = "import 'package:eitherx/eitherx.dart';\n";
     data += "import 'package:injectable/injectable.dart';\n";
+    data += "import '../../core/base_use_case.dart';\n";
+
     if (requestName.isNotEmpty) {
       data +=
           "import '../requests/${names.camelCaseToUnderscore(requestName)}.dart';\n";

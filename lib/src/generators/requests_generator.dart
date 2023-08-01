@@ -25,9 +25,9 @@ class RequestsGenerator extends GeneratorForAnnotation<RequestsAnnotation> {
       final content = StringBuffer();
       final requestName = '${names.firstUpper(method.name)}Request';
       content.writeln("import 'package:json_annotation/json_annotation.dart';");
-      content.writeln('///[$requestName implementation]');
       content.writeln(
           "part '${names.camelCaseToUnderscore(requestName)}.g.dart';");
+      content.writeln('///[$requestName implementation]');
       content.writeln('@JsonSerializable()');
       content.writeln('class $requestName {');
       for (var pram in method.parameters) {
