@@ -35,9 +35,11 @@ class ReadImports {
       data += "import 'package:flutter_test/flutter_test.dart';\n";
       data += "import 'package:mockito/mockito.dart';\n";
       data += "import 'package:mockito/annotations.dart';\n";
+      data += "import 'package:$parent/core/failure.dart';\n";
     } else {
       data += "import 'package:injectable/injectable.dart';\n";
-      data += "import '/core/base_use_case.dart';\n";
+      data += "import 'package:$parent/core/base_use_case.dart';\n";
+      data += "import 'package:$parent/core/failure.dart';\n";
     }
     if (hasCache) {
       data += "import 'package:shared_preferences/shared_preferences.dart';\n";
@@ -63,5 +65,11 @@ class ReadImports {
     final parent = projectDir.absolute.uri.path.split('/');
     return "${parent.elementAt(parent.length - 2)}${(baseFilePath.split('/')..removeLast()).join('/')}"
         .replaceFirst('lib', '');
+  }
+
+  static String get parent {
+    final projectDir = Directory.current;
+    final parent = projectDir.absolute.uri.path.split('/');
+    return parent.elementAt(parent.length - 2).replaceFirst('lib', '');
   }
 }

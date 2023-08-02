@@ -29,7 +29,6 @@ class UseCaseGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     ///[BaseUseCase]
     final baseUseCase = StringBuffer();
     baseUseCase.writeln('///[BaseUseCase]');
-    baseUseCase.writeln('///${paths.join('/')}');
     baseUseCase.writeln('///[Implementation]');
     baseUseCase.writeln("import 'package:eitherx/eitherx.dart';");
     baseUseCase.writeln("abstract class BaseUseCase<RES, POS> {");
@@ -37,6 +36,18 @@ class UseCaseGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     baseUseCase.writeln("}");
 
     AddFile.save('/lib/core/base_use_case', baseUseCase.toString());
+
+    ///[Failure]
+    final failure = StringBuffer();
+    failure.writeln('///[Failure]');
+    failure.writeln('///[Implementation]');
+    failure.writeln("class Failure {");
+    failure.writeln("int code; // 200, 201, 400, 303..500 and so on");
+    failure.writeln("String message; // error , success\n");
+    failure.writeln("Failure(this.code, this.message);");
+    failure.writeln("}");
+
+    AddFile.save('/lib/core/failure', failure.toString());
 
     ///[UseCase]
     final classBuffer = StringBuffer();
