@@ -30,9 +30,8 @@ class ReadImports {
     final files = file(filePath);
     String data = "import 'package:eitherx/eitherx.dart';\n";
     for (var file in files.split('import')) {
-      final fileName =
-          file.split('/').last.replaceFirst("';", '').replaceAll(' ', '');
-      final import = importName(fileName);
+      final fileName = file.split('/').last.split('.dart').first;
+      final import = importName('$fileName.dart');
       if (import != null) data += import;
     }
     final baseResponse = importName('base_response.dart');
