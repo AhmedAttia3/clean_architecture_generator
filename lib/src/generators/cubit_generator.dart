@@ -50,7 +50,7 @@ class CubitGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
           cubit
               .writeln('$responseDataType ${names.subName(method.name)} = [];');
         } else {
-          cubit.writeln('$responseDataType ${names.subName(method.name)};');
+          cubit.writeln('$responseDataType? ${names.subName(method.name)};');
         }
       }
       cubit.writeln(
@@ -107,7 +107,13 @@ class CubitGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         getCacheCubit.writeln('class Get$cubitName extends Cubit<FlowState> {');
         getCacheCubit.writeln('final Get$useCaseName _get$useCaseName;');
         final data = names.subName(method.name);
-        getCacheCubit.writeln('final $type? $data;');
+        if (responseDataType.contains('List')) {
+          getCacheCubit
+              .writeln('$responseDataType ${names.subName(method.name)} = [];');
+        } else {
+          getCacheCubit
+              .writeln('$responseDataType? ${names.subName(method.name)};');
+        }
         getCacheCubit.writeln(
             'Get$cubitName(this._get$useCaseName) : super(ContentState());');
         getCacheCubit.writeln('void execute() {');
