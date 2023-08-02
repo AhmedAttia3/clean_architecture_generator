@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:mvvm_generator/formatter/names.dart';
@@ -9,22 +8,18 @@ class AddFile {
     String content, {
     String extension = 'dart',
   }) {
-    try {
-      final projectDir = Directory.current;
-      final names = Names();
-      final filePath =
-          '${projectDir.path}/${names.camelCaseToUnderscore(fileName)}.$extension';
-      final dir = Directory(path(filePath));
-      if (!dir.existsSync()) {
-        dir.createSync();
-      }
+    final projectDir = Directory.current;
+    final names = Names();
+    final filePath =
+        '${projectDir.path}/${names.camelCaseToUnderscore(fileName)}.$extension';
+    final dir = Directory(path(filePath));
+    if (!dir.existsSync()) {
+      dir.createSync();
+    }
 
-      final file = File(filePath);
-      if (!file.existsSync()) {
-        file.writeAsStringSync(content);
-      }
-    } catch (e) {
-      log(e.toString());
+    final file = File(filePath);
+    if (!file.existsSync()) {
+      file.writeAsStringSync(content);
     }
   }
 
