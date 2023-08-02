@@ -56,10 +56,12 @@ class RepositoryGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     AddFile.save('$path/$repositoryName', repository.toString());
     final repositoryImpl = StringBuffer();
     repositoryImpl.writeln(ReadImports.imports(
-      repositoryName: repositoryName,
+      imports: [repositoryName],
       hasCache: hasCache,
       filePath: buildStep.inputId.path,
     ));
+    repositoryImpl.writeln(
+        "import 'package:${ReadImports.parent}${buildStep.inputId.path}';");
     repositoryImpl.writeln('///[$repositoryNameImplement]');
     repositoryImpl.writeln('///[Implementation]');
     repositoryImpl.writeln('@Injectable(as:$repositoryName)');

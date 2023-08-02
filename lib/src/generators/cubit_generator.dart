@@ -33,11 +33,12 @@ class CubitGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
       final useCaseName = '${names.firstUpper(method.name)}UseCase';
       final requestName = '${names.firstUpper(method.name)}Request';
       final type = methodFormat.returnType(method.type);
+      final responseDataType = names.responseDataType(type);
       final hasData = !type.contains('BaseResponse<dynamic>');
       cubit.writeln(ReadImports.imports(
-        requestName: hasParams ? requestName : "",
-        useCaseName: useCaseName,
+        imports: [useCaseName, hasParams ? requestName : ""],
         filePath: buildStep.inputId.path,
+        isCubit: true,
       ));
       cubit.writeln('///[$cubitName]');
       cubit.writeln('///[Implementation]');
@@ -45,12 +46,11 @@ class CubitGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
       cubit.writeln('class $cubitName extends Cubit<FlowState> {');
       cubit.writeln('final $useCaseName _${names.firstLower(useCaseName)};');
       if (hasData) {
-        final filed =
-            type.replaceFirst('BaseResponse<', '').replaceFirst('>', '');
-        if (filed.contains('List')) {
-          cubit.writeln('$filed ${names.subName(method.name)} = [];');
+        if (responseDataType.contains('List')) {
+          cubit
+              .writeln('$responseDataType ${names.subName(method.name)} = [];');
         } else {
-          cubit.writeln('$filed ${names.subName(method.name)};');
+          cubit.writeln('$responseDataType ${names.subName(method.name)};');
         }
       }
       cubit.writeln(
@@ -99,9 +99,9 @@ class CubitGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
       if (method.comment?.contains('///cache') == true) {
         final getCacheCubit = StringBuffer();
         getCacheCubit.writeln(ReadImports.imports(
-          requestName: requestName,
-          useCaseName: useCaseName,
+          imports: [requestName, useCaseName],
           filePath: buildStep.inputId.path,
+          isCubit: true,
         ));
         getCacheCubit.writeln('@injectable');
         getCacheCubit.writeln('class Get$cubitName extends Cubit<FlowState> {');
