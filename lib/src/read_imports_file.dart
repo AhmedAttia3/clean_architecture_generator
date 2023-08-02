@@ -30,12 +30,12 @@ class ReadImports {
     final files = file(filePath);
     String data = "import 'package:eitherx/eitherx.dart';\n";
     for (var file in files.split('import')) {
-      final import = importName(file.split('/').last.replaceFirst('.dart', ''));
+      final import = importName(file.split('/').last.replaceFirst("';", ''));
       if (import != null) data += import;
     }
-    final baseResponse = importName('base_response');
+    final baseResponse = importName('base_response.dart');
     if (baseResponse != null) data += baseResponse;
-    final failure = importName('failure');
+    final failure = importName('failure.dart');
     if (failure != null) data += failure;
     if (isTest) {
       data += "import 'package:flutter_test/flutter_test.dart';\n";
@@ -43,13 +43,15 @@ class ReadImports {
       data += "import 'package:mockito/annotations.dart';\n";
     } else {
       data += "import 'package:injectable/injectable.dart';\n";
-      final baseUseCase = importName('base_use_case');
+      final baseUseCase = importName('base_use_case.dart');
       if (baseUseCase != null) data += baseUseCase;
       if (isCubit) {
         data += "import 'package:flutter_bloc/flutter_bloc.dart';\n";
-        final states = importName('states');
+        final states = importName('states.dart');
         if (states != null) data += states;
-        final stateRenderer = importName('state_renderer');
+        final fold = importName('fold.dart');
+        if (fold != null) data += fold;
+        final stateRenderer = importName('state_renderer.dart');
         if (stateRenderer != null) data += stateRenderer;
       }
     }

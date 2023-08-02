@@ -85,6 +85,7 @@ class CacheUseCaseGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         getCacheUseCase.writeln('const Get$useCaseName(');
         getCacheUseCase.writeln('this.repository,');
         getCacheUseCase.writeln(');\n');
+        cacheUseCase.writeln('@override');
         getCacheUseCase.writeln(
             'Either<Failure, $responseDataType> execute({Void? request}) {');
         getCacheUseCase.writeln('return repository.get$methodName();');
