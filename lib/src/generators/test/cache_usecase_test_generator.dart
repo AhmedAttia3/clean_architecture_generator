@@ -18,13 +18,14 @@ class CacheUseCaseTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     ConstantReader annotation,
     BuildStep buildStep,
   ) {
+    const expectedPath = "test";
     final visitor = ModelVisitor();
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);
-
     final basePath =
         AddFile.path(buildStep.inputId.path).replaceFirst('lib', 'test');
     final path = "$basePath/repository/use-cases";
+
     final classBuffer = StringBuffer();
 
     for (var method in visitor.useCases) {
@@ -38,7 +39,11 @@ class CacheUseCaseTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
       final usecase = StringBuffer();
 
       usecase.writeln(Imports.create(
-        imports: [useCaseType, method.parameters.isEmpty ? "" : requestName],
+        imports: [
+          useCaseType,
+          method.parameters.isEmpty ? "" : requestName,
+          repositoryName,
+        ],
         filePath: buildStep.inputId.path,
         isTest: true,
       ));
@@ -53,7 +58,7 @@ class CacheUseCaseTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
       usecase.writeln('late Failure failure;');
       usecase.writeln('setUp(() {');
       usecase.writeln('repository = Mock$repositoryName();');
-      usecase.writeln('useCaseName = $useCaseType(repository);');
+      usecase.writeln('$useCaseName = $useCaseType(repository);');
       usecase.writeln("failure = Failure(1, 'message');");
       usecase.writeln("success = $type(");
       usecase.writeln("message: 'message',");
@@ -61,23 +66,23 @@ class CacheUseCaseTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
       if (type.contains('BaseResponse<dynamic>')) {
         usecase.writeln("data: null,);");
       } else {
-        final model = names.baseModelName(type);
-        final expectedModel = "expected_${names.camelCaseToUnderscore(model)}";
+        final model = names.camelCaseToUnderscore(names.baseModelName(type));
         AddFile.save(
-          "$basePath/expected/$expectedModel",
+          "$expectedPath/expected/expected_$model",
           '{}',
           extension: 'json',
         );
+        final decode =
+            "jsonDecode(File('test/expected/expected_$model.json').readAsStringSync())";
         if (type.contains('List')) {
           usecase.writeln("data: List.generate(");
           usecase.writeln("2,");
           usecase.writeln("(index) =>");
-          usecase.writeln("$model.fromJson(Encode.set('$expectedModel'))),");
+          usecase.writeln("$model.fromJson($decode),");
           usecase.writeln(");");
           usecase.writeln("});");
         } else {
-          usecase.writeln(
-              "data: $model.fromJson(Encode.set('$expectedModel')),);");
+          usecase.writeln("data: $model.fromJson($decode),);");
         }
       }
       final request =
@@ -104,6 +109,8 @@ class CacheUseCaseTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
       usecase.writeln("final res = await $useCaseName.execute(");
       if (method.parameters.isNotEmpty) {
         usecase.writeln("request: $request);");
+      } else {
+        usecase.writeln(");");
       }
       usecase.writeln("expect(res.right((data) {}), success);");
       usecase.writeln("verify(webService());");
