@@ -52,7 +52,6 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     classBuffer.writeln('late $repositoryType repository;');
     classBuffer.writeln('late SafeApi apiCall;');
     classBuffer.writeln('late NetworkInfo networkInfo;');
-    classBuffer.writeln('late Failure failure;');
 
     for (var method in visitor.useCases) {
       final methodName = method.name;
@@ -68,7 +67,6 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     classBuffer.writeln('dataSource,');
     classBuffer.writeln('apiCall,');
     classBuffer.writeln(');');
-    classBuffer.writeln("failure = Failure(1, 'message');");
 
     for (var method in visitor.useCases) {
       final methodName = method.name;
@@ -107,7 +105,7 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
           "$methodName() => dataSource.$methodName(${methodFormat.parametersWithValues(method.parameters)});");
     }
 
-    classBuffer.writeln("group('$repositoryType Repository', () {");
+    classBuffer.writeln("\ngroup('$repositoryType Repository', () {");
     if (visitor.useCases.isNotEmpty) {
       classBuffer.writeln("test('No Internet', () async {");
       classBuffer.writeln(
@@ -120,14 +118,13 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
       } else {
         classBuffer.writeln("final res = await repository.${method.name}();");
       }
-      classBuffer.writeln("expect(res, isA<Failure>());");
+      classBuffer.writeln("expect(res.leftOrNull(), isA<Failure>());");
       classBuffer.writeln("verify(networkInfo.isConnected);");
       classBuffer.writeln("verifyNoMoreInteractions(networkInfo);");
-      classBuffer.writeln("});");
+      classBuffer.writeln("});\n");
 
       for (var method in visitor.useCases) {
         final methodName = method.name;
-        final requestName = '${names.firstUpper(method.name)}Request';
         classBuffer.writeln("test('$methodName', () async {");
         classBuffer.writeln(
             "when(networkInfo.isConnected).thenAnswer((realInvocation) async => true);");
@@ -141,19 +138,20 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         } else {
           classBuffer.writeln("final res = await repository.$methodName();");
         }
-        classBuffer.writeln("expect(res, ${methodName}Response);");
+        classBuffer
+            .writeln("expect(res.rightOrNull(), ${methodName}Response);");
         classBuffer.writeln("verify(networkInfo.isConnected);");
-        classBuffer.writeln("verify(getSettings());");
+        classBuffer.writeln("verify($methodName());");
         classBuffer.writeln("verifyNoMoreInteractions(networkInfo);");
         classBuffer.writeln("verifyNoMoreInteractions(dataSource);");
-        classBuffer.writeln("});");
+        classBuffer.writeln("});\n");
       }
     }
     classBuffer.writeln("});");
-    classBuffer.writeln("}");
+    classBuffer.writeln("}\n");
     classBuffer.writeln("Map<String, dynamic> fromJson(String path) {");
     classBuffer.writeln(
-        " return jsonDecode(File('test/expected/$path.json').readAsStringSync());");
+        " return jsonDecode(File('test/expected/\$path.json').readAsStringSync());");
     classBuffer.writeln("}");
     AddFile.save('$path/${repositoryType}Test', classBuffer.toString());
     return classBuffer.toString();

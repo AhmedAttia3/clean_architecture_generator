@@ -80,22 +80,24 @@ class UseCaseTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
           usecase.writeln("2,");
           usecase.writeln("(index) =>");
           usecase.writeln("$modelType.fromJson($decode),");
-          usecase.writeln(");");
-          usecase.writeln("});");
+          usecase.writeln("));");
+          usecase.writeln("});\n");
         } else {
           usecase.writeln("data: $modelType.fromJson($decode),);");
+          usecase.writeln("});\n");
         }
       }
       final request =
           "$requestName(${methodFormat.parametersWithValues(method.parameters)})";
-      usecase.writeln("webService() => repository.$methodName();");
+      usecase.writeln(
+          "webService() => repository.$methodName(${methodFormat.parametersWithValues(method.parameters)});\n");
       usecase.writeln("group('$useCaseType ', () {");
       usecase.writeln("test('$methodName FAILURE', () async {");
       usecase.writeln(
           "when(webService()).thenAnswer((realInvocation) async => Left(failure));");
       usecase.writeln("final res = await $useCaseName.execute(");
       if (method.parameters.isNotEmpty) {
-        usecase.writeln("request: $request);");
+        usecase.writeln("request: const $request);");
       } else {
         usecase.writeln(");");
       }
