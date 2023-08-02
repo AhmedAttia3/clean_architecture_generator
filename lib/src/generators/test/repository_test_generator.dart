@@ -80,15 +80,13 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
       if (type.contains('BaseResponse<dynamic>')) {
         classBuffer.writeln("data: null,);");
       } else {
-        final model = names.baseModelName(type);
-        final expectedModel = "expected_${names.camelCaseToUnderscore(model)}";
+        final model = names.camelCaseToUnderscore(names.baseModelName(type));
         AddFile.save(
-          "$expectedPath/expected/$expectedModel",
+          "$expectedPath/expected/expected_$model",
           '{}',
           extension: 'json',
         );
-        final decode =
-            "jsonDecode(File('test/expected/$expectedModel.json').readAsStringSync())";
+        final decode = "fromJson('expected_$model')";
         if (type.contains('List')) {
           classBuffer.writeln("data: List.generate(");
           classBuffer.writeln("2,");
@@ -153,7 +151,10 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     }
     classBuffer.writeln("});");
     classBuffer.writeln("}");
-
+    classBuffer.writeln("Map<String, dynamic> fromJson(String path) {");
+    classBuffer.writeln(
+        " return jsonDecode(File('test/expected/$path.json').readAsStringSync());");
+    classBuffer.writeln("}");
     AddFile.save('$path/${repositoryType}Test', classBuffer.toString());
     return classBuffer.toString();
   }

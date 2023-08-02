@@ -66,15 +66,14 @@ class UseCaseTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
       if (type.contains('BaseResponse<dynamic>')) {
         usecase.writeln("data: null,);");
       } else {
-        final model = names.baseModelName(type);
-        final expectedModel = "expected_${names.camelCaseToUnderscore(model)}";
+        final model = names.camelCaseToUnderscore(names.baseModelName(type));
         AddFile.save(
-          "$expectedPath/expected/$expectedModel",
+          "$expectedPath/expected/expected_$model",
           '{}',
           extension: 'json',
         );
         final decode =
-            "jsonDecode(File('test/expected/$expectedModel.json').readAsStringSync())";
+            "jsonDecode(File('test/expected/expected_$model.json').readAsStringSync())";
         if (type.contains('List')) {
           usecase.writeln("data: List.generate(");
           usecase.writeln("2,");
