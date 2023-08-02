@@ -81,7 +81,6 @@ class UseCaseGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         useCase.writeln(
             'Future<Either<Failure, $type>> execute({Void? request,}) async {');
       } else {
-        useCase.writeln('@override');
         useCase.writeln(
             'Future<Either<Failure, $type>> execute({$requestName? request,}) async {');
       }
