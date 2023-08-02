@@ -25,6 +25,7 @@ class Imports {
     bool hasCache = false,
     bool isTest = false,
     bool isCubit = false,
+    bool isPaging = false,
     bool isRepo = false,
   }) {
     final names = Names();
@@ -55,6 +56,9 @@ class Imports {
         if (fold != null) data += fold;
         final stateRenderer = importName('state_renderer.dart');
         if (stateRenderer != null) data += stateRenderer;
+      }
+      if (isPaging) {
+        data += "import 'package:flutter_pagewise/flutter_pagewise.dart';";
       }
       if (isRepo) {
         data += "import 'dart:convert';";

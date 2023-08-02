@@ -36,6 +36,7 @@ class RepositoryGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     repository.writeln('abstract class $repositoryName {');
     bool hasCache = false;
     for (var method in visitor.useCases) {
+      hasCache = method.comment?.contains('///cache') == true;
       final useCaseName = names.firstLower(method.name);
       final type = methodFormat.returnType(method.type);
       final responseDataType = names.responseDataType(type);
@@ -43,8 +44,7 @@ class RepositoryGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
           'Future<Either<Failure, $type>> $useCaseName(${methodFormat.parameters(method.parameters)});');
 
       ///[cache save or get]
-      if (method.comment?.contains('///cache') == true) {
-        hasCache = true;
+      if (hasCache) {
         final useCaseName = names.firstUpper(method.name);
         repository.writeln(
             'Future<Either<Failure, Unit>> cache$useCaseName({required $responseDataType data,});');

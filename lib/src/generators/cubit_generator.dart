@@ -28,70 +28,117 @@ class CubitGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
 
     for (var method in visitor.useCases) {
       final cubit = StringBuffer();
+      final varName = names.subName(method.name);
+      final isPaging = method.comment?.contains('///page') == true;
       final hasParams = method.parameters.isNotEmpty;
       final cubitName = '${names.firstUpper(method.name)}Cubit';
       final useCaseName = '${names.firstUpper(method.name)}UseCase';
       final requestName = '${names.firstUpper(method.name)}Request';
       final type = methodFormat.returnType(method.type);
       final responseDataType = names.responseDataType(type);
+      final baseModelType = names.baseModelName(type);
       final hasData = !type.contains('BaseResponse<dynamic>');
       cubit.writeln(Imports.create(
         imports: [useCaseName, hasParams ? requestName : ""],
         filePath: buildStep.inputId.path,
         isCubit: true,
+        isPaging: isPaging,
       ));
       cubit.writeln('///[$cubitName]');
       cubit.writeln('///[Implementation]');
       cubit.writeln('@injectable');
       cubit.writeln('class $cubitName extends Cubit<FlowState> {');
       cubit.writeln('final $useCaseName _${names.firstLower(useCaseName)};');
-      if (hasData) {
-        if (responseDataType.contains('List')) {
-          cubit
-              .writeln('$responseDataType ${names.subName(method.name)} = [];');
-        } else {
-          cubit.writeln('$responseDataType? ${names.subName(method.name)};');
-        }
-      }
-      cubit.writeln(
-          '$cubitName(this._${names.firstLower(useCaseName)}) : super(ContentState());');
-      cubit.writeln(
-          'Future<void> execute(${methodFormat.parameters(method.parameters)}) async {');
-      cubit
-          .writeln('emit(LoadingState(type: StateRendererType.popUpLoading));');
-      cubit.writeln(
-          'final res = await _${names.firstLower(useCaseName)}.execute(');
-      if (hasParams) {
+      if (isPaging) {
         cubit.writeln(
-            "request : $requestName(${methodFormat.passingParameters(method.parameters)}),");
-      }
-      cubit.writeln(');');
-      cubit.writeln('res.left((failure) {');
-      cubit.writeln('emit(ErrorState(');
-      cubit.writeln('type: StateRendererType.toastError,');
-      cubit.writeln('message: failure.message,');
-      cubit.writeln('));');
-      cubit.writeln('});');
-      cubit.writeln('res.right((data) {');
-      cubit.writeln('if (data.success) {');
-      if (hasData) {
-        cubit.writeln('if(data.data != null){');
-        cubit.writeln('${names.subName(method.name)} = data.data!;');
+            'late final PagewiseLoadController<$baseModelType> pagewiseController;');
+        cubit.writeln(
+            '$cubitName(this._${names.firstLower(useCaseName)}) : super(ContentState());');
+        cubit.writeln('void init() {');
+        cubit.writeln(
+            'pagewiseController = PagewiseLoadController<$baseModelType>(');
+        cubit.writeln('pageSize: 10,');
+        cubit.writeln('pageFuture: (page) {');
+        cubit.writeln('final offset = page ?? 0;');
+        cubit.writeln(
+            'return getNotifications(page: offset, limit: offset * 10);');
+        cubit.writeln('},');
+        cubit.writeln(');');
+        cubit.writeln('}');
+        cubit.writeln(
+            'Future<$responseDataType> execute(${methodFormat.parameters(method.parameters)}) async {');
+        cubit.writeln('$responseDataType $varName = [];');
+        cubit.writeln(
+            'final res = await _${names.firstLower(useCaseName)}.execute(');
+        if (hasParams) {
+          cubit.writeln(
+              "request : $requestName(${methodFormat.passingParameters(method.parameters)}),");
+        }
+        cubit.writeln(');');
+        cubit.writeln('res.left((failure) {');
+        cubit.writeln('emit(ErrorState(');
+        cubit.writeln('type: StateRendererType.toastError,');
+        cubit.writeln('message: failure.message,');
+        cubit.writeln('));');
+        cubit.writeln('});');
+        cubit.writeln('res.right((data) {');
+        if (hasData) {
+          cubit.writeln('if(data.data != null){');
+          cubit.writeln('$varName = data.data!;');
+          cubit.writeln('}');
+        }
+        cubit.writeln('});');
+        cubit.writeln('return $varName;');
+        cubit.writeln('}');
+      } else {
+        if (hasData) {
+          if (responseDataType.contains('List')) {
+            cubit.writeln('$responseDataType $varName = [];');
+          } else {
+            cubit.writeln('$responseDataType? $varName;');
+          }
+        }
+        cubit.writeln(
+            '$cubitName(this._${names.firstLower(useCaseName)}) : super(ContentState());');
+        cubit.writeln(
+            'Future<void> execute(${methodFormat.parameters(method.parameters)}) async {');
+        cubit.writeln(
+            'emit(LoadingState(type: StateRendererType.popUpLoading));');
+        cubit.writeln(
+            'final res = await _${names.firstLower(useCaseName)}.execute(');
+        if (hasParams) {
+          cubit.writeln(
+              "request : $requestName(${methodFormat.passingParameters(method.parameters)}),");
+        }
+        cubit.writeln(');');
+        cubit.writeln('res.left((failure) {');
+        cubit.writeln('emit(ErrorState(');
+        cubit.writeln('type: StateRendererType.toastError,');
+        cubit.writeln('message: failure.message,');
+        cubit.writeln('));');
+        cubit.writeln('});');
+        cubit.writeln('res.right((data) {');
+        cubit.writeln('if (data.success) {');
+        if (hasData) {
+          cubit.writeln('if(data.data != null){');
+          cubit.writeln('$varName = data.data!;');
+          cubit.writeln('}');
+        }
+        cubit.writeln('emit(SuccessState(');
+        cubit.writeln('message: data.message,');
+        cubit.writeln('type: StateRendererType.contentState,');
+        cubit.writeln('));');
+        cubit.writeln('} else {');
+        cubit.writeln('emit(SuccessState(');
+        cubit.writeln('message: data.message,');
+        cubit.writeln('type: StateRendererType.toastError,');
+        cubit.writeln('));');
+        cubit.writeln('}');
+        cubit.writeln('});');
+        cubit.writeln('}');
         cubit.writeln('}');
       }
-      cubit.writeln('emit(SuccessState(');
-      cubit.writeln('message: data.message,');
-      cubit.writeln('type: StateRendererType.contentState,');
-      cubit.writeln('));');
-      cubit.writeln('} else {');
-      cubit.writeln('emit(SuccessState(');
-      cubit.writeln('message: data.message,');
-      cubit.writeln('type: StateRendererType.toastError,');
-      cubit.writeln('));');
-      cubit.writeln('}');
-      cubit.writeln('});');
-      cubit.writeln('}');
-      cubit.writeln('}');
+
       AddFile.save('$path/$cubitName', cubit.toString());
       cubits.writeln(cubit);
 
@@ -110,13 +157,10 @@ class CubitGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
             'class GetCache$cacheCubitName extends Cubit<FlowState> {');
         getCacheCubit
             .writeln('final GetCache$cacheUseCaseName _get$cacheUseCaseName;');
-        final data = names.subName(method.name);
         if (responseDataType.contains('List')) {
-          getCacheCubit
-              .writeln('$responseDataType ${names.subName(method.name)} = [];');
+          getCacheCubit.writeln('$responseDataType $varName = [];');
         } else {
-          getCacheCubit
-              .writeln('$responseDataType? ${names.subName(method.name)};');
+          getCacheCubit.writeln('$responseDataType? $varName;');
         }
         getCacheCubit.writeln(
             'GetCache$cacheCubitName(this._get$cacheUseCaseName) : super(ContentState());');
@@ -125,7 +169,7 @@ class CubitGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
             'emit(LoadingState(type: StateRendererType.fullScreenLoading));');
         getCacheCubit.writeln('final res =  _get$cacheUseCaseName.execute();');
         getCacheCubit.writeln('res.right((data) {');
-        getCacheCubit.writeln('$data = data;');
+        getCacheCubit.writeln('$varName = data;');
         getCacheCubit.writeln('emit(ContentState());');
         getCacheCubit.writeln('});');
         getCacheCubit.writeln('res.left((failure) {');

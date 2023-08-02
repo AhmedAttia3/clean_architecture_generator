@@ -29,10 +29,10 @@ class CacheUseCaseGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     ///[UseCase]
     final classBuffer = StringBuffer();
     for (var method in visitor.useCases) {
-      final isCached = method.comment?.contains('///cache');
+      final isCached = method.comment?.contains('///cache') == true;
 
       ///[cache save or get implement useCases]
-      if (isCached == true) {
+      if (isCached) {
         final useCase = StringBuffer();
         final noParams = method.parameters.isEmpty;
         final useCaseName =
