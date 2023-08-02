@@ -14,7 +14,18 @@ class AddFile {
         '${projectDir.path}/${names.camelCaseToUnderscore(fileName)}.$extension';
     final dir = Directory(path(filePath));
     if (!dir.existsSync()) {
-      dir.createSync();
+      try {
+        dir.createSync();
+      } catch (e) {
+        final paths = path(filePath).split('/');
+        String exist = '';
+        for (var path in paths) {
+          exist += '$path/';
+          final dir = Directory(exist);
+          if (dir.existsSync()) continue;
+          dir.createSync();
+        }
+      }
     }
 
     final file = File(filePath);
