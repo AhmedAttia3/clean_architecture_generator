@@ -37,6 +37,7 @@ class RepositoryGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     for (var method in visitor.useCases) {
       final useCaseName = names.firstLower(method.name);
       final type = methodFormat.returnType(method.type);
+      final modelName = names.modelName(type);
       repository.writeln(
           'Future<Either<Failure, $type>> $useCaseName(${methodFormat.parameters(method.parameters)});');
 
@@ -45,8 +46,8 @@ class RepositoryGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         hasCache = true;
         final useCaseName = names.firstUpper(method.name);
         repository.writeln(
-            'Future<Either<Failure, Unit>> cache$useCaseName({required $type data});');
-        repository.writeln('Either<Failure, $type> get$useCaseName();');
+            'Future<Either<Failure, Unit>> cache$useCaseName({required $modelName data});');
+        repository.writeln('Either<Failure, $modelName> get$useCaseName();');
       }
     }
     repository.writeln('}\n');
@@ -82,6 +83,7 @@ class RepositoryGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     for (var method in visitor.useCases) {
       final useCaseName = names.firstLower(method.name);
       final type = methodFormat.returnType(method.type);
+      final modelName = names.modelName(type);
       repositoryImpl.writeln('@override');
       repositoryImpl.writeln(
           'Future<Either<Failure, $type>> $useCaseName(${methodFormat.parameters(method.parameters)})async {');
@@ -100,13 +102,18 @@ class RepositoryGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         ///[cache]
         repositoryImpl.writeln('@override');
         repositoryImpl.writeln(
-            'Future<Either<Failure, Unit>> cache$useCaseName({required $type data}) async {');
+            'Future<Either<Failure, Unit>> cache$useCaseName({required $modelName data}) async {');
         repositoryImpl.writeln('try {');
-        final cachedType = _cacheType(type);
+        final cachedType = _cacheType(modelName);
         final dynamicType = cachedType == 'dynamic';
         if (dynamicType) {
-          repositoryImpl.writeln(
-              'await sharedPreferences.setString(_$key, jsonEncode(data.toJson()));');
+          if (modelName.contains('List')) {
+            repositoryImpl.writeln(
+                'await sharedPreferences.setString(_$key,jsonEncode(data.map((item)=> item.toJson()).toList()));');
+          } else {
+            repositoryImpl.writeln(
+                'await sharedPreferences.setString(_$key, jsonEncode(data.toJson()));');
+          }
         } else {
           repositoryImpl.writeln(
               'await sharedPreferences.set${names.firstUpper(cachedType)}(_$key, data);');
@@ -119,13 +126,22 @@ class RepositoryGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
 
         ///[get]
         repositoryImpl.writeln('@override');
-        repositoryImpl.writeln('Either<Failure, $type> get$useCaseName(){');
+        repositoryImpl
+            .writeln('Either<Failure, $modelName> get$useCaseName(){');
         repositoryImpl.writeln('try {');
         if (dynamicType) {
-          repositoryImpl
-              .writeln("final res = sharedPreferences.getString(_$key) ?? '';");
-          repositoryImpl
-              .writeln("return Right($cachedType.fromJson(jsonDecode(res)));");
+          repositoryImpl.writeln(
+              "final res = sharedPreferences.getString(_$key) ?? '{}';");
+          if (modelName.contains('List')) {
+            repositoryImpl.writeln("$modelName data = [];");
+            repositoryImpl.writeln("for (var item in jsonDecode(res)) {");
+            repositoryImpl.writeln("data.add($cachedType.fromJson());");
+            repositoryImpl.writeln("}");
+            repositoryImpl.writeln("return Right(data);");
+          } else {
+            repositoryImpl.writeln(
+                "return Right($cachedType.fromJson(jsonDecode(res)));");
+          }
         } else {
           repositoryImpl.writeln(
               "final res = sharedPreferences.get${names.firstUpper(cachedType)}(_$key) ?? '';");
