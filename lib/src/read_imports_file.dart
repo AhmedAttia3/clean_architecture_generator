@@ -41,30 +41,35 @@ class Imports {
     final failure = importName('failure.dart');
     if (failure != null) data += failure;
     if (isTest) {
+      data += "import 'dart:convert';";
       data += "import 'package:flutter_test/flutter_test.dart';\n";
       data += "import 'package:mockito/mockito.dart';\n";
       data += "import 'package:mockito/annotations.dart';\n";
+      final fold = importName('fold.dart');
+      if (fold != null) data += fold;
+      final safeRequest = importName('safe_request_handler.dart');
+      if (safeRequest != null) data += safeRequest;
     } else {
       data += "import 'package:injectable/injectable.dart';\n";
-      final baseUseCase = importName('base_use_case.dart');
-      if (baseUseCase != null) data += baseUseCase;
-      if (isCubit) {
-        data += "import 'package:flutter_bloc/flutter_bloc.dart';\n";
-        final states = importName('states.dart');
-        if (states != null) data += states;
-        final fold = importName('fold.dart');
-        if (fold != null) data += fold;
-        final stateRenderer = importName('state_renderer.dart');
-        if (stateRenderer != null) data += stateRenderer;
-      }
-      if (isPaging) {
-        data += "import 'package:flutter_pagewise/flutter_pagewise.dart';";
-      }
-      if (isRepo) {
-        data += "import 'dart:convert';";
-        final safeRequest = importName('safe_request_handler.dart');
-        if (safeRequest != null) data += safeRequest;
-      }
+    }
+    final baseUseCase = importName('base_use_case.dart');
+    if (baseUseCase != null) data += baseUseCase;
+    if (isCubit) {
+      data += "import 'package:flutter_bloc/flutter_bloc.dart';\n";
+      final states = importName('states.dart');
+      if (states != null) data += states;
+      final fold = importName('fold.dart');
+      if (fold != null) data += fold;
+      final stateRenderer = importName('state_renderer.dart');
+      if (stateRenderer != null) data += stateRenderer;
+    }
+    if (isPaging) {
+      data += "import 'package:flutter_pagewise/flutter_pagewise.dart';";
+    }
+    if (isRepo) {
+      data += "import 'dart:convert';";
+      final safeRequest = importName('safe_request_handler.dart');
+      if (safeRequest != null) data += safeRequest;
     }
     if (hasCache) {
       data += "import 'package:shared_preferences/shared_preferences.dart';\n";

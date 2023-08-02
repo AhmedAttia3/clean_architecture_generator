@@ -29,11 +29,13 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
 
     final remoteDataSourceType = names.firstUpper(visitor.className);
     final repositoryType = '${remoteDataSourceType}Repository';
-    final repositoryImplementType = '${remoteDataSourceType}RepositoryImpl';
+    final repositoryImplementType =
+        '${remoteDataSourceType}RepositoryImplement';
     final fileName = "${names.camelCaseToUnderscore(repositoryType)}_test";
     classBuffer.writeln(Imports.create(
       imports: [
         remoteDataSourceType,
+        repositoryImplementType,
         repositoryType,
         "Network",
       ],
@@ -85,17 +87,16 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
           '{}',
           extension: 'json',
         );
+        final decode =
+            "jsonDecode(File('test/expected/$expectedModel.json').readAsStringSync())";
         if (type.contains('List')) {
           classBuffer.writeln("data: List.generate(");
           classBuffer.writeln("2,");
           classBuffer.writeln("(index) =>");
-          classBuffer
-              .writeln("$model.fromJson(Encode.set('$expectedModel'))),");
+          classBuffer.writeln("$model.fromJson($decode),");
           classBuffer.writeln(");");
-          classBuffer.writeln("});");
         } else {
-          classBuffer.writeln(
-              "data: $model.fromJson(Encode.set('$expectedModel')),);");
+          classBuffer.writeln("data: $model.fromJson($decode),);");
         }
       }
     }
@@ -142,8 +143,7 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         } else {
           classBuffer.writeln("final res = await repository.$methodName();");
         }
-        classBuffer
-            .writeln("expect(res.right((data) {}), ${methodName}Response);");
+        classBuffer.writeln("expect(res, ${methodName}Response);");
         classBuffer.writeln("verify(networkInfo.isConnected);");
         classBuffer.writeln("verify(getSettings());");
         classBuffer.writeln("verifyNoMoreInteractions(networkInfo);");

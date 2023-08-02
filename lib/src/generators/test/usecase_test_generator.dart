@@ -42,6 +42,7 @@ class UseCaseTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         imports: [
           useCaseType,
           method.parameters.isEmpty ? "" : requestName,
+          repositoryName,
         ],
         filePath: buildStep.inputId.path,
         isTest: true,
@@ -57,7 +58,7 @@ class UseCaseTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
       usecase.writeln('late Failure failure;');
       usecase.writeln('setUp(() {');
       usecase.writeln('repository = Mock$repositoryName();');
-      usecase.writeln('useCaseName = $useCaseType(repository);');
+      usecase.writeln('$useCaseName = $useCaseType(repository);');
       usecase.writeln("failure = Failure(1, 'message');");
       usecase.writeln("success = $type(");
       usecase.writeln("message: 'message',");
@@ -72,16 +73,17 @@ class UseCaseTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
           '{}',
           extension: 'json',
         );
+        final decode =
+            "jsonDecode(File('test/expected/$expectedModel.json').readAsStringSync())";
         if (type.contains('List')) {
           usecase.writeln("data: List.generate(");
           usecase.writeln("2,");
           usecase.writeln("(index) =>");
-          usecase.writeln("$model.fromJson(Encode.set('$expectedModel'))),");
+          usecase.writeln("$model.fromJson($decode),");
           usecase.writeln(");");
           usecase.writeln("});");
         } else {
-          usecase.writeln(
-              "data: $model.fromJson(Encode.set('$expectedModel')),);");
+          usecase.writeln("data: $model.fromJson($decode),);");
         }
       }
       final request =
@@ -108,6 +110,8 @@ class UseCaseTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
       usecase.writeln("final res = await $useCaseName.execute(");
       if (method.parameters.isNotEmpty) {
         usecase.writeln("request: $request);");
+      } else {
+        usecase.writeln(");");
       }
       usecase.writeln("expect(res.right((data) {}), success);");
       usecase.writeln("verify(webService());");
