@@ -46,7 +46,7 @@ class RepositoryGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         hasCache = true;
         final useCaseName = names.firstUpper(method.name);
         repository.writeln(
-            'Future<Either<Failure, Unit>> cache$useCaseName({required $responseDataType data});');
+            'Future<Either<Failure, Unit>> cache$useCaseName({required $responseDataType data,});');
         repository
             .writeln('Either<Failure, $responseDataType> get$useCaseName();');
       }
@@ -103,7 +103,7 @@ class RepositoryGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         ///[cache]
         repositoryImpl.writeln('@override');
         repositoryImpl.writeln(
-            'Future<Either<Failure, Unit>> cache$useCaseName({required $responseDataType data}) async {');
+            'Future<Either<Failure, Unit>> cache$useCaseName({required $responseDataType data,}) async {');
         repositoryImpl.writeln('try {');
         final cachedType = _cacheType(responseDataType);
         final dynamicType = cachedType == 'dynamic';

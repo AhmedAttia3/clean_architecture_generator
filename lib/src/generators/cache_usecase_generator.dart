@@ -58,9 +58,12 @@ class CacheUseCaseGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         cacheUseCase.writeln(');\n');
         cacheUseCase.writeln('@override');
         cacheUseCase.writeln(
-            'Future<Either<Failure, Unit>> execute({required $responseDataType data,}) async {');
+            'Future<Either<Failure, Unit>> execute({$responseDataType? request,}) async {');
+        cacheUseCase.writeln('if(request!=null){');
         cacheUseCase.writeln('return await repository.cache$methodName');
-        cacheUseCase.writeln('(data: this.data);');
+        cacheUseCase.writeln('(data: request!);');
+        cacheUseCase.writeln('}');
+        cacheUseCase.writeln('return const Right(unit);');
         cacheUseCase.writeln('}\n');
         cacheUseCase.writeln('}\n');
         useCase.writeln(cacheUseCase);
@@ -77,7 +80,7 @@ class CacheUseCaseGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         getCacheUseCase.writeln('///[Implementation]');
         getCacheUseCase.writeln('@injectable');
         getCacheUseCase.writeln(
-            'class Get$useCaseName implements BaseUseCase<Either<Failure, $responseDataType>, Void>{');
+            'class Get$useCaseName implements BaseUseCase<Either<Failure, $responseDataType>, Void?>{');
         getCacheUseCase.writeln('final $repositoryName repository;');
         getCacheUseCase.writeln('const Get$useCaseName(');
         getCacheUseCase.writeln('this.repository,');
