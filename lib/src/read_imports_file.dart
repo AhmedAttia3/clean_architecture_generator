@@ -41,6 +41,7 @@ class Imports {
     final failure = importName('failure.dart');
     if (failure != null) data += failure;
     if (isTest) {
+      data += "import 'dart:io';";
       data += "import 'dart:convert';";
       data += "import 'package:flutter_test/flutter_test.dart';\n";
       data += "import 'package:mockito/mockito.dart';\n";

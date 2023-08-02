@@ -30,6 +30,7 @@ class UseCaseTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
 
     for (var method in visitor.useCases) {
       final methodName = method.name;
+      final modelType = names.baseModelName(method.type);
       final repositoryName = '${names.firstUpper(visitor.className)}Repository';
       final useCaseType = '${names.firstUpper(method.name)}UseCase';
       final useCaseName = '${names.firstLower(method.name)}UseCase';
@@ -78,11 +79,11 @@ class UseCaseTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
           usecase.writeln("data: List.generate(");
           usecase.writeln("2,");
           usecase.writeln("(index) =>");
-          usecase.writeln("$model.fromJson($decode),");
+          usecase.writeln("$modelType.fromJson($decode),");
           usecase.writeln(");");
           usecase.writeln("});");
         } else {
-          usecase.writeln("data: $model.fromJson($decode),);");
+          usecase.writeln("data: $modelType.fromJson($decode),);");
         }
       }
       final request =

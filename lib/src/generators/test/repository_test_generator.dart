@@ -35,7 +35,7 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     classBuffer.writeln(Imports.create(
       imports: [
         remoteDataSourceType,
-        repositoryImplementType,
+        '${repositoryType}Impl',
         repositoryType,
         "Network",
       ],
@@ -73,6 +73,7 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     for (var method in visitor.useCases) {
       final methodName = method.name;
       final type = methodFormat.returnType(method.type);
+      final modelType = names.baseModelName(method.type);
       classBuffer.writeln("///[${names.firstUpper(methodName)}]");
       classBuffer.writeln('${methodName}Response = $type(');
       classBuffer.writeln("message: 'message',");
@@ -91,10 +92,10 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
           classBuffer.writeln("data: List.generate(");
           classBuffer.writeln("2,");
           classBuffer.writeln("(index) =>");
-          classBuffer.writeln("$model.fromJson($decode),");
+          classBuffer.writeln("$modelType.fromJson($decode),");
           classBuffer.writeln(");");
         } else {
-          classBuffer.writeln("data: $model.fromJson($decode),);");
+          classBuffer.writeln("data: $modelType.fromJson($decode),);");
         }
       }
     }
@@ -112,7 +113,6 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
       classBuffer.writeln(
           "when(networkInfo.isConnected).thenAnswer((realInvocation) async => false);");
       final method = visitor.useCases.first;
-      final requestName = '${names.firstUpper(method.name)}Request';
       if (method.parameters.isNotEmpty) {
         final request = methodFormat.parametersWithValues(method.parameters);
         classBuffer
