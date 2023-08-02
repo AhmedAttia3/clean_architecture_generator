@@ -29,6 +29,7 @@ class UseCaseGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     ///[BaseUseCase]
     final baseUseCase = StringBuffer();
     baseUseCase.writeln('///[BaseUseCase]');
+    baseUseCase.writeln('///${paths.join('/')}');
     baseUseCase.writeln('///[Implementation]');
     baseUseCase.writeln("import 'package:eitherx/eitherx.dart';");
     baseUseCase.writeln("abstract class BaseUseCase<RES, POS> {");

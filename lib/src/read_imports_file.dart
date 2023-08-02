@@ -45,15 +45,15 @@ class ReadImports {
 
     if (useCaseName.isNotEmpty) {
       data +=
-          "import 'package:${base(filePath)}use-cases/${names.camelCaseToUnderscore(useCaseName)}.dart';\n";
+          "import 'package:${base(filePath)}/use-cases/${names.camelCaseToUnderscore(useCaseName)}.dart';\n";
     }
     if (requestName.isNotEmpty) {
       data +=
-          "import 'package:${base(filePath)}requests/${names.camelCaseToUnderscore(requestName)}.dart';\n";
+          "import 'package:${base(filePath)}/requests/${names.camelCaseToUnderscore(requestName)}.dart';\n";
     }
     if (repositoryName.isNotEmpty) {
       data +=
-          "import 'package:${base(filePath)}repository/${names.camelCaseToUnderscore(repositoryName)}.dart';\n";
+          "import 'package:${base(filePath)}/repository/${names.camelCaseToUnderscore(repositoryName)}.dart';\n";
     }
     return data;
   }
@@ -61,7 +61,7 @@ class ReadImports {
   static String base(String baseFilePath) {
     final projectDir = Directory.current;
     final parent = projectDir.absolute.uri.path.split('/');
-    return "${parent.elementAt(parent.length - 2)}/${(baseFilePath.split('/')..removeLast()).join('/')}"
+    return "${parent.elementAt(parent.length - 2)}${(baseFilePath.split('/')..removeLast()).join('/')}"
         .replaceFirst('lib', '');
   }
 }

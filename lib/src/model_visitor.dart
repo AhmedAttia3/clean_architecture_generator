@@ -4,6 +4,8 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/visitor.dart';
 import 'package:generators/models/usecase_model.dart';
 
+List<String> paths = [];
+
 class ModelVisitor extends SimpleElementVisitor<void> {
   String className = '';
   List<UseCaseModel> useCases = [];
@@ -15,6 +17,7 @@ class ModelVisitor extends SimpleElementVisitor<void> {
   void visitConstructorElement(ConstructorElement element) {
     final returnType = element.returnType.toString();
     className = returnType.replaceFirst('*', '');
+    paths.add(className);
     constructorParams = element.declaration.parameters;
     for (var param in constructorParams) {
       paramsType.add(param.type.toString());
