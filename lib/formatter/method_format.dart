@@ -17,7 +17,7 @@ class MethodFormat {
   String requestParameters(List<ParameterElement> parameters) {
     String data = '';
     for (var para in parameters) {
-      data += '${para.name.toString()}: request.${para.name.toString()},';
+      data += '${para.name.toString()}: request!.${para.name.toString()},';
     }
     return data;
   }
