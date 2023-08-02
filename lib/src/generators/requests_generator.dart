@@ -1,13 +1,13 @@
 import 'package:analyzer/dart/element/element.dart';
-import 'package:annotations/annotations.dart';
 import 'package:build/build.dart';
 import 'package:generators/formatter/names.dart';
+import 'package:generators/src/mvvm_generator_annotations.dart';
 import 'package:source_gen/source_gen.dart';
 
 import '../add_file_to_project.dart';
 import '../model_visitor.dart';
 
-class RequestsGenerator extends GeneratorForAnnotation<RequestsAnnotation> {
+class RequestsGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
   @override
   String generateForAnnotatedElement(
     Element element,
@@ -19,39 +19,42 @@ class RequestsGenerator extends GeneratorForAnnotation<RequestsAnnotation> {
     final names = Names();
     element.visitChildren(visitor);
 
-    final classBuffer = StringBuffer();
+    final requests = StringBuffer();
 
     for (var method in visitor.useCases) {
-      final content = StringBuffer();
+      if (method.parameters.isEmpty) {
+        continue;
+      }
+      final request = StringBuffer();
       final requestName = '${names.firstUpper(method.name)}Request';
-      content.writeln("import 'package:json_annotation/json_annotation.dart';");
-      content.writeln(
+      request.writeln("import 'package:json_annotation/json_annotation.dart';");
+      request.writeln(
           "part '${names.camelCaseToUnderscore(requestName)}.g.dart';");
-      content.writeln('///[$requestName]');
-      content.writeln('///[Implementation]');
-      content.writeln('@JsonSerializable()');
-      content.writeln('class $requestName {');
+      request.writeln('///[$requestName]');
+      request.writeln('///[Implementation]');
+      request.writeln('@JsonSerializable()');
+      request.writeln('class $requestName {');
       for (var pram in method.parameters) {
-        content.writeln('final ${pram.type} ${pram.name};');
+        request.writeln('final ${pram.type} ${pram.name};');
       }
       if (method.parameters.isNotEmpty) {
-        content.writeln('const $requestName({');
+        request.writeln('const $requestName({');
         for (var pram in method.parameters) {
-          content.writeln('required this.${pram.name},');
+          request.writeln('required this.${pram.name},');
         }
-        content.writeln('});\n');
+        request.writeln('});\n');
       } else {
-        content.writeln('const $requestName();\n');
+        request.writeln('const $requestName();\n');
       }
-      content.writeln(
+      request.writeln(
           'factory $requestName.fromJson(Map<String, dynamic> json) => _\$${requestName}FromJson(json);');
-      content.writeln(
+      request.writeln(
           'Map<String, dynamic> toJson() => _\$${requestName}ToJson(this);');
-      content.writeln('}\n');
+      request.writeln('}\n');
 
-      AddFile.save('$path/$requestName', content.toString());
-      classBuffer.write(content);
+      AddFile.save('$path/$requestName', request.toString());
+      requests.write(request);
     }
-    return classBuffer.toString();
+    return requests.toString();
   }
 }

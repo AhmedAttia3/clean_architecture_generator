@@ -1,13 +1,13 @@
 import 'package:analyzer/dart/element/element.dart';
-import 'package:annotations/annotations.dart';
 import 'package:build/build.dart';
 import 'package:generators/formatter/method_format.dart';
 import 'package:generators/formatter/names.dart';
+import 'package:generators/src/mvvm_generator_annotations.dart';
 import 'package:source_gen/source_gen.dart';
 
 import '../../model_visitor.dart';
 
-class CubitTestGenerator extends GeneratorForAnnotation<CubitTestAnnotation> {
+class CubitTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
   @override
   String generateForAnnotatedElement(
     Element element,

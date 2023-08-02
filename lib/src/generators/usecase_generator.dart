@@ -1,14 +1,15 @@
 import 'package:analyzer/dart/element/element.dart';
-import 'package:annotations/annotations.dart';
 import 'package:build/build.dart';
 import 'package:generators/formatter/method_format.dart';
 import 'package:generators/formatter/names.dart';
+import 'package:generators/generators.dart';
 import 'package:generators/src/add_file_to_project.dart';
 import 'package:generators/src/model_visitor.dart';
-import 'package:generators/src/read_imports_file.dart';
 import 'package:source_gen/source_gen.dart';
 
-class UseCaseGenerator extends GeneratorForAnnotation<UseCaseAnnotation> {
+import '../read_imports_file.dart';
+
+class UseCaseGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
   final names = Names();
 
   @override
@@ -31,8 +32,7 @@ class UseCaseGenerator extends GeneratorForAnnotation<UseCaseAnnotation> {
     baseUseCase.writeln('///[Implementation]');
     baseUseCase.writeln("import 'package:eitherx/eitherx.dart';");
     baseUseCase.writeln("abstract class BaseUseCase<RES, POS> {");
-    baseUseCase.writeln(
-        "Future<Either<Failure, RES>> execute({required POS request});");
+    baseUseCase.writeln("RES execute({POS? request});");
     baseUseCase.writeln("}");
 
     AddFile.save('/lib/core/base_use_case', baseUseCase.toString());
@@ -40,110 +40,102 @@ class UseCaseGenerator extends GeneratorForAnnotation<UseCaseAnnotation> {
     ///[UseCase]
     final classBuffer = StringBuffer();
     for (var method in visitor.useCases) {
-      final content = StringBuffer();
+      final useCase = StringBuffer();
+      final noParams = method.parameters.isEmpty;
       final useCaseName = '${names.firstUpper(method.name)}UseCase';
-      final requestName = '${names.firstUpper(method.name)}Request';
+      final requestName =
+          noParams ? 'Void' : '${names.firstUpper(method.name)}Request';
       final methodName = names.firstLower(method.name);
       final type = methodFormat.returnType(method.type);
-      content.writeln(imports(
+      useCase.writeln('///[Implementation]');
+      if (noParams) useCase.writeln("import 'dart:ffi';");
+      useCase.writeln(ReadImports.imports(
         repositoryName: repositoryName,
-        requestName: requestName,
-        baseFilePath: buildStep.inputId.path,
+        requestName: noParams ? "" : requestName,
+        filePath: buildStep.inputId.path,
       ));
-      content.writeln('///[$useCaseName]');
-      content.writeln('///[Implementation]');
-      content.writeln('@injectable');
-      content.writeln(
-          'class $useCaseName implements BaseUseCase<$type,$requestName>{');
-      content.writeln('final $repositoryName repository;');
-      content.writeln('const $useCaseName(');
-      content.writeln('this.repository,');
-      content.writeln(');\n');
-      content.writeln('@override');
-      content.writeln(
-          'Future<Either<Failure, $type>> execute({required $requestName request,}) async {');
-      content.writeln('return await repository.$methodName');
-      content
+      useCase.writeln('///[$useCaseName]');
+      useCase.writeln('///[Implementation]');
+      useCase.writeln('@injectable');
+      useCase.writeln(
+          'class $useCaseName implements BaseUseCase<Future<Either<Failure, $type>>,$requestName>{');
+      useCase.writeln('final $repositoryName repository;');
+      useCase.writeln('const $useCaseName(');
+      useCase.writeln('this.repository,');
+      useCase.writeln(');\n');
+      useCase.writeln('@override');
+      if (noParams) {
+        useCase.writeln(
+            'Future<Either<Failure, $type>> execute({Void? request}) async {');
+      } else {
+        useCase.writeln(
+            'Future<Either<Failure, $type>> execute({required $requestName request,}) async {');
+      }
+      useCase.writeln('return await repository.$methodName');
+      useCase
           .writeln('(${methodFormat.requestParameters(method.parameters)});');
-      content.writeln('}\n');
-      content.writeln('}\n');
+      useCase.writeln('}\n');
+      useCase.writeln('}\n');
 
-      AddFile.save('$path/$useCaseName', content.toString());
+      AddFile.save('$path/$useCaseName', useCase.toString());
 
       ///[cache save or get implement useCases]
       if (method.comment?.contains('///cache') == true) {
         final methodName = names.firstUpper(method.name);
 
         ///[cache]
-        final cacheContent = StringBuffer();
-        cacheContent.writeln(imports(
+        final cacheUseCase = StringBuffer();
+        if (noParams) cacheUseCase.writeln("import 'dart:ffi';");
+        cacheUseCase.writeln(ReadImports.imports(
           repositoryName: repositoryName,
-          baseFilePath: buildStep.inputId.path,
+          filePath: buildStep.inputId.path,
         ));
-        cacheContent.writeln('///[Cache$useCaseName]');
-        cacheContent.writeln('///[Implementation]');
-        cacheContent.writeln('@injectable');
-        cacheContent.writeln(
-            'class Cache$useCaseName implements BaseUseCase<Unit,$type> {');
-        cacheContent.writeln('final $repositoryName repository;');
-        cacheContent.writeln('const Cache$useCaseName(');
-        cacheContent.writeln('this.repository,');
-        cacheContent.writeln(');\n');
-        cacheContent.writeln('@override');
-        cacheContent.writeln(
+        cacheUseCase.writeln('///[Cache$useCaseName]');
+        cacheUseCase.writeln('///[Implementation]');
+        cacheUseCase.writeln('@injectable');
+        cacheUseCase.writeln(
+            'class Cache$useCaseName implements BaseUseCase<Future<Either<Failure, Unit>>,$type> {');
+        cacheUseCase.writeln('final $repositoryName repository;');
+        cacheUseCase.writeln('const Cache$useCaseName(');
+        cacheUseCase.writeln('this.repository,');
+        cacheUseCase.writeln(');\n');
+        cacheUseCase.writeln('@override');
+        cacheUseCase.writeln(
             'Future<Either<Failure, Unit>> execute({required $type data,}) async {');
-        cacheContent.writeln('return await repository.cache$methodName');
-        cacheContent.writeln('(data: this.data);');
-        cacheContent.writeln('}\n');
-        cacheContent.writeln('}\n');
-        content.write(cacheContent);
-        AddFile.save('$path/Cache$useCaseName', cacheContent.toString());
+        cacheUseCase.writeln('return await repository.cache$methodName');
+        cacheUseCase.writeln('(data: this.data);');
+        cacheUseCase.writeln('}\n');
+        cacheUseCase.writeln('}\n');
+        useCase.writeln(cacheUseCase);
+        AddFile.save('$path/Cache$useCaseName', cacheUseCase.toString());
 
         ///[get]
-        final getContent = StringBuffer();
-        getContent.writeln(imports(
+        final getCacheUseCase = StringBuffer();
+        getCacheUseCase.writeln("import 'dart:ffi';");
+        getCacheUseCase.writeln(ReadImports.imports(
           repositoryName: repositoryName,
-          baseFilePath: buildStep.inputId.path,
+          filePath: buildStep.inputId.path,
         ));
-        getContent.writeln('///[Get$useCaseName]');
-        getContent.writeln('///[Implementation]');
-        getContent.writeln('@injectable');
-        getContent.writeln('class Get$useCaseName {');
-        getContent.writeln('final $repositoryName repository;');
-        getContent.writeln('const Get$useCaseName(');
-        getContent.writeln('this.repository,');
-        getContent.writeln(');\n');
-        getContent.writeln('Either<Failure, $type> execute() {');
-        getContent.writeln('return repository.get$methodName();');
-        getContent.writeln('}\n');
-        getContent.writeln('}\n');
-        content.write(getContent);
-        AddFile.save('$path/Get$useCaseName', getContent.toString());
+        getCacheUseCase.writeln('///[Get$useCaseName]');
+        getCacheUseCase.writeln('///[Implementation]');
+        getCacheUseCase.writeln('@injectable');
+        getCacheUseCase.writeln(
+            'class Get$useCaseName implements BaseUseCase<Either<Failure, $type>, Void>{');
+        getCacheUseCase.writeln('final $repositoryName repository;');
+        getCacheUseCase.writeln('const Get$useCaseName(');
+        getCacheUseCase.writeln('this.repository,');
+        getCacheUseCase.writeln(');\n');
+        getCacheUseCase
+            .writeln('Either<Failure, $type> execute({Void? request}) {');
+        getCacheUseCase.writeln('return repository.get$methodName();');
+        getCacheUseCase.writeln('}\n');
+        getCacheUseCase.writeln('}\n');
+        useCase.writeln(getCacheUseCase);
+        AddFile.save('$path/Get$useCaseName', getCacheUseCase.toString());
       }
 
-      classBuffer.write(content);
+      classBuffer.write(useCase);
     }
     return classBuffer.toString();
-  }
-
-  String imports({
-    required String baseFilePath,
-    String repositoryName = '',
-    String requestName = '',
-  }) {
-    String data = ReadImports.file(baseFilePath);
-    data += "import 'package:eitherx/eitherx.dart';\n";
-    data += "import 'package:injectable/injectable.dart';\n";
-    data += "import '/core/base_use_case.dart';\n";
-
-    if (requestName.isNotEmpty) {
-      data +=
-          "import '../requests/${names.camelCaseToUnderscore(requestName)}.dart';\n";
-    }
-    if (repositoryName.isNotEmpty) {
-      data +=
-          "import '../repository/${names.camelCaseToUnderscore(repositoryName)}.dart';\n";
-    }
-    return data;
   }
 }

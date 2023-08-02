@@ -1,15 +1,15 @@
 import 'package:analyzer/dart/element/element.dart';
-import 'package:annotations/annotations.dart';
 import 'package:build/build.dart';
 import 'package:generators/formatter/method_format.dart';
 import 'package:generators/formatter/names.dart';
 import 'package:generators/src/add_file_to_project.dart';
+import 'package:generators/src/mvvm_generator_annotations.dart';
 import 'package:generators/src/read_imports_file.dart';
 import 'package:source_gen/source_gen.dart';
 
 import '../model_visitor.dart';
 
-class CubitGenerator extends GeneratorForAnnotation<CubitAnnotation> {
+class CubitGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
   final names = Names();
 
   @override
@@ -24,125 +24,113 @@ class CubitGenerator extends GeneratorForAnnotation<CubitAnnotation> {
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);
 
-    final classBuffer = StringBuffer();
+    final cubits = StringBuffer();
 
     for (var method in visitor.useCases) {
-      final content = StringBuffer();
+      final cubit = StringBuffer();
+      final hasParams = method.parameters.isNotEmpty;
       final cubitName = '${names.firstUpper(method.name)}Cubit';
       final useCaseName = '${names.firstUpper(method.name)}UseCase';
       final requestName = '${names.firstUpper(method.name)}Request';
       final type = methodFormat.returnType(method.type);
       final hasData = !type.contains('BaseResponse<dynamic>');
-      content.writeln(imports(
-        requestName: requestName,
+      cubit.writeln(ReadImports.imports(
+        requestName: hasParams ? requestName : "",
         useCaseName: useCaseName,
-        baseFilePath: buildStep.inputId.path,
+        filePath: buildStep.inputId.path,
       ));
-      content.writeln('///[$cubitName]');
-      content.writeln('///[Implementation]');
-      content.writeln('@injectable');
-      content.writeln('class $cubitName extends Cubit<FlowState> {');
-      content.writeln('final $useCaseName _${names.firstLower(useCaseName)};');
+      cubit.writeln('///[$cubitName]');
+      cubit.writeln('///[Implementation]');
+      cubit.writeln('@injectable');
+      cubit.writeln('class $cubitName extends Cubit<FlowState> {');
+      cubit.writeln('final $useCaseName _${names.firstLower(useCaseName)};');
       if (hasData) {
         final filed =
             type.replaceFirst('BaseResponse<', '').replaceFirst('>', '');
         if (filed.contains('List')) {
-          content.writeln('$filed ${names.subName(method.name)} = [];');
+          cubit.writeln('$filed ${names.subName(method.name)} = [];');
         } else {
-          content.writeln('$filed ${names.subName(method.name)};');
+          cubit.writeln('$filed ${names.subName(method.name)};');
         }
       }
-      content.writeln(
+      cubit.writeln(
           '$cubitName(this._${names.firstLower(useCaseName)}) : super(ContentState());');
-      content.writeln(
+      cubit.writeln(
           'Future<void> execute(${methodFormat.parameters(method.parameters)}) async {');
-      content
+      cubit
           .writeln('emit(LoadingState(type: StateRendererType.popUpLoading));');
-      content.writeln(
+      cubit.writeln(
           'final res = await _${names.firstLower(useCaseName)}.execute(');
-      content.writeln(
-          "request : $requestName(${methodFormat.passingParameters(method.parameters)}),");
-      content.writeln(');');
-      content.writeln('res.left((failure) {');
-      content.writeln('emit(ErrorState(');
-      content.writeln('type: StateRendererType.toastError,');
-      content.writeln('message: failure.message,');
-      content.writeln('));');
-      content.writeln('});');
-      content.writeln('res.right((data) {');
-      content.writeln('if (data.success) {');
-      if (hasData) {
-        content.writeln('if(data.data != null){');
-        content.writeln('${names.subName(method.name)} = data.data!;');
-        content.writeln('}');
+      if (hasParams) {
+        cubit.writeln(
+            "request : $requestName(${methodFormat.passingParameters(method.parameters)}),");
       }
-      content.writeln('emit(SuccessState(');
-      content.writeln('message: data.message,');
-      content.writeln('type: StateRendererType.contentState,');
-      content.writeln('));');
-      content.writeln('} else {');
-      content.writeln('emit(SuccessState(');
-      content.writeln('message: data.message,');
-      content.writeln('type: StateRendererType.toastError,');
-      content.writeln('));');
-      content.writeln('}');
-      content.writeln('});');
-      content.writeln('}');
-      content.writeln('}');
-      AddFile.save('$path/$cubitName', content.toString());
-      classBuffer.write(content);
+      cubit.writeln(');');
+      cubit.writeln('res.left((failure) {');
+      cubit.writeln('emit(ErrorState(');
+      cubit.writeln('type: StateRendererType.toastError,');
+      cubit.writeln('message: failure.message,');
+      cubit.writeln('));');
+      cubit.writeln('});');
+      cubit.writeln('res.right((data) {');
+      cubit.writeln('if (data.success) {');
+      if (hasData) {
+        cubit.writeln('if(data.data != null){');
+        cubit.writeln('${names.subName(method.name)} = data.data!;');
+        cubit.writeln('}');
+      }
+      cubit.writeln('emit(SuccessState(');
+      cubit.writeln('message: data.message,');
+      cubit.writeln('type: StateRendererType.contentState,');
+      cubit.writeln('));');
+      cubit.writeln('} else {');
+      cubit.writeln('emit(SuccessState(');
+      cubit.writeln('message: data.message,');
+      cubit.writeln('type: StateRendererType.toastError,');
+      cubit.writeln('));');
+      cubit.writeln('}');
+      cubit.writeln('});');
+      cubit.writeln('}');
+      cubit.writeln('}');
+      AddFile.save('$path/$cubitName', cubit.toString());
+      cubits.writeln(cubit);
 
       ///[get cache]
       if (method.comment?.contains('///cache') == true) {
-        final getContent = StringBuffer();
-        getContent.writeln(imports(
+        final getCacheCubit = StringBuffer();
+        getCacheCubit.writeln(ReadImports.imports(
           requestName: requestName,
           useCaseName: useCaseName,
-          baseFilePath: buildStep.inputId.path,
+          filePath: buildStep.inputId.path,
         ));
-        getContent.writeln('@injectable');
-        getContent.writeln('class Get$cubitName extends Cubit<FlowState> {');
-        getContent.writeln('final Get$useCaseName _get$useCaseName;');
+        getCacheCubit.writeln('@injectable');
+        getCacheCubit.writeln('class Get$cubitName extends Cubit<FlowState> {');
+        getCacheCubit.writeln('final Get$useCaseName _get$useCaseName;');
         final data = names.subName(method.name);
-        getContent.writeln('final $type? $data;');
-        getContent.writeln(
+        getCacheCubit.writeln('final $type? $data;');
+        getCacheCubit.writeln(
             'Get$cubitName(this._get$useCaseName) : super(ContentState());');
-        getContent.writeln('void execute() {');
-        getContent.writeln(
+        getCacheCubit.writeln('void execute() {');
+        getCacheCubit.writeln(
             'emit(LoadingState(type: StateRendererType.fullScreenLoading));');
-        getContent.writeln('final res =  _get$useCaseName.execute();');
-        getContent.writeln('res.right((data) {');
-        getContent.writeln('$data = data;');
-        getContent.writeln('emit(ContentState());');
-        getContent.writeln('});');
-        getContent.writeln('res.left((failure) {');
-        getContent.writeln('emit(ErrorState(');
-        getContent.writeln('type: StateRendererType.toastError,');
-        getContent.writeln('message: failure.message,');
-        getContent.writeln('));');
-        getContent.writeln('});');
-        getContent.writeln('}');
-        getContent.writeln('}');
+        getCacheCubit.writeln('final res =  _get$useCaseName.execute();');
+        getCacheCubit.writeln('res.right((data) {');
+        getCacheCubit.writeln('$data = data;');
+        getCacheCubit.writeln('emit(ContentState());');
+        getCacheCubit.writeln('});');
+        getCacheCubit.writeln('res.left((failure) {');
+        getCacheCubit.writeln('emit(ErrorState(');
+        getCacheCubit.writeln('type: StateRendererType.toastError,');
+        getCacheCubit.writeln('message: failure.message,');
+        getCacheCubit.writeln('));');
+        getCacheCubit.writeln('});');
+        getCacheCubit.writeln('}');
+        getCacheCubit.writeln('}');
 
-        AddFile.save('$path/Get$cubitName', getContent.toString());
-        classBuffer.write(getContent);
+        AddFile.save('$path/Get$cubitName', getCacheCubit.toString());
+        cubits.writeln(getCacheCubit);
       }
     }
-    return classBuffer.toString();
-  }
-
-  String imports({
-    required String baseFilePath,
-    required String useCaseName,
-    required String requestName,
-  }) {
-    String data = ReadImports.file(baseFilePath);
-    data += "import 'package:eitherx/eitherx.dart';\n";
-    data += "import 'package:injectable/injectable.dart';\n";
-    data +=
-        "import '../use-cases/${names.camelCaseToUnderscore(useCaseName)}.dart';\n";
-    data +=
-        "import '../requests/${names.camelCaseToUnderscore(requestName)}.dart';\n";
-    return data;
+    return cubits.toString();
   }
 }

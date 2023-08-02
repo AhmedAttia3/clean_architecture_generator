@@ -1,15 +1,15 @@
 import 'package:analyzer/dart/element/element.dart';
-import 'package:annotations/annotations.dart';
 import 'package:build/build.dart';
 import 'package:generators/formatter/method_format.dart';
 import 'package:generators/formatter/names.dart';
+import 'package:generators/src/mvvm_generator_annotations.dart';
 import 'package:source_gen/source_gen.dart';
 
 import '../add_file_to_project.dart';
 import '../model_visitor.dart';
 import '../read_imports_file.dart';
 
-class RepositoryGenerator extends GeneratorForAnnotation<RepositoryAnnotation> {
+class RepositoryGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
   final names = Names();
 
   @override
@@ -23,124 +23,124 @@ class RepositoryGenerator extends GeneratorForAnnotation<RepositoryAnnotation> {
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);
 
-    final classBuffer = StringBuffer();
+    final repository = StringBuffer();
     final clientService = names.firstLower(visitor.className);
 
     final repositoryName = '${names.firstUpper(visitor.className)}Repository';
     final repositoryNameImplement = '${repositoryName}Implement';
 
-    classBuffer.writeln(imports(baseFilePath: buildStep.inputId.path));
-    classBuffer.writeln('///[$repositoryName]');
-    classBuffer.writeln('///[Implementation]');
-    classBuffer.writeln('abstract class $repositoryName {');
+    repository.writeln(ReadImports.imports(filePath: buildStep.inputId.path));
+    repository.writeln('///[$repositoryName]');
+    repository.writeln('///[Implementation]');
+    repository.writeln('abstract class $repositoryName {');
     bool hasCache = false;
     for (var method in visitor.useCases) {
       final useCaseName = names.firstLower(method.name);
       final type = methodFormat.returnType(method.type);
-      classBuffer.writeln(
+      repository.writeln(
           'Future<Either<Failure, $type>> $useCaseName(${methodFormat.parameters(method.parameters)});');
 
       ///[cache save or get]
       if (method.comment?.contains('///cache') == true) {
         hasCache = true;
         final useCaseName = names.firstUpper(method.name);
-        classBuffer.writeln(
+        repository.writeln(
             'Future<Either<Failure, Unit>> cache$useCaseName({required $type data});');
-        classBuffer.writeln('Either<Failure, $type> get$useCaseName();');
+        repository.writeln('Either<Failure, $type> get$useCaseName();');
       }
     }
-    classBuffer.writeln('}\n');
+    repository.writeln('}\n');
 
-    AddFile.save('$path/$repositoryName', classBuffer.toString());
-    final content = StringBuffer();
-    content.writeln(imports(
+    AddFile.save('$path/$repositoryName', repository.toString());
+    final repositoryImpl = StringBuffer();
+    repositoryImpl.writeln(ReadImports.imports(
       repositoryName: repositoryName,
       hasCache: hasCache,
-      baseFilePath: buildStep.inputId.path,
+      filePath: buildStep.inputId.path,
     ));
-    content.writeln('///[$repositoryNameImplement]');
-    content.writeln('///[Implementation]');
-    content.writeln('@Injectable(as:$repositoryName)');
-    content
+    repositoryImpl.writeln('///[$repositoryNameImplement]');
+    repositoryImpl.writeln('///[Implementation]');
+    repositoryImpl.writeln('@Injectable(as:$repositoryName)');
+    repositoryImpl
         .writeln('class $repositoryNameImplement implements $repositoryName {');
-    content.writeln('final ${visitor.className} $clientService;');
-    content.writeln('final SafeApi api;');
+    repositoryImpl.writeln('final ${visitor.className} $clientService;');
+    repositoryImpl.writeln('final SafeApi api;');
 
     ///[add cache]
     if (hasCache) {
-      content.writeln('final SharedPreferences sharedPreferences;');
+      repositoryImpl.writeln('final SharedPreferences sharedPreferences;');
     }
-    content.writeln('const $repositoryNameImplement(');
-    content.writeln('this.$clientService,');
-    content.writeln('this.api,');
+    repositoryImpl.writeln('const $repositoryNameImplement(');
+    repositoryImpl.writeln('this.$clientService,');
+    repositoryImpl.writeln('this.api,');
 
     ///[add cache]
     if (hasCache) {
-      content.writeln('this.sharedPreferences,');
+      repositoryImpl.writeln('this.sharedPreferences,');
     }
-    content.writeln(');\n');
+    repositoryImpl.writeln(');\n');
     for (var method in visitor.useCases) {
       final useCaseName = names.firstLower(method.name);
       final type = methodFormat.returnType(method.type);
-      content.writeln('@override');
-      content.writeln(
+      repositoryImpl.writeln('@override');
+      repositoryImpl.writeln(
           'Future<Either<Failure, $type>> $useCaseName(${methodFormat.parameters(method.parameters)})async {');
-      content.writeln('return await api<$type>(');
+      repositoryImpl.writeln('return await api<$type>(');
 
-      content.writeln(
+      repositoryImpl.writeln(
           'apiCall: $clientService.${method.name}(${methodFormat.passingParameters(method.parameters)}),);');
-      content.writeln('}\n');
+      repositoryImpl.writeln('}\n');
 
       ///[cache save or get implement]
       if (method.comment?.contains('///cache') == true) {
         final useCaseName = names.firstUpper(method.name);
         final key = names.firstLower(useCaseName);
-        content.writeln('final _$key = "${key.toUpperCase()}";');
+        repositoryImpl.writeln('final _$key = "${key.toUpperCase()}";');
 
         ///[cache]
-        content.writeln('@override');
-        content.writeln(
+        repositoryImpl.writeln('@override');
+        repositoryImpl.writeln(
             'Future<Either<Failure, Unit>> cache$useCaseName({required $type data}) async {');
-        content.writeln('try {');
+        repositoryImpl.writeln('try {');
         final cachedType = _cacheType(type);
         final dynamicType = cachedType == 'dynamic';
         if (dynamicType) {
-          content.writeln(
+          repositoryImpl.writeln(
               'await sharedPreferences.setString(_$key, jsonEncode(data.toJson()));');
         } else {
-          content.writeln(
+          repositoryImpl.writeln(
               'await sharedPreferences.set${names.firstUpper(cachedType)}(_$key, data);');
         }
-        content.writeln('return const Right(unit);');
-        content.writeln('} catch (e) {');
-        content.writeln("return Left(Failure(12, 'Cash failure'));");
-        content.writeln('}');
-        content.writeln('}\n');
+        repositoryImpl.writeln('return const Right(unit);');
+        repositoryImpl.writeln('} catch (e) {');
+        repositoryImpl.writeln("return Left(Failure(12, 'Cash failure'));");
+        repositoryImpl.writeln('}');
+        repositoryImpl.writeln('}\n');
 
         ///[get]
-        content.writeln('@override');
-        content.writeln('Either<Failure, $type> get$useCaseName(){');
-        content.writeln('try {');
+        repositoryImpl.writeln('@override');
+        repositoryImpl.writeln('Either<Failure, $type> get$useCaseName(){');
+        repositoryImpl.writeln('try {');
         if (dynamicType) {
-          content
+          repositoryImpl
               .writeln("final res = sharedPreferences.getString(_$key) ?? '';");
-          content
+          repositoryImpl
               .writeln("return Right($cachedType.fromJson(jsonDecode(res)));");
         } else {
-          content.writeln(
+          repositoryImpl.writeln(
               "final res = sharedPreferences.get${names.firstUpper(cachedType)}(_$key) ?? '';");
-          content.writeln('return Right(res);');
+          repositoryImpl.writeln('return Right(res);');
         }
-        content.writeln('} catch (e) {');
-        content.writeln("return Left(Failure(12, 'Cash failure'));");
-        content.writeln('}');
-        content.writeln('}\n');
+        repositoryImpl.writeln('} catch (e) {');
+        repositoryImpl.writeln("return Left(Failure(12, 'Cash failure'));");
+        repositoryImpl.writeln('}');
+        repositoryImpl.writeln('}\n');
       }
     }
-    content.writeln('}\n');
-    AddFile.save('$path/${repositoryName}Impl', content.toString());
-    classBuffer.write(content);
-    return classBuffer.toString();
+    repositoryImpl.writeln('}\n');
+    AddFile.save('$path/${repositoryName}Impl', repositoryImpl.toString());
+    repository.writeln(repositoryImpl);
+    return repository.toString();
   }
 
   String _cacheType(dynamic type) {
@@ -148,25 +148,5 @@ class RepositoryGenerator extends GeneratorForAnnotation<RepositoryAnnotation> {
       return type.toString();
     }
     return 'dynamic';
-  }
-
-  String imports({
-    required String baseFilePath,
-    String repositoryName = '',
-    bool hasCache = false,
-  }) {
-    String data = ReadImports.file(baseFilePath);
-    data += "import 'package:eitherx/eitherx.dart';\n";
-    data += "import 'package:injectable/injectable.dart';\n";
-    if (hasCache) {
-      data += "import 'package:shared_preferences/shared_preferences.dart';\n";
-    }
-    if (repositoryName.isNotEmpty) {
-      data +=
-          "import './${names.camelCaseToUnderscore(repositoryName)}.dart';\n";
-      data +=
-          "import '../${names.camelCaseToUnderscore(repositoryName.replaceFirst('Repository', ''))}.dart';\n";
-    }
-    return data;
   }
 }

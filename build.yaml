@@ -7,7 +7,7 @@ targets:
 builders:
   generate:
     import: "package:generators/generators.dart"
-    builder_factories: [ "generateUseCase","generateCubit","generateUseCaseUnitTest","generateCubitUnitTest" ,"generateRequests","generateRepository" ]
+    builder_factories: [ "generateMVVM", ]
     build_extensions:
       ".dart":
         - ".g.dart"

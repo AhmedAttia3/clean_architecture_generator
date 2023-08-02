@@ -1,16 +1,15 @@
 import 'package:analyzer/dart/element/element.dart';
-import 'package:annotations/annotations.dart';
 import 'package:build/build.dart';
 import 'package:generators/formatter/method_format.dart';
 import 'package:generators/formatter/names.dart';
 import 'package:generators/src/add_file_to_project.dart';
+import 'package:generators/src/mvvm_generator_annotations.dart';
 import 'package:generators/src/read_imports_file.dart';
 import 'package:source_gen/source_gen.dart';
 
 import '../../model_visitor.dart';
 
-class RepositoryTestGenerator
-    extends GeneratorForAnnotation<RepositoryTestAnnotation> {
+class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
   final names = Names();
 
   @override
@@ -30,8 +29,14 @@ class RepositoryTestGenerator
     final repositoryType = '${remoteDataSourceType}Repository';
     final repositoryImplementType = '${remoteDataSourceType}RepositoryImpl';
     final fileName = "${names.camelCaseToUnderscore(repositoryType)}_test";
-    classBuffer.writeln(imports(baseFilePath: buildStep.inputId.path));
+    classBuffer.writeln(ReadImports.imports(
+      filePath: buildStep.inputId.path,
+      isTest: true,
+    ));
     for (var method in visitor.useCases) {
+      if (method.parameters.isEmpty) {
+        continue;
+      }
       final requestName = names
           .camelCaseToUnderscore('${names.firstUpper(method.name)}Request');
       classBuffer.writeln("import '../requests/$requestName.dart';");
@@ -76,6 +81,11 @@ class RepositoryTestGenerator
       } else {
         final model = names.baseModelName(type);
         final expectedModel = "expected_${names.camelCaseToUnderscore(model)}";
+        AddFile.save(
+          "$basePath/expected/$expectedModel",
+          '{}',
+          extension: 'json',
+        );
         if (type.contains('List')) {
           classBuffer.writeln("data: List.generate(");
           classBuffer.writeln("2,");
@@ -120,6 +130,7 @@ class RepositoryTestGenerator
 
       for (var method in visitor.useCases) {
         final methodName = method.name;
+        final requestName = '${names.firstUpper(method.name)}Request';
         classBuffer.writeln("test('$methodName', () async {");
         classBuffer.writeln(
             "when(networkInfo.isConnected).thenAnswer((realInvocation) async => true);");
@@ -146,16 +157,8 @@ class RepositoryTestGenerator
     classBuffer.writeln("});");
     classBuffer.writeln("}");
 
-    AddFile.save('$basePath/${repositoryType}Test', classBuffer.toString());
+    AddFile.save(
+        '$basePath/repository/${repositoryType}Test', classBuffer.toString());
     return classBuffer.toString();
-  }
-
-  String imports({required String baseFilePath}) {
-    String data = ReadImports.file(baseFilePath);
-    data += "import 'package:eitherx/eitherx.dart';\n";
-    data += "import 'package:flutter_test/flutter_test.dart';\n";
-    data += "import 'package:mockito/mockito.dart';\n";
-    data += "import 'package:mockito/annotations.dart\n';";
-    return data;
   }
 }

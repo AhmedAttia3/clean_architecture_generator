@@ -3,11 +3,15 @@ import 'dart:io';
 import 'package:generators/formatter/names.dart';
 
 class AddFile {
-  static void save(String fileName, String content) {
+  static void save(
+    String fileName,
+    String content, {
+    String extension = 'dart',
+  }) {
     final projectDir = Directory.current;
     final names = Names();
     final filePath =
-        '${projectDir.path}/${names.camelCaseToUnderscore(fileName)}.dart';
+        '${projectDir.path}/${names.camelCaseToUnderscore(fileName)}.$extension';
     final dir = Directory(path(filePath));
     if (!dir.existsSync()) {
       dir.createSync();
