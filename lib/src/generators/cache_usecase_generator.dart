@@ -71,18 +71,19 @@ class CacheUseCaseGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
 
         ///[get]
         final getCacheUseCase = StringBuffer();
+        final cacheUseCaseName = useCaseName.replaceFirst('Get', '');
         getCacheUseCase.writeln("import 'dart:ffi';");
         getCacheUseCase.writeln(ReadImports.imports(
           imports: [repositoryName],
           filePath: buildStep.inputId.path,
         ));
-        getCacheUseCase.writeln('///[Get$useCaseName]');
+        getCacheUseCase.writeln('///[GetCache$cacheUseCaseName]');
         getCacheUseCase.writeln('///[Implementation]');
         getCacheUseCase.writeln('@injectable');
         getCacheUseCase.writeln(
-            'class Get$useCaseName implements BaseUseCase<Either<Failure, $responseDataType>, Void?>{');
+            'class GetCache$cacheUseCaseName implements BaseUseCase<Either<Failure, $responseDataType>, Void?>{');
         getCacheUseCase.writeln('final $repositoryName repository;');
-        getCacheUseCase.writeln('const Get$useCaseName(');
+        getCacheUseCase.writeln('const GetCache$cacheUseCaseName(');
         getCacheUseCase.writeln('this.repository,');
         getCacheUseCase.writeln(');\n');
         cacheUseCase.writeln('@override');
@@ -92,7 +93,8 @@ class CacheUseCaseGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         getCacheUseCase.writeln('}\n');
         getCacheUseCase.writeln('}\n');
         useCase.writeln(getCacheUseCase);
-        AddFile.save('$path/Get$useCaseName', getCacheUseCase.toString());
+        AddFile.save(
+            '$path/GetCache$cacheUseCaseName', getCacheUseCase.toString());
         classBuffer.write(useCase);
       }
     }

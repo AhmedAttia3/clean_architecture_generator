@@ -98,14 +98,18 @@ class CubitGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
       ///[get cache]
       if (method.comment?.contains('///cache') == true) {
         final getCacheCubit = StringBuffer();
+        final cacheCubitName = cubitName.replaceFirst('Get', '');
+        final cacheUseCaseName = useCaseName.replaceFirst('Get', '');
         getCacheCubit.writeln(ReadImports.imports(
           imports: [requestName, useCaseName],
           filePath: buildStep.inputId.path,
           isCubit: true,
         ));
         getCacheCubit.writeln('@injectable');
-        getCacheCubit.writeln('class Get$cubitName extends Cubit<FlowState> {');
-        getCacheCubit.writeln('final Get$useCaseName _get$useCaseName;');
+        getCacheCubit.writeln(
+            'class GetCache$cacheCubitName extends Cubit<FlowState> {');
+        getCacheCubit
+            .writeln('final GetCache$cacheUseCaseName _get$cacheUseCaseName;');
         final data = names.subName(method.name);
         if (responseDataType.contains('List')) {
           getCacheCubit
@@ -115,11 +119,11 @@ class CubitGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
               .writeln('$responseDataType? ${names.subName(method.name)};');
         }
         getCacheCubit.writeln(
-            'Get$cubitName(this._get$useCaseName) : super(ContentState());');
+            'GetCache$cubitName(this._get$cacheUseCaseName) : super(ContentState());');
         getCacheCubit.writeln('void execute() {');
         getCacheCubit.writeln(
             'emit(LoadingState(type: StateRendererType.fullScreenLoading));');
-        getCacheCubit.writeln('final res =  _get$useCaseName.execute();');
+        getCacheCubit.writeln('final res =  _get$cacheUseCaseName.execute();');
         getCacheCubit.writeln('res.right((data) {');
         getCacheCubit.writeln('$data = data;');
         getCacheCubit.writeln('emit(ContentState());');
@@ -133,7 +137,7 @@ class CubitGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         getCacheCubit.writeln('}');
         getCacheCubit.writeln('}');
 
-        AddFile.save('$path/Get$cubitName', getCacheCubit.toString());
+        AddFile.save('$path/GetCache$cacheCubitName', getCacheCubit.toString());
         cubits.writeln(getCacheCubit);
       }
     }

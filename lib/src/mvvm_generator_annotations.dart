@@ -4,4 +4,4 @@ class MVVMAnnotation {
   const MVVMAnnotation();
 }
 
-const GenerateMVVM = MVVMAnnotation();
+const GenerateMvvm = MVVMAnnotation();
