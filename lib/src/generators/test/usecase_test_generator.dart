@@ -30,12 +30,12 @@ class UseCaseTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
 
     for (var method in visitor.useCases) {
       final methodName = method.name;
-      final modelType = names.baseModelName(method.type);
       final repositoryName = '${names.firstUpper(visitor.className)}Repository';
       final useCaseType = '${names.firstUpper(method.name)}UseCase';
       final useCaseName = '${names.firstLower(method.name)}UseCase';
       final requestName = '${names.firstUpper(method.name)}Request';
       final type = methodFormat.returnType(method.type);
+      final modelType = names.baseModelName(type);
       final fileName = "${names.camelCaseToUnderscore(useCaseType)}_test";
       final usecase = StringBuffer();
 

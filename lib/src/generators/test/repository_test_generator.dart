@@ -73,7 +73,7 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     for (var method in visitor.useCases) {
       final methodName = method.name;
       final type = methodFormat.returnType(method.type);
-      final modelType = names.baseModelName(method.type);
+      final modelType = names.baseModelName(type);
       classBuffer.writeln("///[${names.firstUpper(methodName)}]");
       classBuffer.writeln('${methodName}Response = $type(');
       classBuffer.writeln("message: 'message',");
@@ -93,7 +93,7 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
           classBuffer.writeln("2,");
           classBuffer.writeln("(index) =>");
           classBuffer.writeln("$modelType.fromJson($decode),");
-          classBuffer.writeln(");");
+          classBuffer.writeln("));");
         } else {
           classBuffer.writeln("data: $modelType.fromJson($decode),);");
         }
