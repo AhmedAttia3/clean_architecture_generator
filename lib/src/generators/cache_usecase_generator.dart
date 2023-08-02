@@ -1,10 +1,10 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
-import 'package:generators/formatter/method_format.dart';
-import 'package:generators/formatter/names.dart';
-import 'package:generators/generators.dart';
-import 'package:generators/src/add_file_to_project.dart';
-import 'package:generators/src/model_visitor.dart';
+import 'package:mvvm_generator/formatter/method_format.dart';
+import 'package:mvvm_generator/formatter/names.dart';
+import 'package:mvvm_generator/mvvm_generator.dart';
+import 'package:mvvm_generator/src/add_file_to_project.dart';
+import 'package:mvvm_generator/src/model_visitor.dart';
 import 'package:source_gen/source_gen.dart';
 
 import '../read_imports_file.dart';

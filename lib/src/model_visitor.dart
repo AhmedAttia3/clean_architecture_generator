@@ -2,7 +2,7 @@
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/visitor.dart';
-import 'package:generators/models/usecase_model.dart';
+import 'package:mvvm_generator/models/usecase_model.dart';
 
 List<String> paths = [];
 

@@ -6,7 +6,7 @@ targets:
 
 builders:
   generate:
-    import: "package:generators/generators.dart"
+    import: "package:mvvm_generator/mvvm_generator.dart"
     builder_factories: [ "generateMVVM", ]
     build_extensions:
       ".dart":

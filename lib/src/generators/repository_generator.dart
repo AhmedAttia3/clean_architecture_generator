@@ -1,8 +1,8 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
-import 'package:generators/formatter/method_format.dart';
-import 'package:generators/formatter/names.dart';
-import 'package:generators/src/mvvm_generator_annotations.dart';
+import 'package:mvvm_generator/formatter/method_format.dart';
+import 'package:mvvm_generator/formatter/names.dart';
+import 'package:mvvm_generator/src/mvvm_generator_annotations.dart';
 import 'package:source_gen/source_gen.dart';
 
 import '../add_file_to_project.dart';
