@@ -29,8 +29,9 @@ class RepositoryGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     final repositoryName = '${names.firstUpper(visitor.className)}Repository';
     final repositoryNameImplement = '${repositoryName}Implement';
 
-    repository.writeln(ReadImports.imports(filePath: buildStep.inputId.path));
-    repository.writeln('///[$repositoryName]');
+    repository.writeln(ReadImports.imports(
+      filePath: buildStep.inputId.path,
+    ));
     repository.writeln('///[Implementation]');
     repository.writeln('abstract class $repositoryName {');
     bool hasCache = false;
@@ -56,12 +57,10 @@ class RepositoryGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     AddFile.save('$path/$repositoryName', repository.toString());
     final repositoryImpl = StringBuffer();
     repositoryImpl.writeln(ReadImports.imports(
-      imports: [repositoryName],
+      imports: [repositoryName, visitor.className],
       hasCache: hasCache,
       filePath: buildStep.inputId.path,
     ));
-    repositoryImpl.writeln(
-        "import 'package:${ReadImports.parent}${buildStep.inputId.path}';");
     repositoryImpl.writeln('///[$repositoryNameImplement]');
     repositoryImpl.writeln('///[Implementation]');
     repositoryImpl.writeln('@Injectable(as:$repositoryName)');
