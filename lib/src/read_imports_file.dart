@@ -80,19 +80,23 @@ class ReadImports {
 
   static List<String> filesInDir(String path) {
     List<String> data = [];
-    if (path.contains('.dart')) {
-      return data..add(path);
-    } else {
-      final files = Directory(path);
-      if (files.listSync().isEmpty) {
-        return data;
+    try {
+      if (path.contains('.dart')) {
+        return data..add(path);
       } else {
-        final filePaths = files.listSync().map((e) => e.path).toList();
-        for (var filePath in filePaths) {
-          data.addAll(filesInDir(filePath));
+        final files = Directory(path);
+        if (files.listSync().isEmpty) {
+          return data;
+        } else {
+          final filePaths = files.listSync().map((e) => e.path).toList();
+          for (var filePath in filePaths) {
+            data.addAll(filesInDir(filePath));
+          }
+          return data;
         }
-        return data;
       }
+    } catch (e) {
+      return data;
     }
   }
 
