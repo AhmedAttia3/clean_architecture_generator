@@ -87,7 +87,7 @@ class RepositoryGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
       final useCaseName = names.firstLower(method.name);
       final type = methodFormat.returnType(method.type);
       final responseDataType = names.responseDataType(type);
-      final modelName = names.modelName(type);
+      final modelName = names.baseModelName(type);
       repositoryImpl.writeln('@override');
       repositoryImpl.writeln(
           'Future<Either<Failure, $type>> $useCaseName(${methodFormat.parameters(method.parameters)})async {');

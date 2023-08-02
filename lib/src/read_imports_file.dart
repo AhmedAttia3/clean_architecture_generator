@@ -57,6 +57,7 @@ class Imports {
         if (stateRenderer != null) data += stateRenderer;
       }
       if (isRepo) {
+        data += "import 'dart:convert';";
         final safeRequest = importName('safe_request_handler.dart');
         if (safeRequest != null) data += safeRequest;
       }
