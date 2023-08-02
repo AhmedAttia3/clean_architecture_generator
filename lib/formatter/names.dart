@@ -27,6 +27,13 @@ class Names {
         .replaceFirst('?', '');
   }
 
+  String responseDataType(String value) {
+    return value
+        .replaceFirst('BaseResponse<', "")
+        .replaceFirst('>', "")
+        .replaceFirst('?', '');
+  }
+
   String camelCaseToUnderscore(String input) {
     final regex = RegExp('([a-z0-9])([A-Z])');
     return input

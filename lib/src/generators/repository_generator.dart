@@ -83,7 +83,7 @@ class RepositoryGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     for (var method in visitor.useCases) {
       final useCaseName = names.firstLower(method.name);
       final type = methodFormat.returnType(method.type);
-      final modelName = names.modelName(type);
+      final responseDataType = names.responseDataType(type);
       repositoryImpl.writeln('@override');
       repositoryImpl.writeln(
           'Future<Either<Failure, $type>> $useCaseName(${methodFormat.parameters(method.parameters)})async {');
@@ -102,12 +102,12 @@ class RepositoryGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         ///[cache]
         repositoryImpl.writeln('@override');
         repositoryImpl.writeln(
-            'Future<Either<Failure, Unit>> cache$useCaseName({required $modelName data}) async {');
+            'Future<Either<Failure, Unit>> cache$useCaseName({required $responseDataType data}) async {');
         repositoryImpl.writeln('try {');
-        final cachedType = _cacheType(modelName);
+        final cachedType = _cacheType(responseDataType);
         final dynamicType = cachedType == 'dynamic';
         if (dynamicType) {
-          if (modelName.contains('List')) {
+          if (responseDataType.contains('List')) {
             repositoryImpl.writeln(
                 'await sharedPreferences.setString(_$key,jsonEncode(data.map((item)=> item.toJson()).toList()));');
           } else {
@@ -127,13 +127,13 @@ class RepositoryGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         ///[get]
         repositoryImpl.writeln('@override');
         repositoryImpl
-            .writeln('Either<Failure, $modelName> get$useCaseName(){');
+            .writeln('Either<Failure, $responseDataType> get$useCaseName(){');
         repositoryImpl.writeln('try {');
         if (dynamicType) {
           repositoryImpl.writeln(
               "final res = sharedPreferences.getString(_$key) ?? '{}';");
-          if (modelName.contains('List')) {
-            repositoryImpl.writeln("$modelName data = [];");
+          if (responseDataType.contains('List')) {
+            repositoryImpl.writeln("$responseDataType data = [];");
             repositoryImpl.writeln("for (var item in jsonDecode(res)) {");
             repositoryImpl.writeln("data.add($cachedType.fromJson());");
             repositoryImpl.writeln("}");

@@ -37,7 +37,7 @@ class CacheUseCaseGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         final noParams = method.parameters.isEmpty;
         final useCaseName = '${names.firstUpper(method.name)}UseCase';
         final type = methodFormat.returnType(method.type);
-        final typeModel = names.modelName(type);
+        final responseDataType = names.responseDataType(type);
         final methodName = names.firstUpper(method.name);
 
         ///[cache]
@@ -51,14 +51,14 @@ class CacheUseCaseGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         cacheUseCase.writeln('///[Implementation]');
         cacheUseCase.writeln('@injectable');
         cacheUseCase.writeln(
-            'class Cache$useCaseName implements BaseUseCase<Future<Either<Failure, Unit>>,$typeModel> {');
+            'class Cache$useCaseName implements BaseUseCase<Future<Either<Failure, Unit>>,$responseDataType> {');
         cacheUseCase.writeln('final $repositoryName repository;');
         cacheUseCase.writeln('const Cache$useCaseName(');
         cacheUseCase.writeln('this.repository,');
         cacheUseCase.writeln(');\n');
         cacheUseCase.writeln('@override');
         cacheUseCase.writeln(
-            'Future<Either<Failure, Unit>> execute({required $typeModel data,}) async {');
+            'Future<Either<Failure, Unit>> execute({required $responseDataType data,}) async {');
         cacheUseCase.writeln('return await repository.cache$methodName');
         cacheUseCase.writeln('(data: this.data);');
         cacheUseCase.writeln('}\n');
@@ -77,13 +77,13 @@ class CacheUseCaseGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         getCacheUseCase.writeln('///[Implementation]');
         getCacheUseCase.writeln('@injectable');
         getCacheUseCase.writeln(
-            'class Get$useCaseName implements BaseUseCase<Either<Failure, $typeModel>, Void>{');
+            'class Get$useCaseName implements BaseUseCase<Either<Failure, $responseDataType>, Void>{');
         getCacheUseCase.writeln('final $repositoryName repository;');
         getCacheUseCase.writeln('const Get$useCaseName(');
         getCacheUseCase.writeln('this.repository,');
         getCacheUseCase.writeln(');\n');
-        getCacheUseCase
-            .writeln('Either<Failure, $typeModel> execute({Void? request}) {');
+        getCacheUseCase.writeln(
+            'Either<Failure, $responseDataType> execute({Void? request}) {');
         getCacheUseCase.writeln('return repository.get$methodName();');
         getCacheUseCase.writeln('}\n');
         getCacheUseCase.writeln('}\n');
