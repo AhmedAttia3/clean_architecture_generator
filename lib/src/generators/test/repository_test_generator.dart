@@ -20,6 +20,7 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
   ) {
     final basePath =
         AddFile.path(buildStep.inputId.path).replaceFirst('lib', 'test');
+    final path = "$basePath/repository/repo";
     final visitor = ModelVisitor();
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);
@@ -157,8 +158,7 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     classBuffer.writeln("});");
     classBuffer.writeln("}");
 
-    AddFile.save(
-        '$basePath/repository/${repositoryType}Test', classBuffer.toString());
+    AddFile.save('$path/${repositoryType}Test', classBuffer.toString());
     return classBuffer.toString();
   }
 }

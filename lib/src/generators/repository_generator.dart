@@ -18,7 +18,7 @@ class RepositoryGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     ConstantReader annotation,
     BuildStep buildStep,
   ) {
-    final path = "${AddFile.path(buildStep.inputId.path)}/repository";
+    final path = "${AddFile.path(buildStep.inputId.path)}/repository/repo";
     final visitor = ModelVisitor();
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);

@@ -14,7 +14,7 @@ class RequestsGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     ConstantReader annotation,
     BuildStep buildStep,
   ) {
-    final path = "${AddFile.path(buildStep.inputId.path)}/requests";
+    final path = "${AddFile.path(buildStep.inputId.path)}/repository/requests";
     final visitor = ModelVisitor();
     final names = Names();
     element.visitChildren(visitor);

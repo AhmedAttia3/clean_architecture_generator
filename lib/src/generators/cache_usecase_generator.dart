@@ -19,7 +19,7 @@ class CacheUseCaseGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     BuildStep buildStep,
   ) {
     final basePath = AddFile.path(buildStep.inputId.path);
-    final path = "$basePath/use-cases";
+    final path = "$basePath/repository/use-cases";
     final visitor = ModelVisitor();
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);
@@ -62,7 +62,7 @@ class CacheUseCaseGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
             'Future<Either<Failure, Unit>> execute({$responseDataType? request,}) async {');
         cacheUseCase.writeln('if(request!=null){');
         cacheUseCase.writeln('return await repository.cache$methodName');
-        cacheUseCase.writeln('(data: request!);');
+        cacheUseCase.writeln('(data: request);');
         cacheUseCase.writeln('}');
         cacheUseCase.writeln('return const Right(unit);');
         cacheUseCase.writeln('}\n');
@@ -88,7 +88,7 @@ class CacheUseCaseGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         getCacheUseCase.writeln(');\n');
         getCacheUseCase.writeln('@override');
         getCacheUseCase.writeln(
-            'Either<Failure, $responseDataType> execute({Void? request}) {');
+            'Either<Failure, $responseDataType> execute({Void? request,}) {');
         getCacheUseCase.writeln('return repository.get$methodName();');
         getCacheUseCase.writeln('}\n');
         getCacheUseCase.writeln('}\n');

@@ -24,10 +24,10 @@ class CacheUseCaseTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
 
     final basePath =
         AddFile.path(buildStep.inputId.path).replaceFirst('lib', 'test');
+    final path = "$basePath/repository/use-cases";
     final classBuffer = StringBuffer();
 
     for (var method in visitor.useCases) {
-      final path = '$basePath/${visitor.className}';
       final methodName = method.name;
       final repositoryName = '${names.firstUpper(visitor.className)}Repository';
       final useCaseType = '${names.firstUpper(method.name)}UseCase';
@@ -112,8 +112,7 @@ class CacheUseCaseTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
       usecase.writeln("});");
       usecase.writeln("}");
 
-      AddFile.save(
-          "$basePath/use-cases/${useCaseType}Test", usecase.toString());
+      AddFile.save("$path/${useCaseType}Test", usecase.toString());
       classBuffer.writeln(usecase);
     }
     return classBuffer.toString();

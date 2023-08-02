@@ -2,6 +2,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:mvvm_generator/formatter/method_format.dart';
 import 'package:mvvm_generator/formatter/names.dart';
+import 'package:mvvm_generator/src/add_file_to_project.dart';
 import 'package:mvvm_generator/src/mvvm_generator_annotations.dart';
 import 'package:source_gen/source_gen.dart';
 
@@ -14,6 +15,9 @@ class CubitTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     ConstantReader annotation,
     BuildStep buildStep,
   ) {
+    final basePath =
+        AddFile.path(buildStep.inputId.path).replaceFirst('lib', 'test');
+    final path = "$basePath/repository/use-cases";
     final visitor = ModelVisitor();
     final names = Names();
     final methodFormat = MethodFormat();

@@ -19,7 +19,7 @@ class UseCaseGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     BuildStep buildStep,
   ) {
     final basePath = AddFile.path(buildStep.inputId.path);
-    final path = "$basePath/use-cases";
+    final path = "$basePath/repository/use-cases";
     final visitor = ModelVisitor();
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);
@@ -77,7 +77,7 @@ class UseCaseGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
       useCase.writeln('@override');
       if (noParams) {
         useCase.writeln(
-            'Future<Either<Failure, $type>> execute({Void? request}) async {');
+            'Future<Either<Failure, $type>> execute({Void? request,}) async {');
       } else {
         useCase.writeln('@override');
         useCase.writeln(
