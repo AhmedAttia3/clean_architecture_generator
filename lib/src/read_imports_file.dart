@@ -93,23 +93,21 @@ class Imports {
 
   static List<String> filesInDir(String path) {
     List<String> data = [];
-    try {
-      if (path.contains('.dart')) {
-        return data..add(path);
-      } else {
-        final files = Directory(path);
-        if (files.listSync().isEmpty) {
-          return data;
-        } else {
-          final filePaths = files.listSync().map((e) => e.path).toList();
-          for (var filePath in filePaths) {
-            data.addAll(filesInDir(filePath));
-          }
-          return data;
-        }
-      }
-    } catch (e) {
+    if (path.contains('.dart')) {
+      return data..add(path);
+    } else if (path.contains('.')) {
       return data;
+    } else {
+      final files = Directory(path);
+      if (files.listSync().isEmpty) {
+        return data;
+      } else {
+        final filePaths = files.listSync().map((e) => e.path).toList();
+        for (var filePath in filePaths) {
+          data.addAll(filesInDir(filePath));
+        }
+        return data;
+      }
     }
   }
 

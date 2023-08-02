@@ -60,8 +60,7 @@ class CubitGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         cubit.writeln('pageSize: 10,');
         cubit.writeln('pageFuture: (page) {');
         cubit.writeln('final offset = page ?? 0;');
-        cubit.writeln(
-            'return getNotifications(page: offset, limit: offset * 10);');
+        cubit.writeln('return execute(page: offset, limit: offset * 10);');
         cubit.writeln('},');
         cubit.writeln(');');
         cubit.writeln('}');
@@ -89,6 +88,7 @@ class CubitGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         }
         cubit.writeln('});');
         cubit.writeln('return $varName;');
+        cubit.writeln('}');
         cubit.writeln('}');
       } else {
         if (hasData) {
