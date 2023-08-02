@@ -26,12 +26,23 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);
     final classBuffer = StringBuffer();
+    bool hasCache = false;
+
+    ///[HasCache]
+    for (var method in visitor.useCases) {
+      if (method.comment?.contains('///cache') == true) {
+        hasCache = true;
+        break;
+      }
+    }
 
     final remoteDataSourceType = names.firstUpper(visitor.className);
     final repositoryType = '${remoteDataSourceType}Repository';
     final repositoryImplementType =
         '${remoteDataSourceType}RepositoryImplement';
     final fileName = "${names.camelCaseToUnderscore(repositoryType)}_test";
+
+    ///[Imports]
     classBuffer.writeln(Imports.create(
       imports: [
         remoteDataSourceType,
@@ -41,17 +52,20 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
       ],
       filePath: buildStep.inputId.path,
       isTest: true,
+      hasCache: hasCache,
     ));
     classBuffer.writeln("import '$fileName.mocks.dart';");
     classBuffer.writeln('@GenerateNiceMocks([');
     classBuffer.writeln('MockSpec<$remoteDataSourceType>(),');
     classBuffer.writeln('MockSpec<NetworkInfo>(),');
+    if (hasCache) classBuffer.writeln('MockSpec<SharedPreferences>(),');
     classBuffer.writeln('])');
     classBuffer.writeln('void main() {');
     classBuffer.writeln('late $remoteDataSourceType dataSource;');
     classBuffer.writeln('late $repositoryType repository;');
     classBuffer.writeln('late SafeApi apiCall;');
     classBuffer.writeln('late NetworkInfo networkInfo;');
+    classBuffer.writeln('late SharedPreferences sharedPreferences;');
 
     for (var method in visitor.useCases) {
       final methodName = method.name;
@@ -60,12 +74,16 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     }
 
     classBuffer.writeln('setUp(() {');
+    if (hasCache) {
+      classBuffer.writeln('sharedPreferences = MockSharedPreferences();');
+    }
     classBuffer.writeln('networkInfo = MockNetworkInfo();');
     classBuffer.writeln('apiCall = SafeApi(networkInfo);');
     classBuffer.writeln('dataSource = Mock$remoteDataSourceType();');
     classBuffer.writeln('repository = $repositoryImplementType(');
     classBuffer.writeln('dataSource,');
     classBuffer.writeln('apiCall,');
+    if (hasCache) classBuffer.writeln('sharedPreferences,');
     classBuffer.writeln(');');
 
     for (var method in visitor.useCases) {

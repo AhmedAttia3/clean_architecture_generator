@@ -27,6 +27,8 @@ class RequestsGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
       }
       final request = StringBuffer();
       final requestName = '${names.firstUpper(method.name)}Request';
+
+      ///[Imports]
       request.writeln("import 'package:json_annotation/json_annotation.dart';");
       request.writeln(
           "part '${names.camelCaseToUnderscore(requestName)}.g.dart';");

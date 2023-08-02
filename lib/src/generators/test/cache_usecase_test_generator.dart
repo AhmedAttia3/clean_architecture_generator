@@ -38,6 +38,7 @@ class CacheUseCaseTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
       final fileName = "${names.camelCaseToUnderscore(useCaseType)}_test";
       final usecase = StringBuffer();
 
+      ///[Imports]
       usecase.writeln(Imports.create(
         imports: [
           useCaseType,

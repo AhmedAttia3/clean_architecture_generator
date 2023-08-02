@@ -27,6 +27,7 @@ class Imports {
     bool isCubit = false,
     bool isPaging = false,
     bool isRepo = false,
+    bool isUseCase = false,
   }) {
     final names = Names();
     final files = file(filePath);
@@ -66,6 +67,9 @@ class Imports {
     }
     if (isPaging) {
       data += "import 'package:flutter_pagewise/flutter_pagewise.dart';";
+    }
+    if (isUseCase) {
+      data += "import 'dart:ffi';\n";
     }
     if (isRepo) {
       data += "import 'dart:convert';";

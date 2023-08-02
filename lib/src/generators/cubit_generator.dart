@@ -38,6 +38,8 @@ class CubitGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
       final responseDataType = names.responseDataType(type);
       final baseModelType = names.baseModelName(type);
       final hasData = !type.contains('BaseResponse<dynamic>');
+
+      ///[Imports]
       cubit.writeln(Imports.create(
         imports: [useCaseName, hasParams ? requestName : ""],
         filePath: buildStep.inputId.path,
@@ -147,6 +149,8 @@ class CubitGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         final getCacheCubit = StringBuffer();
         final cacheCubitName = cubitName.replaceFirst('Get', '');
         final cacheUseCaseName = useCaseName.replaceFirst('Get', '');
+
+        ///[Imports]
         getCacheCubit.writeln(Imports.create(
           imports: [requestName, 'GetCache$cacheUseCaseName'],
           filePath: buildStep.inputId.path,

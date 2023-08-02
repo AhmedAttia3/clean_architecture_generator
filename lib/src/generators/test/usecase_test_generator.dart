@@ -39,6 +39,7 @@ class UseCaseTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
       final fileName = "${names.camelCaseToUnderscore(useCaseType)}_test";
       final usecase = StringBuffer();
 
+      ///[Imports]
       usecase.writeln(Imports.create(
         imports: [
           useCaseType,
@@ -81,12 +82,12 @@ class UseCaseTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
           usecase.writeln("(index) =>");
           usecase.writeln("$modelType.fromJson($decode),");
           usecase.writeln("));");
-          usecase.writeln("});\n");
         } else {
           usecase.writeln("data: $modelType.fromJson($decode),);");
-          usecase.writeln("});\n");
         }
       }
+      usecase.writeln("});\n");
+
       final request =
           "$requestName(${methodFormat.parametersWithValues(method.parameters)})";
       usecase.writeln(

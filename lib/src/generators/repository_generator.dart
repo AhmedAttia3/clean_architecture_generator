@@ -30,6 +30,7 @@ class RepositoryGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     final repositoryName = '${names.firstUpper(visitor.className)}Repository';
     final repositoryNameImplement = '${repositoryName}Implement';
 
+    ///[Imports]
     repository.writeln(Imports.create(
       filePath: buildStep.inputId.path,
     ));
@@ -58,6 +59,8 @@ class RepositoryGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
 
     AddFile.save('$path/$repositoryName', repository.toString());
     final repositoryImpl = StringBuffer();
+
+    ///[Imports]
     repositoryImpl.writeln(Imports.create(
       imports: [repositoryName, clientService],
       hasCache: hasCache,
