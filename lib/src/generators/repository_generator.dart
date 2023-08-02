@@ -37,7 +37,7 @@ class RepositoryGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     for (var method in visitor.useCases) {
       final useCaseName = names.firstLower(method.name);
       final type = methodFormat.returnType(method.type);
-      final modelName = names.modelName(type);
+      final responseDataType = names.responseDataType(type);
       repository.writeln(
           'Future<Either<Failure, $type>> $useCaseName(${methodFormat.parameters(method.parameters)});');
 
@@ -46,8 +46,9 @@ class RepositoryGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         hasCache = true;
         final useCaseName = names.firstUpper(method.name);
         repository.writeln(
-            'Future<Either<Failure, Unit>> cache$useCaseName({required $modelName data});');
-        repository.writeln('Either<Failure, $modelName> get$useCaseName();');
+            'Future<Either<Failure, Unit>> cache$useCaseName({required $responseDataType data});');
+        repository
+            .writeln('Either<Failure, $responseDataType> get$useCaseName();');
       }
     }
     repository.writeln('}\n');
