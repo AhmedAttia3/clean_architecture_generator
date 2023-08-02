@@ -18,9 +18,10 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     ConstantReader annotation,
     BuildStep buildStep,
   ) {
+    const expectedPath = "test";
     final basePath =
         AddFile.path(buildStep.inputId.path).replaceFirst('lib', 'test');
-    final path = "$basePath/repository/repo";
+    final path = "$basePath/repository/data-source";
     final visitor = ModelVisitor();
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);
@@ -80,7 +81,7 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         final model = names.baseModelName(type);
         final expectedModel = "expected_${names.camelCaseToUnderscore(model)}";
         AddFile.save(
-          "$basePath/expected/$expectedModel",
+          "$expectedPath/expected/$expectedModel",
           '{}',
           extension: 'json',
         );

@@ -18,6 +18,7 @@ class UseCaseTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     ConstantReader annotation,
     BuildStep buildStep,
   ) {
+    const expectedPath = "test";
     final visitor = ModelVisitor();
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);
@@ -67,7 +68,7 @@ class UseCaseTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         final model = names.baseModelName(type);
         final expectedModel = "expected_${names.camelCaseToUnderscore(model)}";
         AddFile.save(
-          "$basePath/expected/$expectedModel",
+          "$expectedPath/expected/$expectedModel",
           '{}',
           extension: 'json',
         );
