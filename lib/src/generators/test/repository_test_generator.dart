@@ -31,17 +31,14 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     final repositoryImplementType = '${remoteDataSourceType}RepositoryImpl';
     final fileName = "${names.camelCaseToUnderscore(repositoryType)}_test";
     classBuffer.writeln(Imports.create(
+      imports: [
+        remoteDataSourceType,
+        repositoryType,
+        "Network",
+      ],
       filePath: buildStep.inputId.path,
       isTest: true,
     ));
-    for (var method in visitor.useCases) {
-      if (method.parameters.isEmpty) {
-        continue;
-      }
-      final requestName = names
-          .camelCaseToUnderscore('${names.firstUpper(method.name)}Request');
-      classBuffer.writeln("import '../requests/$requestName.dart';");
-    }
     classBuffer.writeln("import '$fileName.mocks.dart';");
     classBuffer.writeln('@GenerateNiceMocks([');
     classBuffer.writeln('MockSpec<$remoteDataSourceType>(),');
@@ -117,14 +114,13 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
       final method = visitor.useCases.first;
       final requestName = '${names.firstUpper(method.name)}Request';
       if (method.parameters.isNotEmpty) {
-        final request =
-            "$requestName(${methodFormat.parametersWithValues(method.parameters)})";
-        classBuffer.writeln(
-            "final res = await repository.${method.name}(request: $request);");
+        final request = methodFormat.parametersWithValues(method.parameters);
+        classBuffer
+            .writeln("final res = await repository.${method.name}($request);");
       } else {
         classBuffer.writeln("final res = await repository.${method.name}();");
       }
-      classBuffer.writeln("expect(res.left((data) {}), isA<Failure>());");
+      classBuffer.writeln("expect(res, isA<Failure>());");
       classBuffer.writeln("verify(networkInfo.isConnected);");
       classBuffer.writeln("verifyNoMoreInteractions(networkInfo);");
       classBuffer.writeln("});");
@@ -139,10 +135,9 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         classBuffer.writeln(
             ".thenAnswer((realInvocation) async => ${methodName}Response);");
         if (method.parameters.isNotEmpty) {
-          final request =
-              "$requestName(${methodFormat.parametersWithValues(method.parameters)})";
-          classBuffer.writeln(
-              "final res = await repository.$methodName(request: $request);");
+          final request = methodFormat.parametersWithValues(method.parameters);
+          classBuffer
+              .writeln("final res = await repository.$methodName($request);");
         } else {
           classBuffer.writeln("final res = await repository.$methodName();");
         }

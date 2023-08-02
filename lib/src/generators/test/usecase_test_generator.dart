@@ -38,7 +38,10 @@ class UseCaseTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
       final usecase = StringBuffer();
 
       usecase.writeln(Imports.create(
-        imports: [useCaseType, method.parameters.isEmpty ? "" : requestName],
+        imports: [
+          useCaseType,
+          method.parameters.isEmpty ? "" : requestName,
+        ],
         filePath: buildStep.inputId.path,
         isTest: true,
       ));
