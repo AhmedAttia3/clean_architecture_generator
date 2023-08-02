@@ -52,6 +52,8 @@ class ReadImports {
         if (states != null) data += states;
         final fold = importName('fold.dart');
         if (fold != null) data += fold;
+        final safeRequest = importName('safe_request_handler.dart');
+        if (safeRequest != null) data += safeRequest;
         final stateRenderer = importName('state_renderer.dart');
         if (stateRenderer != null) data += stateRenderer;
       }

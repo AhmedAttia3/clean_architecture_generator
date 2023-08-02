@@ -35,7 +35,8 @@ class CacheUseCaseGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
       if (isCached == true) {
         final useCase = StringBuffer();
         final noParams = method.parameters.isEmpty;
-        final useCaseName = '${names.firstUpper(method.name)}UseCase';
+        final useCaseName =
+            '${names.firstUpper(method.name)}UseCase'.replaceFirst('Get', '');
         final type = methodFormat.returnType(method.type);
         final responseDataType = names.responseDataType(type);
         final methodName = names.firstUpper(method.name);
@@ -71,19 +72,18 @@ class CacheUseCaseGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
 
         ///[get]
         final getCacheUseCase = StringBuffer();
-        final cacheUseCaseName = useCaseName.replaceFirst('Get', '');
         getCacheUseCase.writeln("import 'dart:ffi';");
         getCacheUseCase.writeln(ReadImports.imports(
           imports: [repositoryName],
           filePath: buildStep.inputId.path,
         ));
-        getCacheUseCase.writeln('///[GetCache$cacheUseCaseName]');
+        getCacheUseCase.writeln('///[GetCache$useCaseName]');
         getCacheUseCase.writeln('///[Implementation]');
         getCacheUseCase.writeln('@injectable');
         getCacheUseCase.writeln(
-            'class GetCache$cacheUseCaseName implements BaseUseCase<Either<Failure, $responseDataType>, Void?>{');
+            'class GetCache$useCaseName implements BaseUseCase<Either<Failure, $responseDataType>, Void?>{');
         getCacheUseCase.writeln('final $repositoryName repository;');
-        getCacheUseCase.writeln('const GetCache$cacheUseCaseName(');
+        getCacheUseCase.writeln('const GetCache$useCaseName(');
         getCacheUseCase.writeln('this.repository,');
         getCacheUseCase.writeln(');\n');
         cacheUseCase.writeln('@override');
@@ -93,8 +93,7 @@ class CacheUseCaseGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         getCacheUseCase.writeln('}\n');
         getCacheUseCase.writeln('}\n');
         useCase.writeln(getCacheUseCase);
-        AddFile.save(
-            '$path/GetCache$cacheUseCaseName', getCacheUseCase.toString());
+        AddFile.save('$path/GetCache$useCaseName', getCacheUseCase.toString());
         classBuffer.write(useCase);
       }
     }

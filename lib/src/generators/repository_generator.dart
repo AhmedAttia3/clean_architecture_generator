@@ -57,7 +57,7 @@ class RepositoryGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     AddFile.save('$path/$repositoryName', repository.toString());
     final repositoryImpl = StringBuffer();
     repositoryImpl.writeln(ReadImports.imports(
-      imports: [repositoryName, visitor.className],
+      imports: [repositoryName, clientService],
       hasCache: hasCache,
       filePath: buildStep.inputId.path,
     ));
@@ -162,7 +162,10 @@ class RepositoryGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
   }
 
   String _cacheType(dynamic type) {
-    if (type is int || type is String || type is bool || type is double) {
+    if (type.runtimeType is int ||
+        type.runtimeType is String ||
+        type.runtimeType is bool ||
+        type.runtimeType is double) {
       return type.toString();
     }
     return 'dynamic';
