@@ -44,7 +44,7 @@ class CacheUseCaseGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         ///[cache]
         final cacheUseCase = StringBuffer();
         if (noParams) cacheUseCase.writeln("import 'dart:ffi';");
-        cacheUseCase.writeln(ReadImports.imports(
+        cacheUseCase.writeln(Imports.create(
           imports: [repositoryName],
           filePath: buildStep.inputId.path,
         ));
@@ -73,7 +73,7 @@ class CacheUseCaseGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         ///[get]
         final getCacheUseCase = StringBuffer();
         getCacheUseCase.writeln("import 'dart:ffi';");
-        getCacheUseCase.writeln(ReadImports.imports(
+        getCacheUseCase.writeln(Imports.create(
           imports: [repositoryName],
           filePath: buildStep.inputId.path,
         ));

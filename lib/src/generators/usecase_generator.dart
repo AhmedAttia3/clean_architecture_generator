@@ -61,7 +61,7 @@ class UseCaseGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
       final type = methodFormat.returnType(method.type);
       useCase.writeln('///[Implementation]');
       if (noParams) useCase.writeln("import 'dart:ffi';");
-      useCase.writeln(ReadImports.imports(
+      useCase.writeln(Imports.create(
         imports: [repositoryName, noParams ? "" : requestName],
         filePath: buildStep.inputId.path,
       ));

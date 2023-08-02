@@ -35,7 +35,7 @@ class CubitGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
       final type = methodFormat.returnType(method.type);
       final responseDataType = names.responseDataType(type);
       final hasData = !type.contains('BaseResponse<dynamic>');
-      cubit.writeln(ReadImports.imports(
+      cubit.writeln(Imports.create(
         imports: [useCaseName, hasParams ? requestName : ""],
         filePath: buildStep.inputId.path,
         isCubit: true,
@@ -100,8 +100,8 @@ class CubitGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         final getCacheCubit = StringBuffer();
         final cacheCubitName = cubitName.replaceFirst('Get', '');
         final cacheUseCaseName = useCaseName.replaceFirst('Get', '');
-        getCacheCubit.writeln(ReadImports.imports(
-          imports: [requestName, useCaseName],
+        getCacheCubit.writeln(Imports.create(
+          imports: [requestName, 'GetCache$cacheUseCaseName'],
           filePath: buildStep.inputId.path,
           isCubit: true,
         ));
@@ -119,7 +119,7 @@ class CubitGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
               .writeln('$responseDataType? ${names.subName(method.name)};');
         }
         getCacheCubit.writeln(
-            'GetCache$cubitName(this._get$cacheUseCaseName) : super(ContentState());');
+            'GetCache$cacheCubitName(this._get$cacheUseCaseName) : super(ContentState());');
         getCacheCubit.writeln('void execute() {');
         getCacheCubit.writeln(
             'emit(LoadingState(type: StateRendererType.fullScreenLoading));');

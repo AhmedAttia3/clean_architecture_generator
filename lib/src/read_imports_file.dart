@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:mvvm_generator/formatter/names.dart';
 
-class ReadImports {
+class Imports {
   static String file(String fileName) {
     final projectDir = Directory.current;
     final filePath = '${projectDir.path}/$fileName';
@@ -19,12 +19,13 @@ class ReadImports {
     throw Exception('File not exist');
   }
 
-  static String imports({
+  static String create({
     required String filePath,
     List<String> imports = const [],
     bool hasCache = false,
     bool isTest = false,
     bool isCubit = false,
+    bool isRepo = false,
   }) {
     final names = Names();
     final files = file(filePath);
@@ -52,10 +53,12 @@ class ReadImports {
         if (states != null) data += states;
         final fold = importName('fold.dart');
         if (fold != null) data += fold;
-        final safeRequest = importName('safe_request_handler.dart');
-        if (safeRequest != null) data += safeRequest;
         final stateRenderer = importName('state_renderer.dart');
         if (stateRenderer != null) data += stateRenderer;
+      }
+      if (isRepo) {
+        final safeRequest = importName('safe_request_handler.dart');
+        if (safeRequest != null) data += safeRequest;
       }
     }
     if (hasCache) {
@@ -64,7 +67,7 @@ class ReadImports {
     for (var path in imports) {
       if (path.isEmpty) continue;
       final res = names.camelCaseToUnderscore(path);
-      final import = importName(res);
+      final import = importName('$res.dart');
       if (import != null) data += import;
     }
     return data;

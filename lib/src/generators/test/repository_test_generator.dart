@@ -29,7 +29,7 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     final repositoryType = '${remoteDataSourceType}Repository';
     final repositoryImplementType = '${remoteDataSourceType}RepositoryImpl';
     final fileName = "${names.camelCaseToUnderscore(repositoryType)}_test";
-    classBuffer.writeln(ReadImports.imports(
+    classBuffer.writeln(Imports.create(
       filePath: buildStep.inputId.path,
       isTest: true,
     ));

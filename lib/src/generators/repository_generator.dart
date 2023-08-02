@@ -29,7 +29,7 @@ class RepositoryGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     final repositoryName = '${names.firstUpper(visitor.className)}Repository';
     final repositoryNameImplement = '${repositoryName}Implement';
 
-    repository.writeln(ReadImports.imports(
+    repository.writeln(Imports.create(
       filePath: buildStep.inputId.path,
     ));
     repository.writeln('///[Implementation]');
@@ -56,10 +56,11 @@ class RepositoryGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
 
     AddFile.save('$path/$repositoryName', repository.toString());
     final repositoryImpl = StringBuffer();
-    repositoryImpl.writeln(ReadImports.imports(
+    repositoryImpl.writeln(Imports.create(
       imports: [repositoryName, clientService],
       hasCache: hasCache,
       filePath: buildStep.inputId.path,
+      isRepo: true,
     ));
     repositoryImpl.writeln('///[$repositoryNameImplement]');
     repositoryImpl.writeln('///[Implementation]');
@@ -86,6 +87,7 @@ class RepositoryGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
       final useCaseName = names.firstLower(method.name);
       final type = methodFormat.returnType(method.type);
       final responseDataType = names.responseDataType(type);
+      final modelName = names.modelName(type);
       repositoryImpl.writeln('@override');
       repositoryImpl.writeln(
           'Future<Either<Failure, $type>> $useCaseName(${methodFormat.parameters(method.parameters)})async {');
@@ -137,12 +139,12 @@ class RepositoryGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
           if (responseDataType.contains('List')) {
             repositoryImpl.writeln("$responseDataType data = [];");
             repositoryImpl.writeln("for (var item in jsonDecode(res)) {");
-            repositoryImpl.writeln("data.add($cachedType.fromJson());");
+            repositoryImpl.writeln("data.add($modelName.fromJson(item));");
             repositoryImpl.writeln("}");
             repositoryImpl.writeln("return Right(data);");
           } else {
-            repositoryImpl.writeln(
-                "return Right($cachedType.fromJson(jsonDecode(res)));");
+            repositoryImpl
+                .writeln("return Right($modelName.fromJson(jsonDecode(res)));");
           }
         } else {
           repositoryImpl.writeln(
