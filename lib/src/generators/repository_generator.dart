@@ -9,7 +9,8 @@ import '../add_file_to_project.dart';
 import '../model_visitor.dart';
 import '../read_imports_file.dart';
 
-class RepositoryGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
+class RepositoryGenerator
+    extends GeneratorForAnnotation<ArchitectureAnnotation> {
   final names = Names();
 
   @override

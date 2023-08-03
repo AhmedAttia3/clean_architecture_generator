@@ -10,7 +10,7 @@ import 'package:source_gen/source_gen.dart';
 import '../../model_visitor.dart';
 
 class GetCacheUseCaseTestGenerator
-    extends GeneratorForAnnotation<MVVMAnnotation> {
+    extends GeneratorForAnnotation<ArchitectureAnnotation> {
   final names = Names();
 
   @override

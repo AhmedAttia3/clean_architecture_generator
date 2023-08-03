@@ -7,7 +7,7 @@ import 'package:source_gen/source_gen.dart';
 import '../add_file_to_project.dart';
 import '../model_visitor.dart';
 
-class RequestsGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
+class RequestsGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
   @override
   String generateForAnnotatedElement(
     Element element,

@@ -1,7 +1,7 @@
 // ignore_for_file: constant_identifier_names
 
-class MVVMAnnotation {
-  const MVVMAnnotation();
+class ArchitectureAnnotation {
+  const ArchitectureAnnotation();
 }
 
-const GenerateMvvm = MVVMAnnotation();
+const GenerateArchitecture = ArchitectureAnnotation();

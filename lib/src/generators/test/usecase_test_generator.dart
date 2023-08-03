@@ -9,7 +9,8 @@ import 'package:source_gen/source_gen.dart';
 
 import '../../model_visitor.dart';
 
-class UseCaseTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
+class UseCaseTestGenerator
+    extends GeneratorForAnnotation<ArchitectureAnnotation> {
   final names = Names();
 
   @override

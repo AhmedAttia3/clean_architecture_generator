@@ -5,7 +5,8 @@ import 'package:source_gen/source_gen.dart';
 
 import '../../model_visitor.dart';
 
-class CubitTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
+class CubitTestGenerator
+    extends GeneratorForAnnotation<ArchitectureAnnotation> {
   @override
   String generateForAnnotatedElement(
     Element element,

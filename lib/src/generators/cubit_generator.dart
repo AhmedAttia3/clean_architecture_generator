@@ -9,7 +9,7 @@ import 'package:source_gen/source_gen.dart';
 
 import '../model_visitor.dart';
 
-class CubitGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
+class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
   final names = Names();
 
   @override
