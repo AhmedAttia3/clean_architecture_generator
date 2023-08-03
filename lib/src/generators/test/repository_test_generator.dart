@@ -30,7 +30,7 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
 
     ///[HasCache]
     for (var method in visitor.useCases) {
-      if (method.comment?.contains('///cache') == true) {
+      if (method.isCache) {
         hasCache = true;
         break;
       }
@@ -71,6 +71,12 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
       final methodName = method.name;
       final type = methodFormat.returnType(method.type);
       classBuffer.writeln('late $type ${methodName}Response;');
+      if (method.isCache) {
+        final modelType = names.baseModelName(type);
+        final dataType = names.responseDataType(type);
+        final dataName = "${names.firstLower(modelType)}s";
+        classBuffer.writeln('late $dataType $dataName;');
+      }
     }
 
     classBuffer.writeln('setUp(() {');
@@ -90,6 +96,7 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
       final methodName = method.name;
       final type = methodFormat.returnType(method.type);
       final modelType = names.baseModelName(type);
+
       classBuffer.writeln("///[${names.firstUpper(methodName)}]");
       classBuffer.writeln('${methodName}Response = $type(');
       classBuffer.writeln("message: 'message',");
@@ -114,6 +121,20 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
           classBuffer.writeln("data: $modelType.fromJson($decode),);");
         }
       }
+      if (method.isCache) {
+        final model = names.camelCaseToUnderscore(names.baseModelName(type));
+        final decode = "fromJson('expected_$model')";
+        final dataName = "${names.firstLower(modelType)}s";
+        if (type.contains('List')) {
+          classBuffer.writeln("$dataName = List.generate(");
+          classBuffer.writeln("2,");
+          classBuffer.writeln("(index) =>");
+          classBuffer.writeln("$modelType.fromJson($decode),");
+          classBuffer.writeln(");");
+        } else {
+          classBuffer.writeln("$dataName = $modelType.fromJson($decode);");
+        }
+      }
     }
     classBuffer.writeln('});');
 
@@ -121,10 +142,31 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
       final methodName = method.name;
       classBuffer.writeln(
           "$methodName() => dataSource.$methodName(${methodFormat.parametersWithValues(method.parameters)});");
+
+      if (method.isCache) {
+        final getCacheMethodName =
+            "getCache${names.firstUpper(methodName).replaceFirst('Get', '')}";
+        final cacheMethodName =
+            "cache${names.firstUpper(methodName).replaceFirst('Get', '')}";
+        final type = methodFormat.returnType(method.type);
+        final modelType = names.baseModelName(type);
+        classBuffer.writeln(
+            "$cacheMethodName() => sharedPreferences.setString('${methodName.toUpperCase()}',");
+        final dataName = "${names.firstLower(modelType)}s";
+        if (type.contains('List')) {
+          classBuffer.writeln("jsonEncode($dataName.map((item)=>");
+          classBuffer.writeln("item.toJson()).toList())),);\n");
+        } else {
+          classBuffer.writeln("jsonEncode($modelType.toJson()),);\n");
+        }
+        classBuffer.writeln(
+            "$getCacheMethodName() => sharedPreferences.getString('${methodName.toUpperCase()}');\n");
+      }
     }
 
-    classBuffer.writeln("\ngroup('$repositoryType Repository', () {");
+    classBuffer.writeln("group('$repositoryType Repository', () {");
     if (visitor.useCases.isNotEmpty) {
+      classBuffer.writeln("///[No Internet Test]");
       classBuffer.writeln("test('No Internet', () async {");
       classBuffer.writeln(
           "when(networkInfo.isConnected).thenAnswer((realInvocation) async => false);");
@@ -143,7 +185,10 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
 
       for (var method in visitor.useCases) {
         final methodName = method.name;
-        classBuffer.writeln("test('$methodName', () async {");
+
+        ///[Function Success Test]
+        classBuffer.writeln("///[$methodName Success Test]");
+        classBuffer.writeln("test('$methodName Success', () async {");
         classBuffer.writeln(
             "when(networkInfo.isConnected).thenAnswer((realInvocation) async => true);");
         classBuffer.writeln("when($methodName())");
@@ -163,10 +208,67 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         classBuffer.writeln("verifyNoMoreInteractions(networkInfo);");
         classBuffer.writeln("verifyNoMoreInteractions(dataSource);");
         classBuffer.writeln("});\n");
+
+        ///[Function Failure Test]
+        classBuffer.writeln("///[$methodName Failure Test]");
+        classBuffer.writeln("test('$methodName Failure', () async {");
+        classBuffer.writeln(
+            "when(networkInfo.isConnected).thenAnswer((realInvocation) async => false);");
+        classBuffer.writeln("when($methodName())");
+        classBuffer.writeln(
+            ".thenAnswer((realInvocation) async => ${methodName}Response);");
+        if (method.parameters.isNotEmpty) {
+          final request = methodFormat.parametersWithValues(method.parameters);
+          classBuffer
+              .writeln("final res = await repository.$methodName($request);");
+        } else {
+          classBuffer.writeln("final res = await repository.$methodName();");
+        }
+        classBuffer.writeln("expect(res.leftOrNull(), failure);");
+        classBuffer.writeln("verify(networkInfo.isConnected);");
+        classBuffer.writeln("verify($methodName());");
+        classBuffer.writeln("verifyNoMoreInteractions(networkInfo);");
+        classBuffer.writeln("verifyNoMoreInteractions(dataSource);");
+        classBuffer.writeln("});\n");
+
+        ///[Cache Test]
+        if (method.isCache) {
+          final getCacheMethodName =
+              "getCache${names.firstUpper(methodName).replaceFirst('Get', '')}";
+          final cacheMethodName =
+              "cache${names.firstUpper(methodName).replaceFirst('Get', '')}";
+          final type = methodFormat.returnType(method.type);
+          final modelType = names.baseModelName(type);
+          final dataName = "${names.firstLower(modelType)}s";
+
+          ///[Cache]
+          classBuffer.writeln("///[$cacheMethodName Test]");
+          classBuffer.writeln("test('$cacheMethodName', () async {");
+          classBuffer.writeln(
+              "when($cacheMethodName()).thenAnswer((realInvocation) async => true);");
+          classBuffer.writeln(
+              "final res = await repository.$cacheMethodName(data:$dataName);");
+          classBuffer.writeln("expect(res.rightOrNull(), unit);");
+          classBuffer.writeln("verify($cacheMethodName());");
+          classBuffer.writeln("verifyNoMoreInteractions(sharedPreferences);");
+          classBuffer.writeln("});\n");
+
+          ///[Get Cache]
+          classBuffer.writeln("///[$getCacheMethodName Test]");
+          classBuffer.writeln("test('$getCacheMethodName', () async {");
+          classBuffer.writeln(
+              "when($getCacheMethodName()).thenAnswer((realInvocation) => '[]');");
+          classBuffer.writeln("final res = repository.$getCacheMethodName();");
+          classBuffer.writeln("expect(res.rightOrNull(), $dataName);");
+          classBuffer.writeln("verify($getCacheMethodName());");
+          classBuffer.writeln("verifyNoMoreInteractions(sharedPreferences);");
+          classBuffer.writeln("});\n");
+        }
       }
     }
     classBuffer.writeln("});");
     classBuffer.writeln("}\n");
+    classBuffer.writeln("///[FromJson]");
     classBuffer.writeln("Map<String, dynamic> fromJson(String path) {");
     classBuffer.writeln(
         " return jsonDecode(File('test/expected/\$path.json').readAsStringSync());");

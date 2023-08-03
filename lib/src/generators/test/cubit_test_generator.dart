@@ -23,12 +23,12 @@ class CubitTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);
     final haveKeyValidator =
-        visitor.params.values.contains('GlobalKey<FormState>');
+        visitor.classParams.values.contains('GlobalKey<FormState>');
 
     final classBuffer = StringBuffer();
     final repository = names.firstLower(visitor.className);
     classBuffer.writeln('@GenerateNiceMocks([');
-    for (var param in visitor.paramsType) {
+    for (var param in visitor.classParamsType) {
       classBuffer.writeln('MockSpec<$param>(),');
     }
     if (haveKeyValidator) {
@@ -37,14 +37,14 @@ class CubitTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     classBuffer.writeln('])');
     classBuffer.writeln('void main() {');
     classBuffer.writeln("late ${visitor.className} cubit;");
-    for (var param in visitor.params.entries) {
+    for (var param in visitor.classParams.entries) {
       classBuffer.writeln('late ${param.value} ${param.key};');
     }
     if (haveKeyValidator) {
       classBuffer.writeln('late FormState formState;');
     }
     classBuffer.writeln('setUp(() async {');
-    for (var param in visitor.params.entries) {
+    for (var param in visitor.classParams.entries) {
       classBuffer.writeln('${param.key} = Mock${param.value}();');
     }
     if (haveKeyValidator) {

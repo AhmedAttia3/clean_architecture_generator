@@ -5,13 +5,28 @@ class UseCaseModel {
   final String name;
   final MethodElement declaration;
   final List<ParameterElement> parameters;
-  final String? comment;
+  final bool isPaging, isCache;
+  List<CommendType> functionSets = [];
+  List<CommendType> textControllers = [];
 
-  const UseCaseModel({
+  UseCaseModel({
     required this.type,
     required this.name,
     required this.parameters,
     required this.declaration,
-    this.comment,
+    required this.isPaging,
+    required this.isCache,
+    required this.functionSets,
+    required this.textControllers,
+  });
+}
+
+class CommendType {
+  final String type;
+  final String name;
+
+  const CommendType({
+    required this.name,
+    required this.type,
   });
 }

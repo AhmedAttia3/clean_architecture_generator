@@ -32,6 +32,13 @@ class AddFile {
     if (!file.existsSync()) {
       file.writeAsStringSync(content);
     }
+    // else {
+    //   StringBuffer buffer = StringBuffer(file.readAsStringSync());
+    //   content = content.replaceAll(' ', '');
+    //   content = content.replaceFirst(buffer.toString().replaceAll(' ', ''), '');
+    //   buffer.writeln(content);
+    //   file.writeAsStringSync(buffer.toString());
+    // }
   }
 
   static String path(String fileName) {

@@ -103,7 +103,6 @@ class UseCaseTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         usecase.writeln(");");
       }
       usecase.writeln("expect(res.left((data) {}), failure);");
-      usecase.writeln("expect(res.left((data) {}), failure);");
       usecase.writeln("verify(webService());");
       usecase.writeln("verifyNoMoreInteractions(repository);");
       usecase.writeln("});\n\n");

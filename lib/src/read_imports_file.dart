@@ -57,6 +57,7 @@ class Imports {
     final baseUseCase = importName('base_use_case.dart');
     if (baseUseCase != null) data += baseUseCase;
     if (isCubit) {
+      data += "import 'package:flutter/material.dart';\n";
       data += "import 'package:flutter_bloc/flutter_bloc.dart';\n";
       final states = importName('states.dart');
       if (states != null) data += states;

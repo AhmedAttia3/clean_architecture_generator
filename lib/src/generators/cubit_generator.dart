@@ -29,7 +29,6 @@ class CubitGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     for (var method in visitor.useCases) {
       final cubit = StringBuffer();
       final varName = names.subName(method.name);
-      final isPaging = method.comment?.contains('///page') == true;
       final hasParams = method.parameters.isNotEmpty;
       final cubitName = '${names.firstUpper(method.name)}Cubit';
       final useCaseName = '${names.firstUpper(method.name)}UseCase';
@@ -38,24 +37,26 @@ class CubitGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
       final responseDataType = names.responseDataType(type);
       final baseModelType = names.baseModelName(type);
       final hasData = !type.contains('BaseResponse<dynamic>');
+      final hasTextController = method.textControllers.isNotEmpty;
+      final hasFunctionSet = method.functionSets.isNotEmpty;
 
       ///[Imports]
       cubit.writeln(Imports.create(
         imports: [useCaseName, hasParams ? requestName : ""],
         filePath: buildStep.inputId.path,
         isCubit: true,
-        isPaging: isPaging,
+        isPaging: method.isPaging,
       ));
       cubit.writeln('///[$cubitName]');
       cubit.writeln('///[Implementation]');
       cubit.writeln('@injectable');
       cubit.writeln('class $cubitName extends Cubit<FlowState> {');
       cubit.writeln('final $useCaseName _${names.firstLower(useCaseName)};');
-      if (isPaging) {
+      if (method.isPaging) {
         cubit.writeln(
             'late final PagewiseLoadController<$baseModelType> pagewiseController;');
-        cubit.writeln(
-            '$cubitName(this._${names.firstLower(useCaseName)}) : super(ContentState());');
+        cubit.writeln('$cubitName(this._${names.firstLower(useCaseName)},');
+        cubit.writeln(') : super(ContentState());');
         cubit.writeln('void init() {');
         cubit.writeln(
             'pagewiseController = PagewiseLoadController<$baseModelType>(');
@@ -93,6 +94,27 @@ class CubitGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         cubit.writeln('}');
         cubit.writeln('}');
       } else {
+        ///[initialize formKey for validation]
+        if (hasTextController) {
+          cubit.writeln('final GlobalKey<FormState> formKey;');
+        }
+
+        ///[initialize controller for TextEditingController]
+        for (var controller in method.textControllers) {
+          cubit.writeln('final TextEditingController ${controller.name};');
+          method.parameters
+              .removeWhere((element) => controller.name == element.name);
+        }
+
+        ///[initialize constructor]
+        cubit.writeln('$cubitName(this._${names.firstLower(useCaseName)},');
+        if (hasTextController) cubit.writeln('this.formKey,');
+        for (var controller in method.textControllers) {
+          cubit.writeln('this.${controller.name},');
+        }
+        cubit.writeln(') : super(ContentState());\n');
+
+        ///[initialize var for data when cubit is get request]
         if (hasData) {
           if (responseDataType.contains('List')) {
             cubit.writeln('$responseDataType $varName = [];');
@@ -100,18 +122,76 @@ class CubitGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
             cubit.writeln('$responseDataType? $varName;');
           }
         }
-        cubit.writeln(
-            '$cubitName(this._${names.firstLower(useCaseName)}) : super(ContentState());');
+
+        ///[initialize variable for set function]
+        for (var function in method.functionSets) {
+          cubit.write('${function.type} ${function.name}');
+          switch (function.type) {
+            case 'String':
+              cubit.write(' = "";');
+              break;
+            case 'double':
+              cubit.write(' = 0.0;');
+              break;
+            case 'int':
+              cubit.write(' = 0;');
+              break;
+            case 'List':
+              cubit.write(' = [];');
+              break;
+            case 'num':
+              cubit.write(' = 0;');
+              break;
+          }
+          method.parameters
+              .removeWhere((element) => function.name == element.name);
+        }
+
+        cubit.writeln('\n');
         cubit.writeln(
             'Future<void> execute(${methodFormat.parameters(method.parameters)}) async {');
+        if (hasTextController) {
+          cubit.writeln('if (formKey.currentState!.validate()) {');
+        }
         cubit.writeln(
             'emit(LoadingState(type: StateRendererType.popUpLoading));');
         cubit.writeln(
             'final res = await _${names.firstLower(useCaseName)}.execute(');
-        if (hasParams) {
-          cubit.writeln(
-              "request : $requestName(${methodFormat.passingParameters(method.parameters)}),");
+
+        ///[add request]
+        if (hasParams || hasTextController || hasFunctionSet) {
+          cubit.writeln("request : $requestName(");
         }
+
+        ///[add textEditController to request]
+        if (hasTextController) {
+          for (var controller in method.textControllers) {
+            cubit.writeln('${controller.name} :');
+            if (controller.type == 'int') {
+              cubit.writeln('int.parse(${controller.name}.text),');
+            } else if (controller.type == 'double') {
+              cubit.writeln('double.parse(${controller.name}.text),');
+            } else if (controller.type == 'num') {
+              cubit.writeln('num.parse(${controller.name}.text),');
+            } else {
+              cubit.writeln('${controller.name}.text,');
+            }
+          }
+        }
+
+        ///[add variables to request]
+        if (hasFunctionSet) {
+          for (var function in method.functionSets) {
+            cubit.writeln('${function.name} : ${function.name},');
+          }
+        }
+
+        ///[add params  to request]
+        if (hasParams) {
+          cubit.writeln(methodFormat.passingParameters(method.parameters));
+        }
+
+        cubit.writeln(")");
         cubit.writeln(');');
         cubit.writeln('res.left((failure) {');
         cubit.writeln('emit(ErrorState(');
@@ -138,56 +218,22 @@ class CubitGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         cubit.writeln('}');
         cubit.writeln('});');
         cubit.writeln('}');
+
+        if (hasTextController) cubit.writeln('}');
+
+        ///[create set function]
+        for (var function in method.functionSets) {
+          cubit.writeln(
+              'void set${names.firstUpper(function.name)}(${function.type} value){');
+          cubit.writeln('${function.name} = value;');
+          cubit.writeln('}');
+        }
+
         cubit.writeln('}');
       }
 
       AddFile.save('$path/$cubitName', cubit.toString());
       cubits.writeln(cubit);
-
-      ///[get cache]
-      if (method.comment?.contains('///cache') == true) {
-        final getCacheCubit = StringBuffer();
-        final cacheCubitName = cubitName.replaceFirst('Get', '');
-        final cacheUseCaseName = useCaseName.replaceFirst('Get', '');
-
-        ///[Imports]
-        getCacheCubit.writeln(Imports.create(
-          imports: [requestName, 'GetCache$cacheUseCaseName'],
-          filePath: buildStep.inputId.path,
-          isCubit: true,
-        ));
-        getCacheCubit.writeln('@injectable');
-        getCacheCubit.writeln(
-            'class GetCache$cacheCubitName extends Cubit<FlowState> {');
-        getCacheCubit
-            .writeln('final GetCache$cacheUseCaseName _get$cacheUseCaseName;');
-        if (responseDataType.contains('List')) {
-          getCacheCubit.writeln('$responseDataType $varName = [];');
-        } else {
-          getCacheCubit.writeln('$responseDataType? $varName;');
-        }
-        getCacheCubit.writeln(
-            'GetCache$cacheCubitName(this._get$cacheUseCaseName) : super(ContentState());');
-        getCacheCubit.writeln('void execute() {');
-        getCacheCubit.writeln(
-            'emit(LoadingState(type: StateRendererType.fullScreenLoading));');
-        getCacheCubit.writeln('final res =  _get$cacheUseCaseName.execute();');
-        getCacheCubit.writeln('res.right((data) {');
-        getCacheCubit.writeln('$varName = data;');
-        getCacheCubit.writeln('emit(ContentState());');
-        getCacheCubit.writeln('});');
-        getCacheCubit.writeln('res.left((failure) {');
-        getCacheCubit.writeln('emit(ErrorState(');
-        getCacheCubit.writeln('type: StateRendererType.toastError,');
-        getCacheCubit.writeln('message: failure.message,');
-        getCacheCubit.writeln('));');
-        getCacheCubit.writeln('});');
-        getCacheCubit.writeln('}');
-        getCacheCubit.writeln('}');
-
-        AddFile.save('$path/GetCache$cacheCubitName', getCacheCubit.toString());
-        cubits.writeln(getCacheCubit);
-      }
     }
     return cubits.toString();
   }

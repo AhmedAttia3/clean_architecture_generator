@@ -9,7 +9,8 @@ import 'package:source_gen/source_gen.dart';
 
 import '../../model_visitor.dart';
 
-class CacheUseCaseTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
+class GetCacheUseCaseTestGenerator
+    extends GeneratorForAnnotation<MVVMAnnotation> {
   final names = Names();
 
   @override
@@ -18,9 +19,9 @@ class CacheUseCaseTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     ConstantReader annotation,
     BuildStep buildStep,
   ) {
-    final methodFormat = MethodFormat();
     final visitor = ModelVisitor();
     element.visitChildren(visitor);
+    final methodFormat = MethodFormat();
     final basePath =
         AddFile.path(buildStep.inputId.path).replaceFirst('lib', 'test');
     final path = "$basePath/repository/use-cases";
@@ -28,18 +29,18 @@ class CacheUseCaseTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     final classBuffer = StringBuffer();
 
     for (var method in visitor.useCases) {
-      final type = methodFormat.returnType(method.type);
-      final responseType = names.responseDataType(type);
-      final modelType = names.baseModelName(type);
       final methodName =
-          "cache${names.firstUpper(method.name)}".replaceFirst('Get', '');
+          "getCache${names.firstUpper(method.name)}".replaceFirst('Get', '');
       final useCaseName = '${methodName}UseCase';
       final repositoryName = '${names.firstUpper(visitor.className)}Repository';
       final useCaseType = names.firstUpper(useCaseName);
+      final type = methodFormat.returnType(method.type);
+      final responseType = names.responseDataType(type);
+      final modelType = names.baseModelName(type);
       final fileName = "${names.camelCaseToUnderscore(useCaseType)}_test";
       final usecase = StringBuffer();
       if (method.isCache) {
-        ///[Test Caching]
+        ///[Test Get Caching]
         ///[Imports]
         usecase.writeln(Imports.create(
           imports: [
@@ -56,7 +57,7 @@ class CacheUseCaseTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         usecase.writeln('void main() {');
         usecase.writeln('late $useCaseType $useCaseName;');
         usecase.writeln('late $repositoryName repository;');
-        usecase.writeln('late $responseType data;');
+        usecase.writeln('late $responseType success;');
         usecase.writeln('late Failure failure;');
         usecase.writeln('setUp(() {');
         usecase.writeln('repository = Mock$repositoryName();');
@@ -65,34 +66,30 @@ class CacheUseCaseTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         final model = names.camelCaseToUnderscore(names.baseModelName(type));
         final decode =
             "jsonDecode(File('test/expected/expected_$model.json').readAsStringSync())";
-
         if (responseType.contains('List')) {
-          usecase.writeln("data = List.generate(");
+          usecase.writeln("success = List.generate(");
           usecase.writeln("2,");
           usecase.writeln("(index) =>");
           usecase.writeln("$modelType.fromJson($decode),");
           usecase.writeln(");");
         } else {
-          usecase.writeln("data = $modelType.fromJson($decode);");
+          usecase.writeln("success = $modelType.fromJson($decode);");
         }
-
-        usecase.writeln("webService() => repository.$methodName(data: data);");
+        usecase.writeln("webService() => repository.$methodName();");
         usecase.writeln("group('$useCaseType ', () {");
         usecase.writeln("test('$methodName FAILURE', () async {");
         usecase.writeln(
             "when(webService()).thenAnswer((realInvocation) async => Left(failure));");
-        usecase
-            .writeln("final res = await $useCaseName.execute(request: data);");
+        usecase.writeln("final res = await $useCaseName.execute();");
         usecase.writeln("expect(res.left((data) {}), failure);");
         usecase.writeln("verify(webService());");
         usecase.writeln("verifyNoMoreInteractions(repository);");
         usecase.writeln("});\n\n");
         usecase.writeln("test('$methodName SUCCESS', () async {");
         usecase.writeln(
-            "when(webService()).thenAnswer((realInvocation) async => const Right(unit));");
-        usecase
-            .writeln("final res = await $useCaseName.execute(request: data);");
-        usecase.writeln("expect(res.right((data) {}), unit);");
+            "when(webService()).thenAnswer((realInvocation) async => Right(success));");
+        usecase.writeln("final res = await $useCaseName.execute();");
+        usecase.writeln("expect(res.right((data) {}), success);");
         usecase.writeln("verify(webService());");
         usecase.writeln("verifyNoMoreInteractions(repository);");
         usecase.writeln("});");

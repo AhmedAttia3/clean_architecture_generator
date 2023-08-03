@@ -8,10 +8,10 @@ List<String> paths = [];
 
 class ModelVisitor extends SimpleElementVisitor<void> {
   String className = '';
+  Map<String, String> classParams = {};
+  List<String> classParamsType = [];
   List<UseCaseModel> useCases = [];
   List<ParameterElement> constructorParams = [];
-  List<String> paramsType = [];
-  Map<String, String> params = {};
 
   @override
   void visitConstructorElement(ConstructorElement element) {
@@ -20,24 +20,80 @@ class ModelVisitor extends SimpleElementVisitor<void> {
     paths.add(className);
     constructorParams = element.declaration.parameters;
     for (var param in constructorParams) {
-      paramsType.add(param.type.toString());
-      params[param.type.toString()] = param.name;
+      classParamsType.add(param.type.toString());
+      classParams[param.type.toString()] = param.name;
     }
   }
 
   @override
   void visitMethodElement(MethodElement element) {
+    final parameters = [...element.parameters];
     final type = element.returnType.toString();
     final name = element.name.toString();
-    final parameters = element.parameters;
+    final comment = element.documentationComment ?? '';
+    final prop = propIn(comment: comment, name: 'Prop');
 
-    useCases.add(UseCaseModel(
-      type: type,
-      name: name,
-      parameters: parameters,
-      declaration: element.declaration,
-      comment: element.documentationComment,
-    ));
+    final textControllers =
+        varsIn(comment: comment, name: 'TextController', params: parameters);
+
+    final functionSets =
+        varsIn(comment: comment, name: 'FunctionSet', params: parameters);
+
+    useCases.add(
+      UseCaseModel(
+        type: type,
+        name: name,
+        parameters: parameters,
+        declaration: element.declaration,
+        functionSets: functionSets,
+        textControllers: textControllers,
+        isCache: prop.contains('cached'),
+        isPaging: prop.contains('paging'),
+      ),
+    );
     super.visitMethodElement(element);
+  }
+
+  List<CommendType> varsIn({
+    required String comment,
+    required String name,
+    required List<ParameterElement> params,
+  }) {
+    List<CommendType> items = [];
+    final vars = propIn(comment: comment, name: name);
+    if (vars.isNotEmpty) {
+      for (var item in vars) {
+        final index = params.indexWhere((element) => element.name == item);
+        if (index != -1) {
+          items.add(
+            CommendType(
+              name: item,
+              type: params[index].type.toString(),
+            ),
+          );
+        }
+      }
+    }
+    return items;
+  }
+
+  List<String> propIn({
+    required String comment,
+    required String name,
+  }) {
+    if (comment.contains('///$name')) {
+      final commends = comment.split('///');
+      final index = commends.indexWhere((item) => item.contains(name));
+      if (index != -1) {
+        return commends[index]
+            .replaceFirst(name, '')
+            .replaceAll(' ', '')
+            .replaceAll('\n', '')
+            .replaceAll('[', '')
+            .replaceAll(']', '')
+            .split(',');
+      }
+    }
+    return [];
   }
 }

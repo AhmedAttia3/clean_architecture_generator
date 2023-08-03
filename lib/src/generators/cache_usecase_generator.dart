@@ -29,17 +29,15 @@ class CacheUseCaseGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     ///[UseCase]
     final classBuffer = StringBuffer();
     for (var method in visitor.useCases) {
-      final isCached = method.comment?.contains('///cache') == true;
-
       ///[cache save or get implement useCases]
-      if (isCached) {
+      if (method.isCache) {
         final useCase = StringBuffer();
         final noParams = method.parameters.isEmpty;
-        final useCaseName =
-            '${names.firstUpper(method.name)}UseCase'.replaceFirst('Get', '');
+        final methodName =
+            names.firstUpper(method.name).replaceFirst('Get', '');
+        final useCaseName = '${methodName}UseCase';
         final type = methodFormat.returnType(method.type);
         final responseDataType = names.responseDataType(type);
-        final methodName = names.firstUpper(method.name);
 
         ///[cache]
         final cacheUseCase = StringBuffer();
@@ -49,6 +47,7 @@ class CacheUseCaseGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
           imports: [repositoryName],
           filePath: buildStep.inputId.path,
           isUseCase: noParams,
+          hasCache: true,
         ));
         cacheUseCase.writeln('///[Cache$useCaseName]');
         cacheUseCase.writeln('///[Implementation]');
@@ -62,7 +61,7 @@ class CacheUseCaseGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         cacheUseCase.writeln('@override');
         cacheUseCase.writeln(
             'Future<Either<Failure, Unit>> execute({$responseDataType? request,}) async {');
-        cacheUseCase.writeln('if(request!=null){');
+        cacheUseCase.writeln('if(request != null){');
         cacheUseCase.writeln('return await repository.cache$methodName');
         cacheUseCase.writeln('(data: request);');
         cacheUseCase.writeln('}');
@@ -93,7 +92,7 @@ class CacheUseCaseGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         getCacheUseCase.writeln('@override');
         getCacheUseCase.writeln(
             'Either<Failure, $responseDataType> execute({Void? request,}) {');
-        getCacheUseCase.writeln('return repository.get$methodName();');
+        getCacheUseCase.writeln('return repository.getCache$methodName();');
         getCacheUseCase.writeln('}\n');
         getCacheUseCase.writeln('}\n');
         useCase.writeln(getCacheUseCase);
