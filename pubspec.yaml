@@ -1,6 +1,6 @@
 name: clean_architecture_generator
 description: A flutter package that generates clean architecture code with testing case for that from retrofit code.
-version: 0.0.4
+version: 0.0.5
 homepage: "https://github.com/ibrahimnashat/clean_architecture_generator.git"
 
 environment:
