@@ -1,22 +1,22 @@
-## Generator Description Role
+## Generator description role
 
 Clean architecture generator used for build a code from retrofit services file.
 Use for generate use-case, repositories, requests, cubits and unit test for all of this.
 And can use comments above functions in retrofit file to build cubit with different properties like variable come from TextEditingController, function for set value of variable, cache the return value in sharedPreferences and make cubit used this usecase with pagination controller like pagewise.
 
-## Platform Support
+## Platform support
 
 | Dart | Flutter |
 | :--: |   :-:   | 
 |  ✅  |    ✅    | 
 
-## Generated Code For Unit Test
+## Generated code for unit rest
 
 <p>
  <img src="https://github.com/ibrahimnashat/clean_architecture_generator/blob/master/images/Screenshot%202023-08-03%20221114.png"/>
 </p>
 
-## Generated Code For Repository, Usecase, Requests And Cubits
+## Generated code for repository, usecase, requests and cubits
 
 <p>
  <img src="https://github.com/ibrahimnashat/clean_architecture_generator/blob/master/images/Screenshot%202023-08-03%20221136.png"/>
