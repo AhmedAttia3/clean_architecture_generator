@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:mvvm_generator/formatter/names.dart';
+import 'package:clean_architecture_generator/formatter/names.dart';
 
 class Imports {
   static String file(String fileName) {

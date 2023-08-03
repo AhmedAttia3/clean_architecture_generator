@@ -1,9 +1,6 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
-import 'package:mvvm_generator/formatter/method_format.dart';
-import 'package:mvvm_generator/formatter/names.dart';
-import 'package:mvvm_generator/src/add_file_to_project.dart';
-import 'package:mvvm_generator/src/mvvm_generator_annotations.dart';
+import 'package:clean_architecture_generator/src/annotations.dart';
 import 'package:source_gen/source_gen.dart';
 
 import '../../model_visitor.dart';
@@ -15,18 +12,18 @@ class CubitTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     ConstantReader annotation,
     BuildStep buildStep,
   ) {
-    final basePath =
-        AddFile.path(buildStep.inputId.path).replaceFirst('lib', 'test');
-    final path = "$basePath/repository/use-cases";
+    // final basePath =
+    //     AddFile.path(buildStep.inputId.path).replaceFirst('lib', 'test');
+    // final path = "$basePath/repository/use-cases";
     final visitor = ModelVisitor();
-    final names = Names();
-    final methodFormat = MethodFormat();
+    //   final names = Names();
+    //final methodFormat = MethodFormat();
     element.visitChildren(visitor);
     final haveKeyValidator =
         visitor.classParams.values.contains('GlobalKey<FormState>');
 
     final classBuffer = StringBuffer();
-    final repository = names.firstLower(visitor.className);
+    // final repository = names.firstLower(visitor.className);
     classBuffer.writeln('@GenerateNiceMocks([');
     for (var param in visitor.classParamsType) {
       classBuffer.writeln('MockSpec<$param>(),');

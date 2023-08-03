@@ -15,7 +15,7 @@ import 'src/generators/test/repository_test_generator.dart';
 import 'src/generators/test/usecase_test_generator.dart';
 import 'src/generators/usecase_generator.dart';
 
-export 'src/mvvm_generator_annotations.dart';
+export 'src/annotations.dart';
 
 Builder generateMVVM(BuilderOptions options) => SharedPartBuilder(
       [
