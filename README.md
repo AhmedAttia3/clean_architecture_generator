@@ -1,29 +1,26 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
-
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages).
-
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages).
--->
+## Generator Description Role
 
 Clean architecture generator used for build a code from retrofit services file.
 Use for generate use-case, repositories, requests, cubits and unit test for all of this.
 And can use comments above functions in retrofit file to build cubit with different properties like variable come from TextEditingController, function for set value of variable, cache the return value in sharedPreferences and make cubit used this usecase with pagination controller like pagewise.
 
-### Platform Support
+## Platform Support
 
 | Dart | Flutter |
 | :--: |   :-:   | 
 |  ✅  |    ✅    | 
 
-## Features
-<img alt="Generated Code" src="https://github.com/ibrahimnashat/clean_architecture_generator/blob/master/images/Screenshot%202023-08-03%20221136.png" width="300" height="100"/>
-<img alt="Generated Unit test for Code" src="https://github.com/ibrahimnashat/clean_architecture_generator/blob/master/images/Screenshot%202023-08-03%20221114.png" width="300" height="100"/>
+## Generated Code For Unit Test
+
+<p>
+ <img src="https://github.com/ibrahimnashat/clean_architecture_generator/blob/master/images/Screenshot%202023-08-03%20221114.png"/>
+</p>
+
+## Generated Code For Repository, Usecase, Requests And Cubits
+
+<p>
+ <img src="https://github.com/ibrahimnashat/clean_architecture_generator/blob/master/images/Screenshot%202023-08-03%20221136.png"/>
+</p>
 
 
 
