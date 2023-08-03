@@ -57,7 +57,11 @@ class RepositoryGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     }
     repository.writeln('}\n');
 
-    AddFile.save('$path/$repositoryName', repository.toString());
+    AddFile.save(
+      '$path/$repositoryName',
+      repository.toString(),
+      allowUpdates: true,
+    );
     final repositoryImpl = StringBuffer();
 
     ///[Imports]
@@ -164,7 +168,11 @@ class RepositoryGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
       }
     }
     repositoryImpl.writeln('}\n');
-    AddFile.save('$path/${repositoryName}Impl', repositoryImpl.toString());
+    AddFile.save(
+      '$path/${repositoryName}Impl',
+      repositoryImpl.toString(),
+      allowUpdates: true,
+    );
     repository.writeln(repositoryImpl);
     return repository.toString();
   }

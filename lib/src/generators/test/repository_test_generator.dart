@@ -281,7 +281,11 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
     classBuffer.writeln(
         " return jsonDecode(File('test/expected/\$path.json').readAsStringSync());");
     classBuffer.writeln("}");
-    AddFile.save('$path/${repositoryType}Test', classBuffer.toString());
+    AddFile.save(
+      '$path/${repositoryType}Test',
+      classBuffer.toString(),
+      allowUpdates: true,
+    );
     return classBuffer.toString();
   }
 }

@@ -7,6 +7,7 @@ class AddFile {
     String fileName,
     String content, {
     String extension = 'dart',
+    bool allowUpdates = false,
   }) {
     final projectDir = Directory.current;
     final names = Names();
@@ -29,16 +30,9 @@ class AddFile {
     }
 
     final file = File(filePath);
-    if (!file.existsSync()) {
+    if (!file.existsSync() || allowUpdates) {
       file.writeAsStringSync(content);
     }
-    // else {
-    //   StringBuffer buffer = StringBuffer(file.readAsStringSync());
-    //   content = content.replaceAll(' ', '');
-    //   content = content.replaceFirst(buffer.toString().replaceAll(' ', ''), '');
-    //   buffer.writeln(content);
-    //   file.writeAsStringSync(buffer.toString());
-    // }
   }
 
   static String path(String fileName) {
