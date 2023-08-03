@@ -11,22 +11,21 @@ and the Flutter guide for
 [developing packages and plugins](https://flutter.dev/developing-packages).
 -->
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+Clean architecture generator used for build a code from retrofit services file.
+Use for generate use-case, repositories, requests, cubits and unit test for all of this.
+And can use comments above functions in retrofit file to build cubit with different properties like variable come from TextEditingController, function for set value of variable, cache the return value in sharedPreferences and make cubit used this usecase with pagination controller like pagewise.
+
+### Platform Support
+
+| Dart | Flutter |
+| :--: |   :-:   | 
+|  ✅  |    ✅    | 
 
 ## Features
+<img alt="Generated Code" src="https://github.com/ibrahimnashat/clean_architecture_generator/blob/master/images/Screenshot%202023-08-03%20221136.png" width="300" height="100"/>
+<img alt="Generated Unit test for Code" src="https://github.com/ibrahimnashat/clean_architecture_generator/blob/master/images/Screenshot%202023-08-03%20221114.png" width="300" height="100"/>
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
 
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
-
-## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
 
 ```dart
 
@@ -126,8 +125,6 @@ abstract class SettingsRemoteDataSource {
 
 ```
 
-## Additional information
+#### License
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+This library is distributed under Apache 2.0 license for more info see [LICENSE DETAILS](./LICENSE)
