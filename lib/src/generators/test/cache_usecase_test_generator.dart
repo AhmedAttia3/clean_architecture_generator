@@ -76,7 +76,9 @@ class CacheUseCaseTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
           usecase.writeln("data = $modelType.fromJson($decode);");
         }
 
-        usecase.writeln("webService() => repository.$methodName(data: data);");
+        usecase.writeln("});\n");
+        usecase
+            .writeln("webService() => repository.$methodName(data: data);\n");
         usecase.writeln("group('$useCaseType ', () {");
         usecase.writeln("test('$methodName FAILURE', () async {");
         usecase.writeln(

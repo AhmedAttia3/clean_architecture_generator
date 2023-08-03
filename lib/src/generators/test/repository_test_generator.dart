@@ -144,6 +144,7 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
           "$methodName() => dataSource.$methodName(${methodFormat.parametersWithValues(method.parameters)});");
 
       if (method.isCache) {
+        final key = methodName.toUpperCase().replaceFirst('GET', '');
         final getCacheMethodName =
             "getCache${names.firstUpper(methodName).replaceFirst('Get', '')}";
         final cacheMethodName =
@@ -151,16 +152,16 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         final type = methodFormat.returnType(method.type);
         final modelType = names.baseModelName(type);
         classBuffer.writeln(
-            "$cacheMethodName() => sharedPreferences.setString('${methodName.toUpperCase()}',");
+            "$cacheMethodName() => sharedPreferences.setString('$key',");
         final dataName = "${names.firstLower(modelType)}s";
         if (type.contains('List')) {
           classBuffer.writeln("jsonEncode($dataName.map((item)=>");
-          classBuffer.writeln("item.toJson()).toList())),);\n");
+          classBuffer.writeln("item.toJson()).toList()),);\n");
         } else {
           classBuffer.writeln("jsonEncode($modelType.toJson()),);\n");
         }
         classBuffer.writeln(
-            "$getCacheMethodName() => sharedPreferences.getString('${methodName.toUpperCase()}');\n");
+            "$getCacheMethodName() => sharedPreferences.getString('$key');\n");
       }
     }
 
@@ -224,7 +225,7 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         } else {
           classBuffer.writeln("final res = await repository.$methodName();");
         }
-        classBuffer.writeln("expect(res.leftOrNull(), failure);");
+        classBuffer.writeln("expect(res.leftOrNull(), isA<Failure>());");
         classBuffer.writeln("verify(networkInfo.isConnected);");
         classBuffer.writeln("verify($methodName());");
         classBuffer.writeln("verifyNoMoreInteractions(networkInfo);");
@@ -240,6 +241,7 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
           final type = methodFormat.returnType(method.type);
           final modelType = names.baseModelName(type);
           final dataName = "${names.firstLower(modelType)}s";
+          final dataType = names.responseDataType(type);
 
           ///[Cache]
           classBuffer.writeln("///[$cacheMethodName Test]");
@@ -257,9 +259,15 @@ class RepositoryTestGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
           classBuffer.writeln("///[$getCacheMethodName Test]");
           classBuffer.writeln("test('$getCacheMethodName', () async {");
           classBuffer.writeln(
-              "when($getCacheMethodName()).thenAnswer((realInvocation) => '[]');");
+              "when($getCacheMethodName()).thenAnswer((realInvocation) => ");
+          if (type.contains('List')) {
+            classBuffer.writeln("jsonEncode($dataName.map((item)=>");
+            classBuffer.writeln("item.toJson()).toList()),);\n");
+          } else {
+            classBuffer.writeln("jsonEncode($modelType.toJson()),);\n");
+          }
           classBuffer.writeln("final res = repository.$getCacheMethodName();");
-          classBuffer.writeln("expect(res.rightOrNull(), $dataName);");
+          classBuffer.writeln("expect(res.rightOrNull(),isA<$dataType>());");
           classBuffer.writeln("verify($getCacheMethodName());");
           classBuffer.writeln("verifyNoMoreInteractions(sharedPreferences);");
           classBuffer.writeln("});\n");

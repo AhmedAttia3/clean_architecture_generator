@@ -75,20 +75,22 @@ class GetCacheUseCaseTestGenerator
         } else {
           usecase.writeln("success = $modelType.fromJson($decode);");
         }
-        usecase.writeln("webService() => repository.$methodName();");
+
+        usecase.writeln("});\n");
+        usecase.writeln("webService() => repository.$methodName();\n");
         usecase.writeln("group('$useCaseType ', () {");
-        usecase.writeln("test('$methodName FAILURE', () async {");
+        usecase.writeln("test('$methodName FAILURE', ()  {");
         usecase.writeln(
-            "when(webService()).thenAnswer((realInvocation) async => Left(failure));");
-        usecase.writeln("final res = await $useCaseName.execute();");
+            "when(webService()).thenAnswer((realInvocation) => Left(failure));");
+        usecase.writeln("final res = $useCaseName.execute();");
         usecase.writeln("expect(res.left((data) {}), failure);");
         usecase.writeln("verify(webService());");
         usecase.writeln("verifyNoMoreInteractions(repository);");
         usecase.writeln("});\n\n");
-        usecase.writeln("test('$methodName SUCCESS', () async {");
+        usecase.writeln("test('$methodName SUCCESS', () {");
         usecase.writeln(
-            "when(webService()).thenAnswer((realInvocation) async => Right(success));");
-        usecase.writeln("final res = await $useCaseName.execute();");
+            "when(webService()).thenAnswer((realInvocation) => Right(success));");
+        usecase.writeln("final res = $useCaseName.execute();");
         usecase.writeln("expect(res.right((data) {}), success);");
         usecase.writeln("verify(webService());");
         usecase.writeln("verifyNoMoreInteractions(repository);");

@@ -190,8 +190,9 @@ class CubitGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         if (hasParams) {
           cubit.writeln(methodFormat.passingParameters(method.parameters));
         }
-
-        cubit.writeln(")");
+        if (hasParams || hasTextController || hasFunctionSet) {
+          cubit.writeln(")");
+        }
         cubit.writeln(');');
         cubit.writeln('res.left((failure) {');
         cubit.writeln('emit(ErrorState(');

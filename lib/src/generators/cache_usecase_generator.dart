@@ -78,7 +78,7 @@ class CacheUseCaseGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
         getCacheUseCase.writeln(Imports.create(
           imports: [repositoryName],
           filePath: buildStep.inputId.path,
-          isUseCase: noParams,
+          isUseCase: true,
         ));
         getCacheUseCase.writeln('///[GetCache$useCaseName]');
         getCacheUseCase.writeln('///[Implementation]');

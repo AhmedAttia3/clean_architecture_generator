@@ -51,8 +51,8 @@ class RepositoryGenerator extends GeneratorForAnnotation<MVVMAnnotation> {
             names.firstUpper(method.name).replaceFirst('Get', '');
         repository.writeln(
             'Future<Either<Failure, Unit>> cache$useCaseName({required $responseDataType data,});');
-        repository
-            .writeln('Either<Failure, $responseDataType> get$useCaseName();');
+        repository.writeln(
+            'Either<Failure, $responseDataType> getCache$useCaseName();');
       }
     }
     repository.writeln('}\n');
