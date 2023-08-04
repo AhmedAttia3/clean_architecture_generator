@@ -39,6 +39,9 @@ class ModelVisitor extends SimpleElementVisitor<void> {
     final functionSets =
         varsIn(comment: comment, name: 'FunctionSet', params: parameters);
 
+    final emitSets =
+        varsIn(comment: comment, name: 'EmitSet', params: parameters);
+
     useCases.add(
       UseCaseModel(
         type: type,
@@ -47,6 +50,7 @@ class ModelVisitor extends SimpleElementVisitor<void> {
         declaration: element.declaration,
         functionSets: functionSets,
         textControllers: textControllers,
+        emitSets: emitSets,
         isCache: prop.contains('cached'),
         isPaging: prop.contains('paging'),
       ),

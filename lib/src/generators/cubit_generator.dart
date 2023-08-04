@@ -39,6 +39,7 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
       final hasData = !type.contains('BaseResponse<dynamic>');
       final hasTextController = method.textControllers.isNotEmpty;
       final hasFunctionSet = method.functionSets.isNotEmpty;
+      final hasEmitSet = method.emitSets.isNotEmpty;
 
       ///[Imports]
       cubit.writeln(Imports.create(
@@ -126,23 +127,15 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         ///[initialize variable for set function]
         for (var function in method.functionSets) {
           cubit.write('${function.type} ${function.name}');
-          switch (function.type) {
-            case 'String':
-              cubit.write(' = "";');
-              break;
-            case 'double':
-              cubit.write(' = 0.0;');
-              break;
-            case 'int':
-              cubit.write(' = 0;');
-              break;
-            case 'List':
-              cubit.write(' = [];');
-              break;
-            case 'num':
-              cubit.write(' = 0;');
-              break;
-          }
+          cubit.write(initVaType(function.type));
+          method.parameters
+              .removeWhere((element) => function.name == element.name);
+        }
+
+        ///[initialize variable for set emit function]
+        for (var function in method.emitSets) {
+          cubit.write('${function.type} ${function.name}');
+          cubit.write(initVaType(function.type));
           method.parameters
               .removeWhere((element) => function.name == element.name);
         }
@@ -159,7 +152,7 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
             'final res = await _${names.firstLower(useCaseName)}.execute(');
 
         ///[add request]
-        if (hasParams || hasTextController || hasFunctionSet) {
+        if (hasParams || hasTextController || hasFunctionSet || hasEmitSet) {
           cubit.writeln("request : $requestName(");
         }
 
@@ -186,13 +179,20 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
           }
         }
 
+        ///[add variables to request]
+        if (hasEmitSet) {
+          for (var function in method.emitSets) {
+            cubit.writeln('${function.name} : ${function.name},');
+          }
+        }
+
         ///[add params to request]
         if (hasParams) {
           cubit.writeln(methodFormat.passingParameters(method.parameters));
         }
 
         ///[add end of request params]
-        if (hasParams || hasTextController || hasFunctionSet) {
+        if (hasParams || hasTextController || hasFunctionSet || hasEmitSet) {
           cubit.writeln("),");
         }
         cubit.writeln(');');
@@ -232,6 +232,15 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
           cubit.writeln('}');
         }
 
+        ///[create emit set]
+        for (var function in method.emitSets) {
+          cubit.writeln(
+              'void set${names.firstUpper(function.name)}(${function.type} value){');
+          cubit.writeln('${function.name} = value;');
+          cubit.writeln('emit(ContentState());');
+          cubit.writeln('}');
+        }
+
         cubit.writeln('}');
       }
 
@@ -239,5 +248,22 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
       cubits.writeln(cubit);
     }
     return cubits.toString();
+  }
+
+  String initVaType(String type) {
+    switch (type) {
+      case 'String':
+        return ' = "";';
+      case 'double':
+        return ' = 0.0;';
+      case 'int':
+        return ' = 0;';
+      case 'List':
+        return ' = [];';
+      case 'num':
+        return ' = 0;';
+      default:
+        return "\n";
+    }
   }
 }

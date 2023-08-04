@@ -14,7 +14,7 @@ class RequestsGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     ConstantReader annotation,
     BuildStep buildStep,
   ) {
-    final path = "${AddFile.path(buildStep.inputId.path)}/data/requests";
+    final path = "${AddFile.path(buildStep.inputId.path)}/domain/requests";
     final visitor = ModelVisitor();
     final names = Names();
     element.visitChildren(visitor);

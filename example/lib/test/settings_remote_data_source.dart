@@ -18,6 +18,7 @@ abstract class SettingsRemoteDataSource {
       _SettingsRemoteDataSource;
 
   ///FunctionSet [productId]
+  ///EmitSet [productId]
   ///TextController [type]
   @POST(Endpoints.saveProduct)
   Future<BaseResponse> saveProduct({

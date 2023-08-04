@@ -7,6 +7,7 @@ class UseCaseModel {
   final List<ParameterElement> parameters;
   final bool isPaging, isCache;
   List<CommendType> functionSets = [];
+  List<CommendType> emitSets = [];
   List<CommendType> textControllers = [];
 
   UseCaseModel({
@@ -18,6 +19,7 @@ class UseCaseModel {
     required this.isCache,
     required this.functionSets,
     required this.textControllers,
+    required this.emitSets,
   });
 }
 

@@ -83,22 +83,24 @@ class RepositoryGenerator
     repositoryImpl
         .writeln('class $repositoryNameImplement implements $repositoryName {');
     repositoryImpl.writeln('final ${visitor.className} $clientService;');
-    repositoryImpl.writeln('final SafeApi api;');
 
     ///[add cache]
     if (hasCache) {
       repositoryImpl
           .writeln('final $localDataSourceType $localDataSourceName;');
     }
+
+    repositoryImpl.writeln('final SafeApi api;');
     repositoryImpl.writeln('const $repositoryNameImplement(');
     repositoryImpl.writeln('this.$clientService,');
-    repositoryImpl.writeln('this.api,');
 
     ///[add cache]
     if (hasCache) {
       repositoryImpl.writeln('this.$localDataSourceName,');
     }
+    repositoryImpl.writeln('this.api,');
     repositoryImpl.writeln(');\n');
+
     for (var method in visitor.useCases) {
       final useCaseName = names.firstLower(method.name);
       final type = methodFormat.returnType(method.type);

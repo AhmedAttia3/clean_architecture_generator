@@ -73,9 +73,9 @@ class LocalDataSourceGenerator
 
     dataSourceImpl.writeln('///[$localDataSourceImplType]');
     dataSourceImpl.writeln('///[Implementation]');
-    dataSourceImpl.writeln('@Injectable(as:$localDataSourceName)');
+    dataSourceImpl.writeln('@Injectable(as:$localDataSourceType)');
     dataSourceImpl.writeln(
-        'class $localDataSourceImplType implements $localDataSourceName {');
+        'class $localDataSourceImplType implements $localDataSourceType {');
     dataSourceImpl.writeln('final SharedPreferences sharedPreferences;');
     dataSourceImpl.writeln('const $localDataSourceImplType(');
     dataSourceImpl.writeln('this.sharedPreferences,');
