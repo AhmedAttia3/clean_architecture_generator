@@ -31,7 +31,7 @@ class AddFile {
 
   static String search(String fileName) {
     final name = names.camelCaseToUnderscore(fileName.split('/').last);
-    return Imports.importName(name) ?? "";
+    return Imports.importPath(name) ?? "";
   }
 
   static String getDirectories(String fileName) {
@@ -52,26 +52,28 @@ class AddFile {
     String extension = 'dart',
   }) {
     path = search(path);
-    if (path.isEmpty) path = createPath(path, extension: extension);
-    final dir = Directory(getDirectories(path));
-    if (!dir.existsSync()) {
-      try {
-        dir.createSync();
-      } catch (e) {
-        final paths = getDirectories(path).split('/');
-        String exist = '';
-        for (var path in paths) {
-          exist += '$path/';
-          final dir = Directory(exist);
-          if (dir.existsSync()) continue;
+    if (path.isEmpty) {
+      path = createPath(path, extension: extension);
+      final dir = Directory(getDirectories(path));
+      if (!dir.existsSync()) {
+        try {
           dir.createSync();
+        } catch (e) {
+          final paths = getDirectories(path).split('/');
+          String exist = '';
+          for (var path in paths) {
+            exist += '$path/';
+            final dir = Directory(exist);
+            if (dir.existsSync()) continue;
+            dir.createSync();
+          }
         }
       }
-    }
 
-    final file = File(path);
-    if (!file.existsSync() || allowUpdates) {
-      file.writeAsStringSync(content);
-    }
+      final file = File(path);
+      if (!file.existsSync() || allowUpdates) {
+        file.writeAsStringSync(content);
+      }
+    } else {}
   }
 }

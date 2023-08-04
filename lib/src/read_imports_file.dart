@@ -108,6 +108,15 @@ class Imports {
     return null;
   }
 
+  static String? importPath(String subName) {
+    final files = libFiles;
+    final index = files.indexWhere((item) => item.contains(subName));
+    if (index != -1) {
+      return files[index];
+    }
+    return null;
+  }
+
   static List<String> get libFiles {
     return filesInDir('lib');
   }
