@@ -170,6 +170,7 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     states.writeln("@override");
     states.writeln(
         "StateRendererType getStateRendererType() => StateRendererType.contentState;");
+    states.writeln("@override");
     states.writeln("List<Object?> get props => [];");
     states.writeln("}\n\n");
 
@@ -185,6 +186,7 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
       states.writeln("String getMessage() => message ?? '';");
       states.writeln("@override");
       states.writeln("StateRendererType getStateRendererType() => type;");
+      states.writeln("@override");
       states.writeln("List<Object?> get props => [type, message];");
       states.writeln("}\n\n");
     }
@@ -202,6 +204,7 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     states.writeln("String getMessage() => message ?? '';");
     states.writeln("@override");
     states.writeln("StateRendererType getStateRendererType() => type;");
+    states.writeln("@override");
     states.writeln("List<Object?> get props => [type, message];");
     states.writeln("}\n\n");
 
@@ -219,6 +222,7 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     states.writeln("@override");
     states.writeln(
         "StateRendererType getStateRendererType() => StateRendererType.contentState;");
+    states.writeln("@override");
     states.writeln("List<Object?> get props => [data];");
     states.writeln("}\n\n");
 
