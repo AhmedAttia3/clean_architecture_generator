@@ -74,6 +74,11 @@ class AddFile {
       if (!file.existsSync() || allowUpdates) {
         file.writeAsStringSync(content);
       }
-    } else {}
+    } else {
+      final file = File(path);
+      if (!file.existsSync() || allowUpdates) {
+        file.writeAsStringSync(content);
+      }
+    }
   }
 }
