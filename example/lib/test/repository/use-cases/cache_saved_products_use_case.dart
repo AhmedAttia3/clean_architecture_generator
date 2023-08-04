@@ -1,7 +1,4 @@
 import 'package:eitherx/eitherx.dart';
-import 'package:example/core/consts/constants.dart';
-import 'package:example/core/cubit/base_response/base_response.dart';
-import 'package:example/core/cubit/base_response/base_response.dart';
 import 'package:example/core/failure.dart';
 import 'package:injectable/injectable.dart';
 import 'package:example/core/base_use_case.dart';
@@ -19,8 +16,8 @@ this.repository,
 
 @override
 Future<Either<Failure, Unit>> execute({double? request,}) async {
-if(request!=null){
-return await repository.cacheGetSavedProducts
+if(request != null){
+return await repository.cacheSavedProducts
 (data: request);
 }
 return const Right(unit);

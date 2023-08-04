@@ -1,13 +1,8 @@
 import 'package:eitherx/eitherx.dart';
-import 'package:example/core/consts/constants.dart';
-import 'package:example/core/cubit/base_response/base_response.dart';
-import 'package:example/core/cubit/base_response/base_response.dart';
 import 'package:example/core/failure.dart';
 import 'dart:io';import 'dart:convert';import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
-import 'package:example/core/consts/fold.dart';
-import 'package:example/core/cubit/safe_request_handler.dart';
 import 'package:example/core/base_use_case.dart';
 import 'package:example/test/repository/use-cases/save_product_use_case.dart';
 import 'package:example/test/repository/requests/save_product_request.dart';
@@ -20,16 +15,16 @@ MockSpec<SettingsRemoteDataSourceRepository>(),
 void main() {
 late SaveProductUseCase saveProductUseCase;
 late SettingsRemoteDataSourceRepository repository;
-late BaseResponse<dynamic> success;
+late InvalidType success;
 late Failure failure;
 setUp(() {
 repository = MockSettingsRemoteDataSourceRepository();
 saveProductUseCase = SaveProductUseCase(repository);
 failure = Failure(1, 'message');
-success = BaseResponse<dynamic>(
+success = InvalidType(
 message: 'message',
 success: true,
-data: null,);
+data: InvalidType.fromJson(jsonDecode(File('test/expected/expected_invalid_type.json').readAsStringSync())),);
 });
 
 webService() => repository.saveProduct(productId: "productId",type: "type",);

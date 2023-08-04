@@ -1,9 +1,9 @@
 // ignore_for_file: depend_on_referenced_packages
 
+import 'package:clean_architecture_generator/clean_architecture_generator.dart';
 import 'package:dio/dio.dart';
 import 'package:mabna/features/home/repository/models/product_model.dart';
 import 'package:mabna/features/settings/repository/models/settings_model.dart';
-import 'package:mvvm_generator/mvvm_generator.dart';
 
 import '../../../../../core/consts/constants.dart';
 import '../../../../../core/cubit/base_response/base_response.dart';
@@ -11,7 +11,7 @@ import '../../models/question_model.dart';
 
 part '../settings_remote_data_source.g.dart';
 
-@GenerateMvvm
+@GenerateArchitecture
 @RestApi()
 abstract class SettingsRemoteDataSource {
   factory SettingsRemoteDataSource(Dio dio, {String baseUrl}) =

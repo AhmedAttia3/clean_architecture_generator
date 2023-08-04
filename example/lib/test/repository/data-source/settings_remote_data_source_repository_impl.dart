@@ -1,12 +1,6 @@
 import 'package:eitherx/eitherx.dart';
-import 'package:example/core/consts/constants.dart';
-import 'package:example/core/cubit/base_response/base_response.dart';
-import 'package:example/core/cubit/base_response/base_response.dart';
-import 'package:example/core/failure.dart';
 import 'package:injectable/injectable.dart';
-import 'package:example/core/base_use_case.dart';
-import 'dart:convert';import 'package:example/core/cubit/safe_request_handler.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';import 'package:shared_preferences/shared_preferences.dart';
 import 'package:example/test/repository/data-source/settings_remote_data_source_repository.dart';
 import 'package:example/test/settings_remote_data_source.dart';
 
@@ -24,8 +18,8 @@ this.sharedPreferences,
 );
 
 @override
-Future<Either<Failure, BaseResponse<dynamic>>> saveProduct({required String productId,required String type, })async {
-return await api<BaseResponse<dynamic>>(
+Future<Either<Failure, InvalidType>> saveProduct({required String productId,required String type, })async {
+return await api<InvalidType>(
 apiCall: settingsRemoteDataSource.saveProduct(productId: productId,type: type,),);
 }
 
@@ -57,20 +51,20 @@ return Left(Failure(12, 'Cash failure'));
 }
 
 @override
-Future<Either<Failure, BaseResponse<InvalidType>>> getSettings()async {
-return await api<BaseResponse<InvalidType>>(
+Future<Either<Failure, InvalidType>> getSettings()async {
+return await api<InvalidType>(
 apiCall: settingsRemoteDataSource.getSettings(),);
 }
 
 @override
-Future<Either<Failure, BaseResponse<InvalidType>>> getSengs()async {
-return await api<BaseResponse<InvalidType>>(
+Future<Either<Failure, InvalidType>> getSengs()async {
+return await api<InvalidType>(
 apiCall: settingsRemoteDataSource.getSengs(),);
 }
 
 @override
-Future<Either<Failure, BaseResponse<List<InvalidType>?>>> getQuestions()async {
-return await api<BaseResponse<List<InvalidType>?>>(
+Future<Either<Failure, InvalidType>> getQuestions()async {
+return await api<InvalidType>(
 apiCall: settingsRemoteDataSource.getQuestions(),);
 }
 

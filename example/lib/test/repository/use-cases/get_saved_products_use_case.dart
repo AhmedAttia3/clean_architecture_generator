@@ -1,8 +1,5 @@
 ///[Implementation]
 import 'package:eitherx/eitherx.dart';
-import 'package:example/core/consts/constants.dart';
-import 'package:example/core/cubit/base_response/base_response.dart';
-import 'package:example/core/cubit/base_response/base_response.dart';
 import 'package:example/core/failure.dart';
 import 'package:injectable/injectable.dart';
 import 'package:example/core/base_use_case.dart';
