@@ -54,6 +54,7 @@ class RepositoryTestGenerator
         '${repositoryType}Impl',
         repositoryType,
         "Network",
+        "Failure",
       ],
       filePath: buildStep.inputId.path,
       isTest: true,
@@ -67,6 +68,7 @@ class RepositoryTestGenerator
     classBuffer.writeln('void main() {');
     classBuffer.writeln('late $remoteDataSourceType dataSource;');
     classBuffer.writeln('late $repositoryType repository;');
+    classBuffer.writeln('late Failure failure;');
     classBuffer.writeln('late SafeApi apiCall;');
     classBuffer.writeln('late NetworkInfo networkInfo;');
     classBuffer.writeln('late $localDataSourceType $localDataSourceName;');
@@ -87,6 +89,7 @@ class RepositoryTestGenerator
     if (hasCache) {
       classBuffer.writeln('$localDataSourceName = Mock$localDataSourceType();');
     }
+    classBuffer.writeln('failure = Failure(999,"Cache failure");');
     classBuffer.writeln('networkInfo = MockNetworkInfo();');
     classBuffer.writeln('apiCall = SafeApi(networkInfo);');
     classBuffer.writeln('dataSource = Mock$remoteDataSourceType();');
@@ -148,7 +151,6 @@ class RepositoryTestGenerator
           "$methodName() => dataSource.$methodName(${methodFormat.parametersWithValues(method.parameters)});");
 
       if (method.isCache) {
-        final key = methodName.toUpperCase().replaceFirst('GET', '');
         final getCacheMethodName =
             "getCache${names.firstUpper(methodName).replaceFirst('Get', '')}";
         final cacheMethodName =
@@ -157,7 +159,7 @@ class RepositoryTestGenerator
         final modelType = names.baseModelName(type);
         final dataName = "${names.firstLower(modelType)}s";
         classBuffer.writeln(
-            "$cacheMethodName() => $localDataSourceName.$cacheMethodName('data:$dataName');\n");
+            "$cacheMethodName() => $localDataSourceName.$cacheMethodName(data : $dataName);\n");
 
         classBuffer.writeln(
             "$getCacheMethodName() => $localDataSourceName.$getCacheMethodName();\n");
@@ -246,7 +248,7 @@ class RepositoryTestGenerator
           classBuffer.writeln("///[$cacheMethodName Success]");
           classBuffer.writeln("test('$cacheMethodName', () async {");
           classBuffer.writeln(
-              "when($cacheMethodName()).thenAnswer((realInvocation) async => const Right(unit);");
+              "when($cacheMethodName()).thenAnswer((realInvocation) async => const Right(unit));");
           classBuffer.writeln(
               "final res = await repository.$cacheMethodName(data:$dataName);");
           classBuffer.writeln("expect(res.rightOrNull(), unit);");
@@ -258,7 +260,7 @@ class RepositoryTestGenerator
           classBuffer.writeln("///[$cacheMethodName Failure]");
           classBuffer.writeln("test('$cacheMethodName', () async {");
           classBuffer.writeln(
-              "when($cacheMethodName()).thenAnswer((realInvocation) async => const Left(failure);");
+              "when($cacheMethodName()).thenAnswer((realInvocation) async => const Left(failure));");
           classBuffer.writeln(
               "final res = await repository.$cacheMethodName(data:$dataName);");
           classBuffer.writeln("expect(res.leftOrNull(), isA<Failure>());");
