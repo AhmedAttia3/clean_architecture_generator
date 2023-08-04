@@ -7,7 +7,7 @@ targets:
 builders:
   generate:
     import: "package:clean_architecture_generator/clean_architecture_generator.dart"
-    builder_factories: [ "generateMVVM", ]
+    builder_factories: [ "generateArchitecture", ]
     build_extensions:
       ".dart":
         - ".g.dart"

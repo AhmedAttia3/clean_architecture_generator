@@ -17,6 +17,101 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     final visitor = ModelVisitor();
     element.visitChildren(visitor);
 
+    ///[kPrint]
+    final kPrint = StringBuffer();
+    kPrint.writeln('///[kPrint]');
+    kPrint.writeln('///[Implementation]');
+    kPrint.writeln(Imports.create(
+      filePath: buildStep.inputId.path,
+      libs: [
+        "import 'dart:convert';",
+        "import 'dart:developer';",
+        "import 'package:flutter/foundation.dart';",
+      ],
+    ));
+    kPrint.writeln("void kPrint(dynamic data) {");
+    kPrint.writeln("if (kDebugMode) {");
+    kPrint.writeln("_pr(data);");
+    kPrint.writeln("} else if (data is Map) {");
+    kPrint.writeln("_pr(jsonEncode(data));");
+    kPrint.writeln("} else {");
+    kPrint.writeln("_pr(data.toString());");
+    kPrint.writeln("}");
+    kPrint.writeln("}");
+    kPrint.writeln("}\n\n");
+    kPrint.writeln("void _pr(String data) {");
+    kPrint.writeln("if (data.length > 500) {");
+    kPrint.writeln("log(data);");
+    kPrint.writeln("} else {");
+    kPrint.writeln("print(data);");
+    kPrint.writeln("}");
+    kPrint.writeln("log(StackTrace.current.toString().split('\n')[2]);");
+    kPrint.writeln("}");
+
+    AddFile.save('$path/print', kPrint.toString());
+
+    ///[Network]
+    final network = StringBuffer();
+    network.writeln('///[Network]');
+    network.writeln('///[Implementation]');
+    network.writeln(Imports.create(
+      filePath: buildStep.inputId.path,
+      libs: [
+        "import 'package:injectable/injectable.dart';",
+        "import 'package:internet_connection_checker/internet_connection_checker.dart';",
+      ],
+    ));
+    network.writeln("abstract class NetworkInfo {");
+    network.writeln("Future<bool> get isConnected;");
+    network.writeln("}\n\n");
+    network.writeln("@Injectable(as: NetworkInfo)");
+    network.writeln("class NetworkInfoImpl implements NetworkInfo {");
+    network.writeln("InternetConnectionChecker internetConnectionChecker;");
+    network.writeln("NetworkInfoImpl(this.internetConnectionChecker);");
+    network.writeln("@override");
+    network.writeln(
+        "Future<bool> get isConnected => internetConnectionChecker.hasConnection;");
+    network.writeln("}");
+
+    AddFile.save('$path/network', network.toString());
+
+    ///[SafeApi]
+    final safeApi = StringBuffer();
+    safeApi.writeln('///[SafeApi]');
+    safeApi.writeln('///[Implementation]');
+    safeApi.writeln(Imports.create(
+      filePath: buildStep.inputId.path,
+      imports: ['Failure', 'print'],
+      libs: [
+        "import 'dart:developer';",
+        "import 'package:eitherx/eitherx.dart';",
+        "import 'package:injectable/injectable.dart';",
+      ],
+    ));
+    safeApi.writeln("@injectable");
+    safeApi.writeln("class SafeApi {");
+    safeApi.writeln("final NetworkInfo networkInfo;");
+    safeApi.writeln("SafeApi(this.networkInfo);)");
+    safeApi.writeln("Future<Either<Failure, T>> call<T>({");
+    safeApi.writeln("required Future<T> apiCall,");
+    safeApi.writeln("}) async {");
+    safeApi.writeln("final hasConnection = await networkInfo.isConnected;");
+    safeApi.writeln("if (hasConnection) {");
+    safeApi.writeln("try {");
+    safeApi.writeln("final response = await apiCall;");
+    safeApi.writeln("return Right(response);");
+    safeApi.writeln("} catch (error) {");
+    safeApi.writeln('kPrint("API Error: \$error");');
+    safeApi.writeln('return Left(Failure(600, error.toString()));');
+    safeApi.writeln('}');
+    safeApi.writeln('} else {');
+    safeApi.writeln("return Left(Failure(500, 'No Internet'));");
+    safeApi.writeln('}');
+    safeApi.writeln('}');
+    safeApi.writeln('}');
+
+    AddFile.save('$path/safe_request_handler', safeApi.toString());
+
     ///[BaseUseCase]
     final baseUseCase = StringBuffer();
     baseUseCase.writeln('///[BaseUseCase]');
@@ -142,7 +237,7 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     baseResponse.writeln("class BaseResponse<T> {");
     baseResponse.writeln("final T? data;");
     baseResponse.writeln("String message;");
-    baseResponse.writeln("T? data;");
+    baseResponse.writeln("bool success;");
     baseResponse.writeln("BaseResponse({");
     baseResponse.writeln("this.data,");
     baseResponse.writeln("required this.message,");
@@ -160,7 +255,7 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     final fold = StringBuffer();
     fold.writeln(Imports.create(
       filePath: buildStep.inputId.path,
-      imports: ["Failure"],
+      imports: ["Failure", "print"],
       libs: [
         "import 'dart:developer';",
         "import 'package:eitherx/eitherx.dart';"
@@ -171,7 +266,7 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     fold.writeln("dynamic right(Function(T data) callBack) {");
     fold.writeln("return fold(");
     fold.writeln("(failure) {");
-    fold.writeln("log('Error! \$failure');");
+    fold.writeln("kPrint('Error! \$failure');");
     fold.writeln(" },");
     fold.writeln("(data) {");
     fold.writeln("callBack(data);");
@@ -182,8 +277,8 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     fold.writeln("dynamic left(Function(Failure failure) callBack) {");
     fold.writeln("return fold(");
     fold.writeln("(failure) {");
-    fold.writeln("log(failure.code);");
-    fold.writeln("log(failure.message);");
+    fold.writeln("kPrint(failure.code);");
+    fold.writeln("kPrint(failure.message);");
     fold.writeln("callBack(failure);");
     fold.writeln("return failure;");
     fold.writeln("},");

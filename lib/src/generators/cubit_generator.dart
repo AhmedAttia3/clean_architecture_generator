@@ -224,20 +224,20 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         if (hasTextController) cubit.writeln('}');
 
         if (hasEmitSet) {
-          ///[create set function]
-          for (var function in method.functionSets) {
-            cubit.writeln(
-                'void set${names.firstUpper(function.name)}(${function.type} value){');
-            cubit.writeln('${function.name} = value;');
-            cubit.writeln('}');
-          }
-        } else if (hasFunctionSet) {
           ///[create emit set]
           for (var function in method.emitSets) {
             cubit.writeln(
                 'void set${names.firstUpper(function.name)}(${function.type} value){');
             cubit.writeln('${function.name} = value;');
             cubit.writeln('emit(ContentState());');
+            cubit.writeln('}');
+          }
+        } else if (hasFunctionSet) {
+          ///[create set function]
+          for (var function in method.functionSets) {
+            cubit.writeln(
+                'void set${names.firstUpper(function.name)}(${function.type} value){');
+            cubit.writeln('${function.name} = value;');
             cubit.writeln('}');
           }
         }

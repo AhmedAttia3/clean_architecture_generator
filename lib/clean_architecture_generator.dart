@@ -19,12 +19,12 @@ import 'src/generators/usecase_generator.dart';
 
 export 'src/annotations.dart';
 
-Builder generateMVVM(BuilderOptions options) => SharedPartBuilder(
+Builder generateArchitecture(BuilderOptions options) => SharedPartBuilder(
       [
         OptimizeGenerator(),
         RequestsGenerator(),
-        RepositoryGenerator(),
         LocalDataSourceGenerator(),
+        RepositoryGenerator(),
         UseCaseGenerator(),
         CacheUseCaseGenerator(),
         CubitGenerator(),
@@ -37,7 +37,7 @@ Builder generateMVVM(BuilderOptions options) => SharedPartBuilder(
         GetCacheUseCaseTestGenerator(),
         CubitTestGenerator(),
       ],
-      'mvvm',
+      'clean_architecture',
       formatOutput: (code) {
         return '#BUILD DONE SUCCESSFULLY';
       },
