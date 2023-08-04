@@ -39,8 +39,8 @@ class AddFile {
   }
 
   static void searchAndAddFile(String fileName, String content) {
-    if (!Imports.libFiles
-        .contains(names.camelCaseToUnderscore(fileName.split('/').last))) {
+    final name = names.camelCaseToUnderscore(fileName.split('/').last);
+    if (!Imports.libFiles.contains(name)) {
       save(fileName, content);
     }
   }

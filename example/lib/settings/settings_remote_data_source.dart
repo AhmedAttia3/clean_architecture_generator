@@ -26,7 +26,7 @@ abstract class SettingsRemoteDataSource {
 
   ///Prop [paging]
   @GET("getSavedProducts")
-  Future<BaseResponse<ProductModel?>> getSavedProducts({
+  Future<BaseResponse<List<ProductModel>?>> getSavedProducts({
     @Query('page') required int page,
     @Query('limit') required int limit,
   });

@@ -176,15 +176,15 @@ class LocalDataSourceGenerator
       case 'String':
         return '""';
       case 'double':
-        return '0.0';
+        return '"0.0"';
       case 'int':
-        return '0';
+        return '"0"';
       case 'List':
-        return '[]';
+        return '"[]"';
       case 'num':
-        return '0';
+        return '"0"';
       default:
-        return "{}";
+        return '"{}"';
     }
   }
 }

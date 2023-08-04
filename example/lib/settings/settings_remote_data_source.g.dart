@@ -55,7 +55,7 @@ class _SettingsRemoteDataSource implements SettingsRemoteDataSource {
   }
 
   @override
-  Future<BaseResponse<ProductModel?>> getSavedProducts({
+  Future<BaseResponse<List<ProductModel>?>> getSavedProducts({
     required int page,
     required int limit,
   }) async {
@@ -67,7 +67,7 @@ class _SettingsRemoteDataSource implements SettingsRemoteDataSource {
     final _headers = <String, dynamic>{};
     final Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<BaseResponse<ProductModel>>(Options(
+        _setStreamType<BaseResponse<List<ProductModel>>>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -83,11 +83,14 @@ class _SettingsRemoteDataSource implements SettingsRemoteDataSource {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = BaseResponse<ProductModel?>.fromJson(
+    final value = BaseResponse<List<ProductModel>>.fromJson(
       _result.data!,
-      (json) => json == null
-          ? null
-          : ProductModel.fromJson(json as Map<String, dynamic>),
+      (json) => json is List<dynamic>
+          ? json
+              .map<ProductModel>(
+                  (i) => ProductModel.fromJson(i as Map<String, dynamic>))
+              .toList()
+          : List.empty(),
     );
     return value;
   }

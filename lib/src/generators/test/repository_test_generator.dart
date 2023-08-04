@@ -265,7 +265,7 @@ class RepositoryTestGenerator
             classBuffer.writeln("jsonEncode($dataName.map((item)=>");
             classBuffer.writeln("item.toJson()).toList()),);\n");
           } else {
-            classBuffer.writeln("jsonEncode($modelType.toJson()),);\n");
+            classBuffer.writeln("jsonEncode($dataName.toJson()),);\n");
           }
           classBuffer.writeln("final res = repository.$getCacheMethodName();");
           classBuffer.writeln("expect(res.rightOrNull(),isA<$dataType>());");
