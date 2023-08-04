@@ -72,12 +72,11 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     states.writeln("class InitialState extends FlowState {");
     states.writeln("@override");
     states.writeln("String getMessage() {");
-    states.writeln("return " ";");
+    states.writeln("return '';");
     states.writeln("}");
     states.writeln("@override");
     states.writeln(
         "StateRendererType getStateRendererType() => StateRendererType.contentState;");
-    states.writeln("@override");
     states.writeln("List<Object?> get props => [];");
     states.writeln("}\n\n");
 
@@ -93,29 +92,42 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
       states.writeln("String getMessage() => message ?? '';");
       states.writeln("@override");
       states.writeln("StateRendererType getStateRendererType() => type;");
-      states.writeln("@override");
       states.writeln("List<Object?> get props => [type, message];");
       states.writeln("}\n\n");
     }
 
-    for (var state in ["Content", "Success"]) {
-      states.writeln("class ${state}State<T> extends FlowState {");
-      states.writeln("final StateRendererType type;");
-      states.writeln("final String message;");
-      states.writeln("final T? data;");
-      states.writeln("${state}State({");
-      states.writeln("required this.type,");
-      states.writeln("required this.message,");
-      states.writeln("this.data,");
-      states.writeln("});");
-      states.writeln("@override");
-      states.writeln("String getMessage() => message ?? '';");
-      states.writeln("@override");
-      states.writeln("StateRendererType getStateRendererType() => type;");
-      states.writeln("@override");
-      states.writeln("List<Object?> get props => [type, message];");
-      states.writeln("}\n\n");
-    }
+    states.writeln("class SuccessState<T> extends FlowState {");
+    states.writeln("final StateRendererType type;");
+    states.writeln("final String message;");
+    states.writeln("final T? data;");
+    states.writeln("SuccessState({");
+    states.writeln("required this.type,");
+    states.writeln("required this.message,");
+    states.writeln("this.data,");
+    states.writeln("});");
+    states.writeln("@override");
+    states.writeln("String getMessage() => message ?? '';");
+    states.writeln("@override");
+    states.writeln("StateRendererType getStateRendererType() => type;");
+    states.writeln("List<Object?> get props => [type, message];");
+    states.writeln("}\n\n");
+
+    states.writeln("class ContentState<T> extends FlowState {");
+    states.writeln("final StateRendererType? type;");
+    states.writeln("final String? message;");
+    states.writeln("final T? data;");
+    states.writeln("ContentState({");
+    states.writeln("this.type,");
+    states.writeln("this.message,");
+    states.writeln("this.data,");
+    states.writeln("});");
+    states.writeln("@override");
+    states.writeln("String getMessage() => message ?? '';");
+    states.writeln("@override");
+    states.writeln(
+        "StateRendererType getStateRendererType() => StateRendererType.contentState");
+    states.writeln("List<Object?> get props => [data];");
+    states.writeln("}\n\n");
 
     AddFile.searchAndAddFile('$path/states', states.toString());
 

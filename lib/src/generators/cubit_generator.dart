@@ -123,21 +123,22 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
             cubit.writeln('$responseDataType? $varName;');
           }
         }
-
-        ///[initialize variable for set function]
-        for (var function in method.functionSets) {
-          cubit.write('${function.type} ${function.name}');
-          cubit.write(initVaType(function.type));
-          method.parameters
-              .removeWhere((element) => function.name == element.name);
-        }
-
-        ///[initialize variable for set emit function]
-        for (var function in method.emitSets) {
-          cubit.write('${function.type} ${function.name}');
-          cubit.write(initVaType(function.type));
-          method.parameters
-              .removeWhere((element) => function.name == element.name);
+        if (hasEmitSet) {
+          ///[initialize variable for set emit function]
+          for (var function in method.emitSets) {
+            cubit.write('${function.type} ${function.name}');
+            cubit.write(initVaType(function.type));
+            method.parameters
+                .removeWhere((element) => function.name == element.name);
+          }
+        } else if (hasFunctionSet) {
+          ///[initialize variable for set function]
+          for (var function in method.functionSets) {
+            cubit.write('${function.type} ${function.name}');
+            cubit.write(initVaType(function.type));
+            method.parameters
+                .removeWhere((element) => function.name == element.name);
+          }
         }
 
         cubit.writeln('\n');
@@ -172,16 +173,14 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
           }
         }
 
-        ///[add variables to request]
-        if (hasFunctionSet) {
-          for (var function in method.functionSets) {
+        if (hasEmitSet) {
+          ///[add variables to request]
+          for (var function in method.emitSets) {
             cubit.writeln('${function.name} : ${function.name},');
           }
-        }
-
-        ///[add variables to request]
-        if (hasEmitSet) {
-          for (var function in method.emitSets) {
+        } else if (hasFunctionSet) {
+          ///[add variables to request]
+          for (var function in method.functionSets) {
             cubit.writeln('${function.name} : ${function.name},');
           }
         }
@@ -224,21 +223,23 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
 
         if (hasTextController) cubit.writeln('}');
 
-        ///[create set function]
-        for (var function in method.functionSets) {
-          cubit.writeln(
-              'void set${names.firstUpper(function.name)}(${function.type} value){');
-          cubit.writeln('${function.name} = value;');
-          cubit.writeln('}');
-        }
-
-        ///[create emit set]
-        for (var function in method.emitSets) {
-          cubit.writeln(
-              'void set${names.firstUpper(function.name)}(${function.type} value){');
-          cubit.writeln('${function.name} = value;');
-          cubit.writeln('emit(ContentState());');
-          cubit.writeln('}');
+        if (hasEmitSet) {
+          ///[create set function]
+          for (var function in method.functionSets) {
+            cubit.writeln(
+                'void set${names.firstUpper(function.name)}(${function.type} value){');
+            cubit.writeln('${function.name} = value;');
+            cubit.writeln('}');
+          }
+        } else if (hasFunctionSet) {
+          ///[create emit set]
+          for (var function in method.emitSets) {
+            cubit.writeln(
+                'void set${names.firstUpper(function.name)}(${function.type} value){');
+            cubit.writeln('${function.name} = value;');
+            cubit.writeln('emit(ContentState());');
+            cubit.writeln('}');
+          }
         }
 
         cubit.writeln('}');
