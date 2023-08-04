@@ -23,8 +23,8 @@ class UseCaseTestGenerator
     final visitor = ModelVisitor();
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);
-    final basePath =
-        AddFile.path(buildStep.inputId.path).replaceFirst('lib', 'test');
+    final basePath = AddFile.getDirectories(buildStep.inputId.path)
+        .replaceFirst('lib', 'test');
     final path = "$basePath/domain/use-cases";
 
     final classBuffer = StringBuffer();

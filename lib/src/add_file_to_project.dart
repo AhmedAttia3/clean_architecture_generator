@@ -12,15 +12,53 @@ class AddFile {
     String extension = 'dart',
     bool allowUpdates = false,
   }) {
+    _saveOrUpdate(
+      fileName,
+      content,
+      allowUpdates: allowUpdates,
+      extension: extension,
+    );
+  }
+
+  static String createPath(
+    String fileName, {
+    String extension = 'dart',
+  }) {
     final projectDir = Directory.current;
-    final filePath =
-        '${projectDir.path}/${names.camelCaseToUnderscore(fileName)}.$extension';
-    final dir = Directory(path(filePath));
+    final name = "${names.camelCaseToUnderscore(fileName)}.$extension";
+    return '${projectDir.path}/$name';
+  }
+
+  static String search(String fileName) {
+    final name = names.camelCaseToUnderscore(fileName.split('/').last);
+    return Imports.importName(name) ?? "";
+  }
+
+  static String getDirectories(String fileName) {
+    return (fileName.split('/')..removeLast()).join('/');
+  }
+
+  static void searchAndAddFile(String fileName, String content) {
+    final path = search(fileName);
+    if (path.isEmpty) {
+      save(fileName, content);
+    }
+  }
+
+  static _saveOrUpdate(
+    String path,
+    String content, {
+    bool allowUpdates = false,
+    String extension = 'dart',
+  }) {
+    path = search(path);
+    if (path.isEmpty) path = createPath(path, extension: extension);
+    final dir = Directory(getDirectories(path));
     if (!dir.existsSync()) {
       try {
         dir.createSync();
       } catch (e) {
-        final paths = path(filePath).split('/');
+        final paths = getDirectories(path).split('/');
         String exist = '';
         for (var path in paths) {
           exist += '$path/';
@@ -31,22 +69,9 @@ class AddFile {
       }
     }
 
-    final file = File(filePath);
+    final file = File(path);
     if (!file.existsSync() || allowUpdates) {
       file.writeAsStringSync(content);
     }
-  }
-
-  static void searchAndAddFile(String fileName, String content) {
-    final files = Imports.libFiles;
-    final name = names.camelCaseToUnderscore(fileName.split('/').last);
-    final isContains = files.join('\n').contains(name);
-    if (!isContains) {
-      save(fileName, content);
-    }
-  }
-
-  static String path(String fileName) {
-    return (fileName.split('/')..removeLast()).join('/');
   }
 }

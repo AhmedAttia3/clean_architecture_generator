@@ -22,8 +22,8 @@ class GetCacheUseCaseTestGenerator
     final visitor = ModelVisitor();
     element.visitChildren(visitor);
     final methodFormat = MethodFormat();
-    final basePath =
-        AddFile.path(buildStep.inputId.path).replaceFirst('lib', 'test');
+    final basePath = AddFile.getDirectories(buildStep.inputId.path)
+        .replaceFirst('lib', 'test');
     final path = "$basePath/domain/use-cases";
 
     final classBuffer = StringBuffer();

@@ -9,7 +9,7 @@ import 'package:source_gen/source_gen.dart';
 
 import '../../model_visitor.dart';
 
-class LocalDataSourceTestGenerator
+class RemoteDataSourceTestGenerator
     extends GeneratorForAnnotation<ArchitectureAnnotation> {
   final names = Names();
 

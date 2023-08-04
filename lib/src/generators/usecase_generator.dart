@@ -18,7 +18,7 @@ class UseCaseGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     ConstantReader annotation,
     BuildStep buildStep,
   ) {
-    final basePath = AddFile.path(buildStep.inputId.path);
+    final basePath = AddFile.getDirectories(buildStep.inputId.path);
     final path = "$basePath/domain/use-cases";
     final visitor = ModelVisitor();
     final methodFormat = MethodFormat();

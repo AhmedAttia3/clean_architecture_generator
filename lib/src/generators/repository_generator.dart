@@ -20,9 +20,9 @@ class RepositoryGenerator
     BuildStep buildStep,
   ) {
     final abstractRepoPath =
-        "${AddFile.path(buildStep.inputId.path)}/domain/repository";
+        "${AddFile.getDirectories(buildStep.inputId.path)}/domain/repository";
     final implRepoPath =
-        "${AddFile.path(buildStep.inputId.path)}/data/repository";
+        "${AddFile.getDirectories(buildStep.inputId.path)}/data/repository";
     final visitor = ModelVisitor();
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);

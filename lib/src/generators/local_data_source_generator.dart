@@ -19,7 +19,8 @@ class LocalDataSourceGenerator
     ConstantReader annotation,
     BuildStep buildStep,
   ) {
-    final path = "${AddFile.path(buildStep.inputId.path)}/data/data-source";
+    final path =
+        "${AddFile.getDirectories(buildStep.inputId.path)}/data/data-source";
     final visitor = ModelVisitor();
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);

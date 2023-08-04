@@ -18,7 +18,8 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     ConstantReader annotation,
     BuildStep buildStep,
   ) {
-    final path = "${AddFile.path(buildStep.inputId.path)}/presentation/logic";
+    final path =
+        "${AddFile.getDirectories(buildStep.inputId.path)}/presentation/logic";
     final visitor = ModelVisitor();
 
     final methodFormat = MethodFormat();
