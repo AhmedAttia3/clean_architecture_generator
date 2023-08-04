@@ -7,6 +7,7 @@ import 'src/generators/cache_cubit_generator.dart';
 import 'src/generators/cache_usecase_generator.dart';
 import 'src/generators/cubit_generator.dart';
 import 'src/generators/local_data_source_generator.dart';
+import 'src/generators/optimize/optimize_generator.dart';
 import 'src/generators/repository_generator.dart';
 import 'src/generators/requests_generator.dart';
 import 'src/generators/test/cache_usecase_test_generator.dart';
@@ -20,6 +21,7 @@ export 'src/annotations.dart';
 
 Builder generateMVVM(BuilderOptions options) => SharedPartBuilder(
       [
+        OptimizeGenerator(),
         RequestsGenerator(),
         RepositoryGenerator(),
         LocalDataSourceGenerator(),

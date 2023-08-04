@@ -1,8 +1,12 @@
 import 'dart:io';
 
 import 'package:clean_architecture_generator/formatter/names.dart';
+import 'package:clean_architecture_generator/src/read_imports_file.dart';
 
 class AddFile {
+  static Imports imports = Imports();
+  static Names names = Names();
+
   static void save(
     String fileName,
     String content, {
@@ -10,7 +14,6 @@ class AddFile {
     bool allowUpdates = false,
   }) {
     final projectDir = Directory.current;
-    final names = Names();
     final filePath =
         '${projectDir.path}/${names.camelCaseToUnderscore(fileName)}.$extension';
     final dir = Directory(path(filePath));
@@ -32,6 +35,13 @@ class AddFile {
     final file = File(filePath);
     if (!file.existsSync() || allowUpdates) {
       file.writeAsStringSync(content);
+    }
+  }
+
+  static void searchAndAddFile(String fileName, String content) {
+    if (!Imports.libFiles
+        .contains(names.camelCaseToUnderscore(fileName.split('/').last))) {
+      save(fileName, content);
     }
   }
 

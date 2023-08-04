@@ -22,6 +22,7 @@ class Imports {
   static String create({
     required String filePath,
     List<String> imports = const [],
+    List<String> libs = const [],
     bool hasCache = false,
     bool isTest = false,
     bool isCubit = false,
@@ -90,6 +91,10 @@ class Imports {
       final res = names.camelCaseToUnderscore(path);
       final import = importName('$res.dart');
       if (import != null) data += import;
+    }
+    for (var path in libs) {
+      if (path.isEmpty) continue;
+      data += path;
     }
     return data;
   }
