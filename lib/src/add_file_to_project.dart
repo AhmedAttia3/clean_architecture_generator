@@ -39,10 +39,10 @@ class AddFile {
 
   static void searchAndAddFile(String fileName, String content) {
     final files = Imports.libFiles;
-    content += files.join('\n');
-    final name =
-        '${names.camelCaseToUnderscore(fileName.split('/').last)}.dart';
+    content += files.join(' ');
+    final name = names.camelCaseToUnderscore(fileName.split('/').last);
     final isContains = files.contains(name);
+    content += name;
     if (!isContains) {
       content += '$isContains';
       save(fileName, content);
