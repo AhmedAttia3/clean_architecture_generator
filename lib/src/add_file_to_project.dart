@@ -38,12 +38,13 @@ class AddFile {
   }
 
   static void searchAndAddFile(String fileName, String content) {
+    final files = Imports.libFiles;
+    content += files.join('\n');
     final name =
         '${names.camelCaseToUnderscore(fileName.split('/').last)}.dart';
-    final isContains = Imports.libFiles.contains(name);
+    final isContains = files.contains(name);
     if (!isContains) {
       content += '$isContains';
-      content += Imports.libFiles.join('\n');
       save(fileName, content);
     }
   }
