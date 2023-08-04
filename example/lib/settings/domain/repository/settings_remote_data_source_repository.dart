@@ -30,8 +30,10 @@ abstract class SettingsRemoteDataSourceRepository {
 
   Either<Failure, SettingsModel> getCacheSettings();
 
-  Future<Either<Failure, BaseResponse<dynamic>>> getApp({
+  Future<Either<Failure, BaseResponse<List<SettingsModel>?>>> getApp({
     required int page,
     required int limit,
   });
+
+  Future<Either<Failure, BaseResponse<int>>> getAA();
 }

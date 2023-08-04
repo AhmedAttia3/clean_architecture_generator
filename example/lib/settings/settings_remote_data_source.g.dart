@@ -128,7 +128,7 @@ class _SettingsRemoteDataSource implements SettingsRemoteDataSource {
   }
 
   @override
-  Future<BaseResponse<dynamic>> getApp({
+  Future<BaseResponse<List<SettingsModel>?>> getApp({
     required int page,
     required int limit,
   }) async {
@@ -140,7 +140,7 @@ class _SettingsRemoteDataSource implements SettingsRemoteDataSource {
     final _headers = <String, dynamic>{};
     final Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<BaseResponse<dynamic>>(Options(
+        _setStreamType<BaseResponse<List<SettingsModel>>>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -156,9 +156,44 @@ class _SettingsRemoteDataSource implements SettingsRemoteDataSource {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = BaseResponse<dynamic>.fromJson(
+    final value = BaseResponse<List<SettingsModel>>.fromJson(
       _result.data!,
-      (json) => json as dynamic,
+      (json) => json is List<dynamic>
+          ? json
+              .map<SettingsModel>(
+                  (i) => SettingsModel.fromJson(i as Map<String, dynamic>))
+              .toList()
+          : List.empty(),
+    );
+    return value;
+  }
+
+  @override
+  Future<BaseResponse<int>> getAA() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<BaseResponse<int>>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              'getApp',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    final value = BaseResponse<int>.fromJson(
+      _result.data!,
+      (json) => json as int,
     );
     return value;
   }

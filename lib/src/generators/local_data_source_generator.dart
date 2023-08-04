@@ -98,7 +98,7 @@ class LocalDataSourceGenerator
         dataSourceImpl.writeln(
             'Future<Either<Failure, Unit>> cache$useCaseName({required $responseDataType data,}) async {');
         dataSourceImpl.writeln('try {');
-        final cachedType = _cacheType(responseDataType);
+        final cachedType = names.varType(responseDataType);
         final dynamicType = cachedType == 'dynamic';
         if (dynamicType) {
           if (responseDataType.contains('List')) {
@@ -159,17 +159,6 @@ class LocalDataSourceGenerator
     dataSource.writeln(dataSourceImpl);
 
     return dataSource.toString();
-  }
-
-  String _cacheType(dynamic type) {
-    if (type.runtimeType is int ||
-        type.runtimeType is String ||
-        type.runtimeType is bool ||
-        type.runtimeType is double ||
-        type.runtimeType is Map) {
-      return type.toString();
-    }
-    return 'dynamic';
   }
 
   String initVaType(String type) {

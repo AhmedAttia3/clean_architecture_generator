@@ -30,6 +30,7 @@ class CacheUseCaseTestGenerator
 
     for (var method in visitor.useCases) {
       final type = methodFormat.returnType(method.type);
+      final varType = names.varType(type);
       final responseType = names.responseDataType(type);
       final modelType = names.baseModelName(type);
       final methodName =
@@ -67,7 +68,15 @@ class CacheUseCaseTestGenerator
         final decode =
             "jsonDecode(File('test/expected/expected_$model.json').readAsStringSync())";
 
-        if (responseType.contains('List')) {
+        if (varType == 'int' ||
+            varType == 'double' ||
+            varType == 'num' ||
+            varType == 'String' ||
+            varType == 'Map' ||
+            varType == 'bool') {
+          classBuffer
+              .writeln("success = ${methodFormat.initData(varType, 'name')};");
+        } else if (responseType.contains('List')) {
           usecase.writeln("data = List.generate(");
           usecase.writeln("2,");
           usecase.writeln("(index) =>");

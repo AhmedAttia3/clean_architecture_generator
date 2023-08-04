@@ -27,6 +27,17 @@ class Names {
         .replaceFirst('?', '');
   }
 
+  String varType(dynamic type) {
+    if (type.runtimeType is int ||
+        type.runtimeType is String ||
+        type.runtimeType is bool ||
+        type.runtimeType is double ||
+        type.runtimeType is Map) {
+      return type.toString();
+    }
+    return 'dynamic';
+  }
+
   String responseDataType(String value) {
     return value
         .replaceFirst('BaseResponse<', "")

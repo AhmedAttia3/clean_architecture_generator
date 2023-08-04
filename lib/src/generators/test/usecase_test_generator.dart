@@ -36,6 +36,7 @@ class UseCaseTestGenerator
       final useCaseName = '${names.firstLower(method.name)}UseCase';
       final requestName = '${names.firstUpper(method.name)}Request';
       final type = methodFormat.returnType(method.type);
+      final varType = names.varType(type);
       final modelType = names.baseModelName(type);
       final fileName = "${names.camelCaseToUnderscore(useCaseType)}_test";
       final usecase = StringBuffer();
@@ -66,7 +67,15 @@ class UseCaseTestGenerator
       usecase.writeln("success = $type(");
       usecase.writeln("message: 'message',");
       usecase.writeln("success: true,");
-      if (type.contains('BaseResponse<dynamic>')) {
+      if (varType == 'int' ||
+          varType == 'double' ||
+          varType == 'num' ||
+          varType == 'String' ||
+          varType == 'Map' ||
+          varType == 'bool') {
+        classBuffer
+            .writeln("data: ${methodFormat.initData(varType, 'name')},);");
+      } else if (type.contains('BaseResponse<dynamic>')) {
         usecase.writeln("data: null,);");
       } else {
         final model = names.camelCaseToUnderscore(names.baseModelName(type));

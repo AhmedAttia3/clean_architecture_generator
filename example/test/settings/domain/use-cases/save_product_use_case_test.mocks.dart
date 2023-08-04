@@ -265,7 +265,9 @@ class MockSettingsRemoteDataSourceRepository extends _i1.Mock
         ),
       ) as _i2.Either<_i5.Failure, _i8.SettingsModel>);
   @override
-  _i4.Future<_i2.Either<_i5.Failure, _i6.BaseResponse<dynamic>>> getApp({
+  _i4.Future<
+      _i2
+      .Either<_i5.Failure, _i6.BaseResponse<List<_i8.SettingsModel>?>>> getApp({
     required int? page,
     required int? limit,
   }) =>
@@ -278,9 +280,11 @@ class MockSettingsRemoteDataSourceRepository extends _i1.Mock
             #limit: limit,
           },
         ),
-        returnValue: _i4
-            .Future<_i2.Either<_i5.Failure, _i6.BaseResponse<dynamic>>>.value(
-            _FakeEither_0<_i5.Failure, _i6.BaseResponse<dynamic>>(
+        returnValue: _i4.Future<
+                _i2.Either<_i5.Failure,
+                    _i6.BaseResponse<List<_i8.SettingsModel>?>>>.value(
+            _FakeEither_0<_i5.Failure,
+                _i6.BaseResponse<List<_i8.SettingsModel>?>>(
           this,
           Invocation.method(
             #getApp,
@@ -291,9 +295,11 @@ class MockSettingsRemoteDataSourceRepository extends _i1.Mock
             },
           ),
         )),
-        returnValueForMissingStub: _i4
-            .Future<_i2.Either<_i5.Failure, _i6.BaseResponse<dynamic>>>.value(
-            _FakeEither_0<_i5.Failure, _i6.BaseResponse<dynamic>>(
+        returnValueForMissingStub: _i4.Future<
+                _i2.Either<_i5.Failure,
+                    _i6.BaseResponse<List<_i8.SettingsModel>?>>>.value(
+            _FakeEither_0<_i5.Failure,
+                _i6.BaseResponse<List<_i8.SettingsModel>?>>(
           this,
           Invocation.method(
             #getApp,
@@ -304,5 +310,32 @@ class MockSettingsRemoteDataSourceRepository extends _i1.Mock
             },
           ),
         )),
-      ) as _i4.Future<_i2.Either<_i5.Failure, _i6.BaseResponse<dynamic>>>);
+      ) as _i4.Future<
+          _i2.Either<_i5.Failure, _i6.BaseResponse<List<_i8.SettingsModel>?>>>);
+  @override
+  _i4.Future<_i2.Either<_i5.Failure, _i6.BaseResponse<int>>> getAA() =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getAA,
+          [],
+        ),
+        returnValue:
+            _i4.Future<_i2.Either<_i5.Failure, _i6.BaseResponse<int>>>.value(
+                _FakeEither_0<_i5.Failure, _i6.BaseResponse<int>>(
+          this,
+          Invocation.method(
+            #getAA,
+            [],
+          ),
+        )),
+        returnValueForMissingStub:
+            _i4.Future<_i2.Either<_i5.Failure, _i6.BaseResponse<int>>>.value(
+                _FakeEither_0<_i5.Failure, _i6.BaseResponse<int>>(
+          this,
+          Invocation.method(
+            #getAA,
+            [],
+          ),
+        )),
+      ) as _i4.Future<_i2.Either<_i5.Failure, _i6.BaseResponse<int>>>);
 }

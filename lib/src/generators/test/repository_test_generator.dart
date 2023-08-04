@@ -103,12 +103,21 @@ class RepositoryTestGenerator
       final methodName = method.name;
       final type = methodFormat.returnType(method.type);
       final modelType = names.baseModelName(type);
+      final varType = names.varType(type);
 
       classBuffer.writeln("///[${names.firstUpper(methodName)}]");
       classBuffer.writeln('${methodName}Response = $type(');
       classBuffer.writeln("message: 'message',");
       classBuffer.writeln("success: true,");
-      if (type.contains('BaseResponse<dynamic>')) {
+      if (varType == 'int' ||
+          varType == 'double' ||
+          varType == 'num' ||
+          varType == 'String' ||
+          varType == 'Map' ||
+          varType == 'bool') {
+        classBuffer
+            .writeln("data: ${methodFormat.initData(varType, 'name')},);");
+      } else if (type.contains('BaseResponse<dynamic>')) {
         classBuffer.writeln("data: null,);");
       } else {
         final model = names.camelCaseToUnderscore(names.baseModelName(type));

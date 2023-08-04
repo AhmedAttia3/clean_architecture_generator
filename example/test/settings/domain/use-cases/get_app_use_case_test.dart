@@ -21,16 +21,20 @@ MockSpec<SettingsRemoteDataSourceRepository>(),
 void main() {
 late GetAppUseCase getAppUseCase;
 late SettingsRemoteDataSourceRepository repository;
-late BaseResponse<dynamic> success;
+late BaseResponse<List<SettingsModel>?> success;
 late Failure failure;
 setUp(() {
 repository = MockSettingsRemoteDataSourceRepository();
 getAppUseCase = GetAppUseCase(repository);
 failure = Failure(1, 'message');
-success = BaseResponse<dynamic>(
+success = BaseResponse<List<SettingsModel>?>(
 message: 'message',
 success: true,
-data: null,);
+data: List.generate(
+2,
+(index) =>
+SettingsModel.fromJson(jsonDecode(File('test/expected/expected_settings_model.json').readAsStringSync())),
+));
 });
 
 webService() => repository.getApp(page: 2,limit: 2,);
