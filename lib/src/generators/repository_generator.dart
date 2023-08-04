@@ -19,13 +19,12 @@ class RepositoryGenerator
     ConstantReader annotation,
     BuildStep buildStep,
   ) {
-    final abstractRepoPath =
-        "${AddFile.getDirectories(buildStep.inputId.path)}/domain/repository";
-    final implRepoPath =
-        "${AddFile.getDirectories(buildStep.inputId.path)}/data/repository";
     final visitor = ModelVisitor();
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);
+    final path = AddFile.getDirectories(buildStep.inputId.path);
+    final abstractRepoPath = "$path/domain/repository";
+    final implRepoPath = "$path/data/repository";
 
     final repository = StringBuffer();
     final clientService = names.firstLower(visitor.className);

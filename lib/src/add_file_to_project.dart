@@ -31,7 +31,7 @@ class AddFile {
 
   static String? search(String fileName) {
     final name = names.camelCaseToUnderscore(fileName.split('/').last);
-    return Imports.importPath(name);
+    return Imports.importPath('$name.dart');
   }
 
   static String getDirectories(String fileName) {

@@ -37,8 +37,11 @@ abstract class SettingsRemoteDataSource {
 
   ///Prop [paging]
   @GET("getApp")
-  Future<BaseResponse> getApp({
+  Future<BaseResponse<List<SettingsModel>?>> getApp({
     @Query('page') required int page,
     @Query('limit') required int limit,
   });
+
+  @GET("getApp")
+  Future<BaseResponse<int>> getAA();
 }

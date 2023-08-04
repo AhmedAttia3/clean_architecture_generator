@@ -123,7 +123,11 @@ class UseCaseTestGenerator
       usecase.writeln("});");
       usecase.writeln("}");
 
-      AddFile.save("$path/${useCaseType}Test", usecase.toString());
+      AddFile.save(
+        "$path/${useCaseType}Test",
+        usecase.toString(),
+        allowUpdates: true,
+      );
       classBuffer.writeln(usecase);
     }
     return classBuffer.toString();

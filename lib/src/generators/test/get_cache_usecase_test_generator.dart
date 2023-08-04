@@ -98,7 +98,11 @@ class GetCacheUseCaseTestGenerator
         usecase.writeln("});");
         usecase.writeln("}");
 
-        AddFile.save("$path/$fileName", usecase.toString());
+        AddFile.save(
+          "$path/$fileName",
+          usecase.toString(),
+          allowUpdates: true,
+        );
         classBuffer.writeln(usecase);
       }
     }
