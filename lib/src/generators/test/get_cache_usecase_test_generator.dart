@@ -73,7 +73,7 @@ class GetCacheUseCaseTestGenerator
             varType == 'String' ||
             varType == 'Map' ||
             varType == 'bool') {
-          classBuffer
+          usecase
               .writeln("success = ${methodFormat.initData(varType, 'name')};");
         } else if (responseType.contains('List')) {
           usecase.writeln("success = List.generate(");

@@ -91,12 +91,12 @@ data: List.generate(
 SettingsModel.fromJson(fromJson('expected_settings_model')),
 ));
 ///int
-///dynamic
+///int
 ///[GetAA]
 getAAResponse = BaseResponse<int>(
 message: 'message',
 success: true,
-data: int.fromJson(fromJson('expected_int')),);
+data: 2,);
 });
 saveProduct() => dataSource.saveProduct(productId: "productId",type: "type",);
 getSavedProducts() => dataSource.getSavedProducts(page: 2,limit: 2,);

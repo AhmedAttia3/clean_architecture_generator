@@ -73,8 +73,7 @@ class UseCaseTestGenerator
           varType == 'String' ||
           varType == 'Map' ||
           varType == 'bool') {
-        classBuffer
-            .writeln("data: ${methodFormat.initData(varType, 'name')},);");
+        usecase.writeln("data: ${methodFormat.initData(varType, 'name')},);");
       } else if (type.contains('BaseResponse<dynamic>')) {
         usecase.writeln("data: null,);");
       } else {
