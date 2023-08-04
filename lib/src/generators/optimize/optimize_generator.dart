@@ -37,7 +37,6 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     kPrint.writeln("} else {");
     kPrint.writeln("_pr(data.toString());");
     kPrint.writeln("}");
-    kPrint.writeln("}");
     kPrint.writeln("}\n\n");
     kPrint.writeln("void _pr(String data) {");
     kPrint.writeln("if (data.length > 500) {");
@@ -45,7 +44,7 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     kPrint.writeln("} else {");
     kPrint.writeln("print(data);");
     kPrint.writeln("}");
-    kPrint.writeln("log(StackTrace.current.toString().split('\n')[2]);");
+    kPrint.writeln("log(StackTrace.current.toString().split('\\n')[2]);");
     kPrint.writeln("}");
 
     AddFile.save('$path/print', kPrint.toString());
@@ -74,6 +73,29 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     network.writeln("}");
 
     AddFile.save('$path/network', network.toString());
+
+    ///[BaseUseCase]
+    final baseUseCase = StringBuffer();
+    baseUseCase.writeln('///[BaseUseCase]');
+    baseUseCase.writeln('///[Implementation]');
+    baseUseCase.writeln("import 'package:eitherx/eitherx.dart';");
+    baseUseCase.writeln("abstract class BaseUseCase<RES, POS> {");
+    baseUseCase.writeln("RES execute({POS? request});");
+    baseUseCase.writeln("}");
+
+    AddFile.save('$path/base_use_case', baseUseCase.toString());
+
+    ///[Failure]
+    final failure = StringBuffer();
+    failure.writeln('///[Failure]');
+    failure.writeln('///[Implementation]');
+    failure.writeln("class Failure {");
+    failure.writeln("int code; // 200, 201, 400, 303..500 and so on");
+    failure.writeln("String message; // error , success\n");
+    failure.writeln("Failure(this.code, this.message);");
+    failure.writeln("}");
+
+    AddFile.save('$path/failure', failure.toString());
 
     ///[SafeApi]
     final safeApi = StringBuffer();
@@ -112,29 +134,6 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
 
     AddFile.save('$path/safe_request_handler', safeApi.toString());
 
-    ///[BaseUseCase]
-    final baseUseCase = StringBuffer();
-    baseUseCase.writeln('///[BaseUseCase]');
-    baseUseCase.writeln('///[Implementation]');
-    baseUseCase.writeln("import 'package:eitherx/eitherx.dart';");
-    baseUseCase.writeln("abstract class BaseUseCase<RES, POS> {");
-    baseUseCase.writeln("RES execute({POS? request});");
-    baseUseCase.writeln("}");
-
-    AddFile.save('$path/base_use_case', baseUseCase.toString());
-
-    ///[Failure]
-    final failure = StringBuffer();
-    failure.writeln('///[Failure]');
-    failure.writeln('///[Implementation]');
-    failure.writeln("class Failure {");
-    failure.writeln("int code; // 200, 201, 400, 303..500 and so on");
-    failure.writeln("String message; // error , success\n");
-    failure.writeln("Failure(this.code, this.message);");
-    failure.writeln("}");
-
-    AddFile.save('$path/failure', failure.toString());
-
     ///[StateRendererType]
     final stateRenderer = StringBuffer();
     stateRenderer.writeln("enum StateRendererType {");
@@ -155,9 +154,8 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     final states = StringBuffer();
     states.writeln(Imports.create(
       filePath: buildStep.inputId.path,
-      imports: [
-        "StateRenderer",
-      ],
+      imports: ["StateRenderer"],
+      libs: ["import 'package:equatable/equatable.dart';"],
     ));
     states.writeln("abstract class FlowState extends Equatable {");
     states.writeln("StateRendererType getStateRendererType();");
