@@ -4,7 +4,6 @@ import 'package:clean_architecture_generator/formatter/names.dart';
 import 'package:clean_architecture_generator/src/read_imports_file.dart';
 
 class AddFile {
-  static Imports imports = Imports();
   static Names names = Names();
 
   static void save(
@@ -41,7 +40,7 @@ class AddFile {
   static void searchAndAddFile(String fileName, String content) {
     final name =
         '${names.camelCaseToUnderscore(fileName.split('/').last)}.dart';
-    if (!Imports.libFiles.contains(name)) {
+    if (!Imports.filesInDir('lib').contains(name)) {
       save(fileName, content);
     }
   }
