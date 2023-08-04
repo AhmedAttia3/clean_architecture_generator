@@ -2,7 +2,7 @@
 
 import 'package:clean_architecture_generator/clean_architecture_generator.dart';
 import 'package:dio/dio.dart';
-import 'package:example/core/base_response.dart';
+import 'package:example/settings/models/base_response.dart';
 import 'package:example/settings/models/product_model.dart';
 import 'package:example/settings/models/settings_model.dart';
 import 'package:retrofit/retrofit.dart';

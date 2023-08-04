@@ -47,7 +47,7 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     kPrint.writeln("log(StackTrace.current.toString().split('\\n')[2]);");
     kPrint.writeln("}");
 
-    AddFile.save('$path/print', kPrint.toString());
+    AddFile.searchAndAddFile('$path/print', kPrint.toString());
 
     ///[Network]
     final network = StringBuffer();
@@ -72,7 +72,7 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         "Future<bool> get isConnected => internetConnectionChecker.hasConnection;");
     network.writeln("}");
 
-    AddFile.save('$path/network', network.toString());
+    AddFile.searchAndAddFile('$path/network', network.toString());
 
     ///[BaseUseCase]
     final baseUseCase = StringBuffer();
@@ -83,7 +83,7 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     baseUseCase.writeln("RES execute({POS? request});");
     baseUseCase.writeln("}");
 
-    AddFile.save('$path/base_use_case', baseUseCase.toString());
+    AddFile.searchAndAddFile('$path/base_use_case', baseUseCase.toString());
 
     ///[Failure]
     final failure = StringBuffer();
@@ -95,7 +95,7 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     failure.writeln("Failure(this.code, this.message);");
     failure.writeln("}");
 
-    AddFile.save('$path/failure', failure.toString());
+    AddFile.searchAndAddFile('$path/failure', failure.toString());
 
     ///[SafeApi]
     final safeApi = StringBuffer();
@@ -132,7 +132,7 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     safeApi.writeln('}');
     safeApi.writeln('}');
 
-    AddFile.save('$path/safe_request_handler', safeApi.toString());
+    AddFile.searchAndAddFile('$path/safe_request_handler', safeApi.toString());
 
     ///[StateRendererType]
     final stateRenderer = StringBuffer();
