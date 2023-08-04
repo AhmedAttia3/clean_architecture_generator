@@ -20,7 +20,7 @@ class CacheUseCaseGenerator
     BuildStep buildStep,
   ) {
     final basePath = AddFile.path(buildStep.inputId.path);
-    final path = "$basePath/repository/use-cases";
+    final path = "$basePath/domain/use-cases";
     final visitor = ModelVisitor();
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);

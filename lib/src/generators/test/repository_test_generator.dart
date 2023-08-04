@@ -22,7 +22,7 @@ class RepositoryTestGenerator
     const expectedPath = "test";
     final basePath =
         AddFile.path(buildStep.inputId.path).replaceFirst('lib', 'test');
-    final path = "$basePath/repository/data-source";
+    final path = "$basePath/domain/repository";
     final visitor = ModelVisitor();
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);

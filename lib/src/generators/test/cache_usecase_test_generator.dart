@@ -24,7 +24,7 @@ class CacheUseCaseTestGenerator
     element.visitChildren(visitor);
     final basePath =
         AddFile.path(buildStep.inputId.path).replaceFirst('lib', 'test');
-    final path = "$basePath/repository/use-cases";
+    final path = "$basePath/domain/use-cases";
 
     final classBuffer = StringBuffer();
 

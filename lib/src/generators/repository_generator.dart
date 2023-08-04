@@ -19,8 +19,10 @@ class RepositoryGenerator
     ConstantReader annotation,
     BuildStep buildStep,
   ) {
-    final path =
-        "${AddFile.path(buildStep.inputId.path)}/repository/data-source";
+    final abstractRepoPath =
+        "${AddFile.path(buildStep.inputId.path)}/data/repository";
+    final implRepoPath =
+        "${AddFile.path(buildStep.inputId.path)}/domain/repository";
     final visitor = ModelVisitor();
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);
@@ -59,7 +61,7 @@ class RepositoryGenerator
     repository.writeln('}\n');
 
     AddFile.save(
-      '$path/$repositoryName',
+      '$abstractRepoPath/$repositoryName',
       repository.toString(),
       allowUpdates: true,
     );
@@ -170,7 +172,7 @@ class RepositoryGenerator
     }
     repositoryImpl.writeln('}\n');
     AddFile.save(
-      '$path/${repositoryName}Impl',
+      '$implRepoPath/${repositoryName}Impl',
       repositoryImpl.toString(),
       allowUpdates: true,
     );
