@@ -57,6 +57,8 @@ class MethodFormat {
       return true;
     } else if (type == 'num') {
       return 2.0;
+    } else if (type == 'List') {
+      return [];
     }
   }
 }

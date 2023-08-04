@@ -35,9 +35,9 @@ class GetCacheUseCaseTestGenerator
       final repositoryName = '${names.firstUpper(visitor.className)}Repository';
       final useCaseType = names.firstUpper(useCaseName);
       final type = methodFormat.returnType(method.type);
-      final varType = names.varType(type);
-      final responseType = names.responseDataType(type);
       final modelType = names.baseModelName(type);
+      final varType = names.varType(modelType);
+      final responseType = names.responseDataType(type);
       final fileName = "${names.camelCaseToUnderscore(useCaseType)}_test";
       final usecase = StringBuffer();
       if (method.isCache) {

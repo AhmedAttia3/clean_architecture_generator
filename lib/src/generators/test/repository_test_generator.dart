@@ -103,7 +103,7 @@ class RepositoryTestGenerator
       final methodName = method.name;
       final type = methodFormat.returnType(method.type);
       final modelType = names.baseModelName(type);
-      final varType = names.varType(type);
+      final varType = names.varType(modelType);
 
       classBuffer.writeln("///[${names.firstUpper(methodName)}]");
       classBuffer.writeln('${methodName}Response = $type(');

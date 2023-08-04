@@ -32,6 +32,7 @@ class Names {
         type.runtimeType is String ||
         type.runtimeType is bool ||
         type.runtimeType is double ||
+        type.runtimeType is List ||
         type.runtimeType is Map) {
       return type.toString();
     }

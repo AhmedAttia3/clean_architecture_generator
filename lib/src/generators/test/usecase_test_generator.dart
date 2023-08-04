@@ -36,8 +36,8 @@ class UseCaseTestGenerator
       final useCaseName = '${names.firstLower(method.name)}UseCase';
       final requestName = '${names.firstUpper(method.name)}Request';
       final type = methodFormat.returnType(method.type);
-      final varType = names.varType(type);
       final modelType = names.baseModelName(type);
+      final varType = names.varType(modelType);
       final fileName = "${names.camelCaseToUnderscore(useCaseType)}_test";
       final usecase = StringBuffer();
 

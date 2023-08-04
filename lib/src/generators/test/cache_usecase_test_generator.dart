@@ -30,9 +30,9 @@ class CacheUseCaseTestGenerator
 
     for (var method in visitor.useCases) {
       final type = methodFormat.returnType(method.type);
-      final varType = names.varType(type);
-      final responseType = names.responseDataType(type);
       final modelType = names.baseModelName(type);
+      final varType = names.varType(modelType);
+      final responseType = names.responseDataType(type);
       final methodName =
           "cache${names.firstUpper(method.name)}".replaceFirst('Get', '');
       final useCaseName = '${methodName}UseCase';
