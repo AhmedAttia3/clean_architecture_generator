@@ -260,7 +260,7 @@ class RepositoryTestGenerator
           classBuffer.writeln("///[$cacheMethodName Failure]");
           classBuffer.writeln("test('$cacheMethodName', () async {");
           classBuffer.writeln(
-              "when($cacheMethodName()).thenAnswer((realInvocation) async => const Left(failure));");
+              "when($cacheMethodName()).thenAnswer((realInvocation) async => Left(failure));");
           classBuffer.writeln(
               "final res = await repository.$cacheMethodName(data:$dataName);");
           classBuffer.writeln("expect(res.leftOrNull(), isA<Failure>());");
