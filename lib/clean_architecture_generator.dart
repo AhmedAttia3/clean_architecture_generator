@@ -6,6 +6,7 @@ import 'package:source_gen/source_gen.dart';
 import 'src/generators/cache_cubit_generator.dart';
 import 'src/generators/cache_usecase_generator.dart';
 import 'src/generators/cubit_generator.dart';
+import 'src/generators/local_data_source_generator.dart';
 import 'src/generators/repository_generator.dart';
 import 'src/generators/requests_generator.dart';
 import 'src/generators/test/cache_usecase_test_generator.dart';
@@ -21,6 +22,7 @@ Builder generateMVVM(BuilderOptions options) => SharedPartBuilder(
       [
         RequestsGenerator(),
         RepositoryGenerator(),
+        LocalDataSourceGenerator(),
         UseCaseGenerator(),
         CacheUseCaseGenerator(),
         CubitGenerator(),

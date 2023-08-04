@@ -41,4 +41,14 @@ class Names {
             regex, (match) => '${match.group(1)}_${match.group(2)}')
         .toLowerCase();
   }
+
+  String localDataSourceType(String value) {
+    String type = firstUpper(value);
+    if (type.contains('RemoteDataSource')) {
+      type = type.replaceFirst('RemoteDataSource', "LocalDataSource");
+    } else {
+      type = "${type}LocalDataSource";
+    }
+    return type;
+  }
 }

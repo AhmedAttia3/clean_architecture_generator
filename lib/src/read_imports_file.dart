@@ -27,6 +27,7 @@ class Imports {
     bool isCubit = false,
     bool isPaging = false,
     bool isRepo = false,
+    bool isLocalDataSource = false,
     bool isUseCase = false,
   }) {
     final names = Names();
@@ -76,6 +77,10 @@ class Imports {
       data += "import 'dart:convert';";
       final safeRequest = importName('safe_request_handler.dart');
       if (safeRequest != null) data += safeRequest;
+    }
+    if (isLocalDataSource) {
+      data += "import 'dart:convert';";
+      data += "import 'package:shared_preferences/shared_preferences.dart';\n";
     }
     if (hasCache) {
       data += "import 'package:shared_preferences/shared_preferences.dart';\n";

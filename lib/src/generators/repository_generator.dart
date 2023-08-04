@@ -20,9 +20,9 @@ class RepositoryGenerator
     BuildStep buildStep,
   ) {
     final abstractRepoPath =
-        "${AddFile.path(buildStep.inputId.path)}/data/repository";
-    final implRepoPath =
         "${AddFile.path(buildStep.inputId.path)}/domain/repository";
+    final implRepoPath =
+        "${AddFile.path(buildStep.inputId.path)}/data/repository";
     final visitor = ModelVisitor();
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);
@@ -65,11 +65,14 @@ class RepositoryGenerator
       repository.toString(),
       allowUpdates: true,
     );
+
     final repositoryImpl = StringBuffer();
+    final localDataSourceType = names.localDataSourceType(visitor.className);
+    final localDataSourceName = names.firstLower(localDataSourceType);
 
     ///[Imports]
     repositoryImpl.writeln(Imports.create(
-      imports: [repositoryName, clientService],
+      imports: [repositoryName, clientService, localDataSourceType],
       hasCache: hasCache,
       filePath: buildStep.inputId.path,
       isRepo: true,
@@ -84,7 +87,8 @@ class RepositoryGenerator
 
     ///[add cache]
     if (hasCache) {
-      repositoryImpl.writeln('final SharedPreferences sharedPreferences;');
+      repositoryImpl
+          .writeln('final $localDataSourceType $localDataSourceName;');
     }
     repositoryImpl.writeln('const $repositoryNameImplement(');
     repositoryImpl.writeln('this.$clientService,');
@@ -92,7 +96,7 @@ class RepositoryGenerator
 
     ///[add cache]
     if (hasCache) {
-      repositoryImpl.writeln('this.sharedPreferences,');
+      repositoryImpl.writeln('this.$localDataSourceName,');
     }
     repositoryImpl.writeln(');\n');
     for (var method in visitor.useCases) {
@@ -113,60 +117,21 @@ class RepositoryGenerator
       if (method.isCache) {
         final useCaseName =
             names.firstUpper(method.name).replaceFirst('Get', '');
-        final key = names.firstLower(useCaseName);
-        repositoryImpl.writeln('final _$key = "${key.toUpperCase()}";');
 
         ///[cache]
         repositoryImpl.writeln('@override');
         repositoryImpl.writeln(
             'Future<Either<Failure, Unit>> cache$useCaseName({required $responseDataType data,}) async {');
-        repositoryImpl.writeln('try {');
-        final cachedType = _cacheType(responseDataType);
-        final dynamicType = cachedType == 'dynamic';
-        if (dynamicType) {
-          if (responseDataType.contains('List')) {
-            repositoryImpl.writeln(
-                'await sharedPreferences.setString(_$key,jsonEncode(data.map((item)=> item.toJson()).toList()));');
-          } else {
-            repositoryImpl.writeln(
-                'await sharedPreferences.setString(_$key, jsonEncode(data.toJson()));');
-          }
-        } else {
-          repositoryImpl.writeln(
-              'await sharedPreferences.set${names.firstUpper(cachedType)}(_$key, data);');
-        }
-        repositoryImpl.writeln('return const Right(unit);');
-        repositoryImpl.writeln('} catch (e) {');
-        repositoryImpl.writeln("return Left(Failure(12, 'Cash failure'));");
-        repositoryImpl.writeln('}');
+        repositoryImpl.writeln(
+            'return await $localDataSourceName.cache$useCaseName(data: data);');
         repositoryImpl.writeln('}\n');
 
         ///[get]
         repositoryImpl.writeln('@override');
         repositoryImpl.writeln(
             'Either<Failure, $responseDataType> getCache$useCaseName(){');
-        repositoryImpl.writeln('try {');
-        if (dynamicType) {
-          repositoryImpl.writeln(
-              "final res = sharedPreferences.getString(_$key) ?? '{}';");
-          if (responseDataType.contains('List')) {
-            repositoryImpl.writeln("$responseDataType data = [];");
-            repositoryImpl.writeln("for (var item in jsonDecode(res)) {");
-            repositoryImpl.writeln("data.add($modelName.fromJson(item));");
-            repositoryImpl.writeln("}");
-            repositoryImpl.writeln("return Right(data);");
-          } else {
-            repositoryImpl
-                .writeln("return Right($modelName.fromJson(jsonDecode(res)));");
-          }
-        } else {
-          repositoryImpl.writeln(
-              "final res = sharedPreferences.get${names.firstUpper(cachedType)}(_$key) ?? '';");
-          repositoryImpl.writeln('return Right(res);');
-        }
-        repositoryImpl.writeln('} catch (e) {');
-        repositoryImpl.writeln("return Left(Failure(12, 'Cash failure'));");
-        repositoryImpl.writeln('}');
+        repositoryImpl
+            .writeln('return $localDataSourceName.getCache$useCaseName();');
         repositoryImpl.writeln('}\n');
       }
     }
@@ -178,15 +143,5 @@ class RepositoryGenerator
     );
     repository.writeln(repositoryImpl);
     return repository.toString();
-  }
-
-  String _cacheType(dynamic type) {
-    if (type.runtimeType is int ||
-        type.runtimeType is String ||
-        type.runtimeType is bool ||
-        type.runtimeType is double) {
-      return type.toString();
-    }
-    return 'dynamic';
   }
 }
