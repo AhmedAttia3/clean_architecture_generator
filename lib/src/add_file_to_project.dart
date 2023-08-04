@@ -42,6 +42,7 @@ class AddFile {
         '${names.camelCaseToUnderscore(fileName.split('/').last)}.dart';
     if (!Imports.libFiles.contains(name)) {
       content += '$name';
+      content += Imports.libFiles.join('\n');
       save(fileName, content);
     }
   }
