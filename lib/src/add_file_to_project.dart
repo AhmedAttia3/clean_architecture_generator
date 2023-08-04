@@ -41,7 +41,7 @@ class AddFile {
     final name =
         '${names.camelCaseToUnderscore(fileName.split('/').last)}.dart';
     final isContains = Imports.libFiles.contains(name);
-    if (isContains) {
+    if (!isContains) {
       content += '$isContains';
       content += Imports.libFiles.join('\n');
       save(fileName, content);
