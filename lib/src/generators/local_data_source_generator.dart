@@ -113,7 +113,7 @@ class LocalDataSourceGenerator
         }
         dataSourceImpl.writeln('return const Right(unit);');
         dataSourceImpl.writeln('} catch (e) {');
-        dataSourceImpl.writeln("return Left(Failure(12, 'Cash failure'));");
+        dataSourceImpl.writeln("return Left(Failure(999, 'Cache failure'));");
         dataSourceImpl.writeln('}');
         dataSourceImpl.writeln('}\n');
 
@@ -124,7 +124,7 @@ class LocalDataSourceGenerator
         dataSourceImpl.writeln('try {');
         if (dynamicType) {
           dataSourceImpl.writeln(
-              "final res = sharedPreferences.getString(_$key) ?? '{}';");
+              "final res = sharedPreferences.getString(_$key) ?? ${initVaType(cachedType)};");
           if (responseDataType.contains('List')) {
             dataSourceImpl.writeln("$responseDataType data = [];");
             dataSourceImpl.writeln("for (var item in jsonDecode(res)) {");
@@ -137,11 +137,11 @@ class LocalDataSourceGenerator
           }
         } else {
           dataSourceImpl.writeln(
-              "final res = sharedPreferences.get${names.firstUpper(cachedType)}(_$key) ?? '';");
+              "final res = sharedPreferences.get${names.firstUpper(cachedType)}(_$key) ?? ${initVaType(cachedType)};");
           dataSourceImpl.writeln('return Right(res);');
         }
         dataSourceImpl.writeln('} catch (e) {');
-        dataSourceImpl.writeln("return Left(Failure(12, 'Cash failure'));");
+        dataSourceImpl.writeln("return Left(Failure(999, 'Cache failure'));");
         dataSourceImpl.writeln('}');
         dataSourceImpl.writeln('}\n');
       }
@@ -164,9 +164,29 @@ class LocalDataSourceGenerator
     if (type.runtimeType is int ||
         type.runtimeType is String ||
         type.runtimeType is bool ||
-        type.runtimeType is double) {
+        type.runtimeType is double ||
+        type.runtimeType is Map) {
       return type.toString();
     }
     return 'dynamic';
+  }
+
+  String initVaType(String type) {
+    switch (type) {
+      case 'String':
+        return '""';
+      case 'double':
+        return '0.0';
+      case 'int':
+        return '0';
+      case 'List':
+        return '[]';
+      case 'num':
+        return '0';
+      case 'Map':
+        return '{}';
+      default:
+        return "";
+    }
   }
 }
