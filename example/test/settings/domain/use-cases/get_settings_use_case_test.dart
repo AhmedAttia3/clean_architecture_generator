@@ -1,5 +1,6 @@
 import 'package:eitherx/eitherx.dart';
 import 'package:example/core/base_response.dart';
+import 'package:example/settings/models/product_model.dart';
 import 'package:example/settings/models/settings_model.dart';
 import 'package:example/core/base_response.dart';
 import 'package:example/core/failure.dart';
@@ -19,16 +20,16 @@ MockSpec<SettingsRemoteDataSourceRepository>(),
 void main() {
 late GetSettingsUseCase getSettingsUseCase;
 late SettingsRemoteDataSourceRepository repository;
-late InvalidType success;
+late BaseResponse<SettingsModel?> success;
 late Failure failure;
 setUp(() {
 repository = MockSettingsRemoteDataSourceRepository();
 getSettingsUseCase = GetSettingsUseCase(repository);
 failure = Failure(1, 'message');
-success = InvalidType(
+success = BaseResponse<SettingsModel?>(
 message: 'message',
 success: true,
-data: InvalidType.fromJson(jsonDecode(File('test/expected/expected_invalid_type.json').readAsStringSync())),);
+data: SettingsModel.fromJson(jsonDecode(File('test/expected/expected_settings_model.json').readAsStringSync())),);
 });
 
 webService() => repository.getSettings();

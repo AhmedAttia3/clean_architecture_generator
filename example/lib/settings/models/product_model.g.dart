@@ -12,3 +12,11 @@ ProductModel _$ProductModelFromJson(Map<String, dynamic> json) => ProductModel(
       description: json['description'] as String? ?? '',
       quantity: json['quantity'] as int? ?? 0,
     );
+
+Map<String, dynamic> _$ProductModelToJson(ProductModel instance) =>
+    <String, dynamic>{
+      '_id': instance.id,
+      'name': instance.name,
+      'description': instance.description,
+      'quantity': instance.quantity,
+    };

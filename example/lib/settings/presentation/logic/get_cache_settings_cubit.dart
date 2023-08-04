@@ -1,5 +1,6 @@
 import 'package:eitherx/eitherx.dart';
 import 'package:example/core/base_response.dart';
+import 'package:example/settings/models/product_model.dart';
 import 'package:example/settings/models/settings_model.dart';
 import 'package:example/core/base_response.dart';
 import 'package:example/core/failure.dart';
@@ -15,7 +16,7 @@ import 'package:example/settings/domain/use-cases/get_cache_settings_use_case.da
 @injectable
 class GetCacheSettingsCubit extends Cubit<FlowState> {
 final GetCacheSettingsUseCase _getSettingsUseCase;
-InvalidType? settings;
+SettingsModel? settings;
 GetCacheSettingsCubit(this._getSettingsUseCase) : super(ContentState());
 void execute() {
 emit(LoadingState(type: StateRendererType.fullScreenLoading));

@@ -13,3 +13,11 @@ SettingsModel _$SettingsModelFromJson(Map<String, dynamic> json) =>
       terms: json['terms'] as String? ?? '',
       about: json['about'] as String? ?? '',
     );
+
+Map<String, dynamic> _$SettingsModelToJson(SettingsModel instance) =>
+    <String, dynamic>{
+      '_id': instance.id,
+      'privacy': instance.privacy,
+      'terms': instance.terms,
+      'about': instance.about,
+    };

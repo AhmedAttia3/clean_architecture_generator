@@ -159,7 +159,7 @@ class RepositoryTestGenerator
           classBuffer.writeln("jsonEncode($dataName.map((item)=>");
           classBuffer.writeln("item.toJson()).toList()),);\n");
         } else {
-          classBuffer.writeln("jsonEncode($modelType.toJson()),);\n");
+          classBuffer.writeln("jsonEncode($dataName.toJson()),);\n");
         }
         classBuffer.writeln(
             "$getCacheMethodName() => sharedPreferences.getString('$key');\n");

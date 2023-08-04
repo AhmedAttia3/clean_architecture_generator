@@ -1,5 +1,6 @@
 import 'package:eitherx/eitherx.dart';
 import 'package:example/core/base_response.dart';
+import 'package:example/settings/models/product_model.dart';
 import 'package:example/settings/models/settings_model.dart';
 import 'package:example/core/base_response.dart';
 import 'package:example/core/failure.dart';
@@ -18,11 +19,11 @@ import 'package:example/settings/domain/requests/get_saved_products_request.dart
 @injectable
 class GetSavedProductsCubit extends Cubit<FlowState> {
 final GetSavedProductsUseCase _getSavedProductsUseCase;
-late final PagewiseLoadController<InvalidType> pagewiseController;
+late final PagewiseLoadController<ProductModel> pagewiseController;
 GetSavedProductsCubit(this._getSavedProductsUseCase,
 ) : super(ContentState());
 void init() {
-pagewiseController = PagewiseLoadController<InvalidType>(
+pagewiseController = PagewiseLoadController<ProductModel>(
 pageSize: 10,
 pageFuture: (page) {
 final offset = page ?? 0;
@@ -30,8 +31,8 @@ return execute(page: offset, limit: offset * 10);
 },
 );
 }
-Future<InvalidType> execute({required int page,required int limit, }) async {
-InvalidType savedProducts = [];
+Future<ProductModel> execute({required int page,required int limit, }) async {
+ProductModel savedProducts = [];
 final res = await _getSavedProductsUseCase.execute(
 request : GetSavedProductsRequest(page: page,limit: limit,),
 );

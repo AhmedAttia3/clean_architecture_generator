@@ -1,8 +1,4 @@
-import 'package:eitherx/eitherx.dart';
-import 'package:example/settings/models/settings_model.dart';
-import 'package:example/core/failure.dart';
-import 'package:injectable/injectable.dart';
-import 'package:example/core/base_use_case.dart';
+import 'package:equatable/equatable.dart';
 import 'package:example/core/state_renderer.dart';
 
 abstract class FlowState extends Equatable {
@@ -10,7 +6,6 @@ abstract class FlowState extends Equatable {
 
   String getMessage();
 }
-
 
 class InitialState extends FlowState {
   @override
@@ -23,7 +18,6 @@ class InitialState extends FlowState {
 
   List<Object?> get props => [];
 }
-
 
 class LoadingState extends FlowState {
   final StateRendererType type;
@@ -43,7 +37,6 @@ class LoadingState extends FlowState {
   List<Object?> get props => [type, message];
 }
 
-
 class ErrorState extends FlowState {
   final StateRendererType type;
   final String? message;
@@ -62,7 +55,6 @@ class ErrorState extends FlowState {
   List<Object?> get props => [type, message];
 }
 
-
 class EmptyState extends FlowState {
   final StateRendererType type;
   final String? message;
@@ -80,7 +72,6 @@ class EmptyState extends FlowState {
 
   List<Object?> get props => [type, message];
 }
-
 
 class SuccessState<T> extends FlowState {
   final StateRendererType type;
@@ -102,7 +93,6 @@ class SuccessState<T> extends FlowState {
   List<Object?> get props => [type, message];
 }
 
-
 class ContentState<T> extends FlowState {
   final StateRendererType? type;
   final String? message;
@@ -118,9 +108,7 @@ class ContentState<T> extends FlowState {
   String getMessage() => message ?? '';
 
   @override
-  StateRendererType getStateRendererType() => StateRendererType.contentState
+  StateRendererType getStateRendererType() => StateRendererType.contentState;
 
   List<Object?> get props => [data];
 }
-
-

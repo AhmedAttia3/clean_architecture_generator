@@ -1,12 +1,9 @@
 ///[SafeApi]
 ///[Implementation]
-import 'dart:developer';
-
 import 'package:eitherx/eitherx.dart';
-import 'package:eitherx/eitherx.dart';
+import 'package:example/core/failure.dart';
+import 'package:example/core/network.dart';
 import 'package:example/core/print.dart';
-import 'package:example/settings/models/settings_model.dart';
-import 'package:injectable/injectable.dart';
 import 'package:injectable/injectable.dart';
 
 @injectable

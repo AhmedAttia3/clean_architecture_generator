@@ -103,7 +103,7 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     safeApi.writeln('///[Implementation]');
     safeApi.writeln(Imports.create(
       filePath: buildStep.inputId.path,
-      imports: ['Failure', 'print'],
+      imports: ['Failure', 'print', 'network'],
       libs: [
         "import 'dart:developer';",
         "import 'package:eitherx/eitherx.dart';",
@@ -113,7 +113,7 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     safeApi.writeln("@injectable");
     safeApi.writeln("class SafeApi {");
     safeApi.writeln("final NetworkInfo networkInfo;");
-    safeApi.writeln("SafeApi(this.networkInfo);)");
+    safeApi.writeln("SafeApi(this.networkInfo);");
     safeApi.writeln("Future<Either<Failure, T>> call<T>({");
     safeApi.writeln("required Future<T> apiCall,");
     safeApi.writeln("}) async {");
@@ -218,7 +218,7 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     states.writeln("String getMessage() => message ?? '';");
     states.writeln("@override");
     states.writeln(
-        "StateRendererType getStateRendererType() => StateRendererType.contentState");
+        "StateRendererType getStateRendererType() => StateRendererType.contentState;");
     states.writeln("List<Object?> get props => [data];");
     states.writeln("}\n\n");
 

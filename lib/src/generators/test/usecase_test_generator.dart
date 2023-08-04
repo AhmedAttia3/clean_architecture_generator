@@ -112,7 +112,7 @@ class UseCaseTestGenerator
           "when(webService()).thenAnswer((realInvocation) async => Right(success));");
       usecase.writeln("final res = await $useCaseName.execute(");
       if (method.parameters.isNotEmpty) {
-        usecase.writeln("request: $request);");
+        usecase.writeln("request: const $request);");
       } else {
         usecase.writeln(");");
       }

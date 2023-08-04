@@ -1,14 +1,11 @@
-import 'package:eitherx/eitherx.dart';
-import 'package:example/core/base_response.dart';
-import 'package:example/settings/models/product_model.dart';
-import 'package:example/settings/models/settings_model.dart';
-import 'package:example/core/base_response.dart';
-import 'package:example/core/failure.dart';
-import 'package:injectable/injectable.dart';
-import 'package:example/core/base_use_case.dart';
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:eitherx/eitherx.dart';
+import 'package:example/core/failure.dart';
 import 'package:example/settings/data/data-source/settings_local_data_source.dart';
+import 'package:example/settings/models/settings_model.dart';
+import 'package:injectable/injectable.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 ///[SettingsLocalDataSourceImpl]
 ///[Implementation]
@@ -16,13 +13,16 @@ import 'package:example/settings/data/data-source/settings_local_data_source.dar
 class SettingsLocalDataSourceImpl implements SettingsLocalDataSource {
   final SharedPreferences sharedPreferences;
 
-  const SettingsLocalDataSourceImpl(this.sharedPreferences,);
+  const SettingsLocalDataSourceImpl(
+    this.sharedPreferences,
+  );
 
   final _settings = "SETTINGS";
 
   @override
-  Future<Either<Failure, Unit>> cacheSettings(
-      {required SettingsModel data,}) async {
+  Future<Either<Failure, Unit>> cacheSettings({
+    required SettingsModel data,
+  }) async {
     try {
       await sharedPreferences.setString(_settings, jsonEncode(data.toJson()));
       return const Right(unit);
@@ -34,13 +34,10 @@ class SettingsLocalDataSourceImpl implements SettingsLocalDataSource {
   @override
   Either<Failure, SettingsModel> getCacheSettings() {
     try {
-      final res = sharedPreferences.getString(_settings)
-    ?? ;
-    return Right(SettingsModel.fromJson(jsonDecode(res)));
+      final res = sharedPreferences.getString(_settings) ?? "{}";
+      return Right(SettingsModel.fromJson(jsonDecode(res)));
     } catch (e) {
-    return Left(Failure(999, 'Cache failure'));
+      return Left(Failure(999, 'Cache failure'));
     }
   }
-
 }
-

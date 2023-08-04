@@ -183,10 +183,8 @@ class LocalDataSourceGenerator
         return '[]';
       case 'num':
         return '0';
-      case 'Map':
-        return '{}';
       default:
-        return "";
+        return "{}";
     }
   }
 }

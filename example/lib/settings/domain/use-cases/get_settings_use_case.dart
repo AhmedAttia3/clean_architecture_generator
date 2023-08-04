@@ -1,6 +1,7 @@
 ///[Implementation]
 import 'package:eitherx/eitherx.dart';
 import 'package:example/core/base_response.dart';
+import 'package:example/settings/models/product_model.dart';
 import 'package:example/settings/models/settings_model.dart';
 import 'package:example/core/base_response.dart';
 import 'package:example/core/failure.dart';
@@ -12,14 +13,14 @@ import 'package:example/settings/domain/repository/settings_remote_data_source_r
 ///[GetSettingsUseCase]
 ///[Implementation]
 @injectable
-class GetSettingsUseCase implements BaseUseCase<Future<Either<Failure, InvalidType>>,Void>{
+class GetSettingsUseCase implements BaseUseCase<Future<Either<Failure, BaseResponse<SettingsModel?>>>,Void>{
 final SettingsRemoteDataSourceRepository repository;
 const GetSettingsUseCase(
 this.repository,
 );
 
 @override
-Future<Either<Failure, InvalidType>> execute({Void? request,}) async {
+Future<Either<Failure, BaseResponse<SettingsModel?>>> execute({Void? request,}) async {
 return await repository.getSettings
 ();
 }

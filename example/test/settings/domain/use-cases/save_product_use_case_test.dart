@@ -1,5 +1,6 @@
 import 'package:eitherx/eitherx.dart';
 import 'package:example/core/base_response.dart';
+import 'package:example/settings/models/product_model.dart';
 import 'package:example/settings/models/settings_model.dart';
 import 'package:example/core/base_response.dart';
 import 'package:example/core/failure.dart';
@@ -20,16 +21,16 @@ MockSpec<SettingsRemoteDataSourceRepository>(),
 void main() {
 late SaveProductUseCase saveProductUseCase;
 late SettingsRemoteDataSourceRepository repository;
-late InvalidType success;
+late BaseResponse<dynamic> success;
 late Failure failure;
 setUp(() {
 repository = MockSettingsRemoteDataSourceRepository();
 saveProductUseCase = SaveProductUseCase(repository);
 failure = Failure(1, 'message');
-success = InvalidType(
+success = BaseResponse<dynamic>(
 message: 'message',
 success: true,
-data: InvalidType.fromJson(jsonDecode(File('test/expected/expected_invalid_type.json').readAsStringSync())),);
+data: null,);
 });
 
 webService() => repository.saveProduct(productId: "productId",type: "type",);
