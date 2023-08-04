@@ -39,7 +39,8 @@ class AddFile {
   }
 
   static void searchAndAddFile(String fileName, String content) {
-    final name = names.camelCaseToUnderscore(fileName.split('/').last);
+    final name =
+        '${names.camelCaseToUnderscore(fileName.split('/').last)}.dart';
     if (!Imports.libFiles.contains(name)) {
       save(fileName, content);
     }
