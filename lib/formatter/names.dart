@@ -28,13 +28,14 @@ class Names {
   }
 
   String varType(dynamic type) {
-    if (type.runtimeType is int ||
-        type.runtimeType is String ||
-        type.runtimeType is bool ||
-        type.runtimeType is double ||
-        type.runtimeType is List ||
-        type.runtimeType is Map) {
-      return type.toString();
+    type = type.toString();
+    if (type == "int" ||
+        type == "String" ||
+        type == "bool" ||
+        type == "double" ||
+        type == "List" ||
+        type == "Map") {
+      return type;
     }
     return 'dynamic';
   }

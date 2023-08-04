@@ -48,11 +48,15 @@ dataSource,
 settingsLocalDataSource,
 apiCall,
 );
+///dynamic
+///dynamic
 ///[SaveProduct]
 saveProductResponse = BaseResponse<dynamic>(
 message: 'message',
 success: true,
 data: null,);
+///ProductModel
+///dynamic
 ///[GetSavedProducts]
 getSavedProductsResponse = BaseResponse<List<ProductModel>?>(
 message: 'message',
@@ -67,12 +71,16 @@ productModels = List.generate(
 (index) =>
 ProductModel.fromJson(fromJson('expected_product_model')),
 );
+///SettingsModel
+///dynamic
 ///[GetSettings]
 getSettingsResponse = BaseResponse<SettingsModel?>(
 message: 'message',
 success: true,
 data: SettingsModel.fromJson(fromJson('expected_settings_model')),);
 settingsModels = SettingsModel.fromJson(fromJson('expected_settings_model'));
+///SettingsModel
+///dynamic
 ///[GetApp]
 getAppResponse = BaseResponse<List<SettingsModel>?>(
 message: 'message',
@@ -82,6 +90,8 @@ data: List.generate(
 (index) =>
 SettingsModel.fromJson(fromJson('expected_settings_model')),
 ));
+///int
+///dynamic
 ///[GetAA]
 getAAResponse = BaseResponse<int>(
 message: 'message',
