@@ -76,9 +76,7 @@ class AddFile {
       }
     } else {
       final file = File(import);
-      if (!file.existsSync() || allowUpdates) {
-        file.writeAsStringSync(content);
-      }
+      if (allowUpdates) file.writeAsStringSync(content);
     }
   }
 }
