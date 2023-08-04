@@ -1,6 +1,6 @@
 // ignore_for_file: depend_on_referenced_packages
 
-import 'package:clean_architecture_generator/clean_architecture_generator.dart';
+// import 'package:clean_architecture_generator/clean_architecture_generator.dart';
 import 'package:dio/dio.dart';
 import 'package:example/core/base_response.dart';
 import 'package:example/settings/models/product_model.dart';
@@ -9,7 +9,7 @@ import 'package:retrofit/retrofit.dart';
 
 part 'settings_remote_data_source.g.dart';
 
-@GenerateArchitecture
+// @GenerateArchitecture
 @RestApi()
 abstract class SettingsRemoteDataSource {
   factory SettingsRemoteDataSource(Dio dio, {String baseUrl}) =

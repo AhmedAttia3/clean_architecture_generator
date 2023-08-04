@@ -9,7 +9,7 @@ import 'package:source_gen/source_gen.dart';
 
 import '../../model_visitor.dart';
 
-class RepositoryTestGenerator
+class LocalDataSourceTestGenerator
     extends GeneratorForAnnotation<ArchitectureAnnotation> {
   final names = Names();
 
@@ -27,7 +27,6 @@ class RepositoryTestGenerator
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);
     final classBuffer = StringBuffer();
-
     bool hasCache = false;
 
     ///[HasCache]
@@ -38,8 +37,6 @@ class RepositoryTestGenerator
       }
     }
 
-    final localDataSourceType = names.localDataSourceType(visitor.className);
-    final localDataSourceName = names.firstLower(localDataSourceType);
     final remoteDataSourceType = names.firstUpper(visitor.className);
     final repositoryType = '${remoteDataSourceType}Repository';
     final repositoryImplementType =
@@ -49,7 +46,6 @@ class RepositoryTestGenerator
     ///[Imports]
     classBuffer.writeln(Imports.create(
       imports: [
-        localDataSourceType,
         remoteDataSourceType,
         '${repositoryType}Impl',
         repositoryType,
@@ -57,19 +53,20 @@ class RepositoryTestGenerator
       ],
       filePath: buildStep.inputId.path,
       isTest: true,
+      hasCache: hasCache,
     ));
     classBuffer.writeln("import '$fileName.mocks.dart';");
     classBuffer.writeln('@GenerateNiceMocks([');
     classBuffer.writeln('MockSpec<$remoteDataSourceType>(),');
     classBuffer.writeln('MockSpec<NetworkInfo>(),');
-    if (hasCache) classBuffer.writeln('MockSpec<$localDataSourceType>(),');
+    if (hasCache) classBuffer.writeln('MockSpec<SharedPreferences>(),');
     classBuffer.writeln('])');
     classBuffer.writeln('void main() {');
     classBuffer.writeln('late $remoteDataSourceType dataSource;');
     classBuffer.writeln('late $repositoryType repository;');
     classBuffer.writeln('late SafeApi apiCall;');
     classBuffer.writeln('late NetworkInfo networkInfo;');
-    classBuffer.writeln('late $localDataSourceType $localDataSourceName;');
+    classBuffer.writeln('late SharedPreferences sharedPreferences;');
 
     for (var method in visitor.useCases) {
       final methodName = method.name;
@@ -85,15 +82,15 @@ class RepositoryTestGenerator
 
     classBuffer.writeln('setUp(() {');
     if (hasCache) {
-      classBuffer.writeln('$localDataSourceName = Mock$localDataSourceType();');
+      classBuffer.writeln('sharedPreferences = MockSharedPreferences();');
     }
     classBuffer.writeln('networkInfo = MockNetworkInfo();');
     classBuffer.writeln('apiCall = SafeApi(networkInfo);');
     classBuffer.writeln('dataSource = Mock$remoteDataSourceType();');
     classBuffer.writeln('repository = $repositoryImplementType(');
     classBuffer.writeln('dataSource,');
-    if (hasCache) classBuffer.writeln('$localDataSourceName,');
     classBuffer.writeln('apiCall,');
+    if (hasCache) classBuffer.writeln('sharedPreferences,');
     classBuffer.writeln(');');
 
     for (var method in visitor.useCases) {
@@ -155,12 +152,17 @@ class RepositoryTestGenerator
             "cache${names.firstUpper(methodName).replaceFirst('Get', '')}";
         final type = methodFormat.returnType(method.type);
         final modelType = names.baseModelName(type);
+        classBuffer.writeln(
+            "$cacheMethodName() => sharedPreferences.setString('$key',");
         final dataName = "${names.firstLower(modelType)}s";
+        if (type.contains('List')) {
+          classBuffer.writeln("jsonEncode($dataName.map((item)=>");
+          classBuffer.writeln("item.toJson()).toList()),);\n");
+        } else {
+          classBuffer.writeln("jsonEncode($dataName.toJson()),);\n");
+        }
         classBuffer.writeln(
-            "$cacheMethodName() => $localDataSourceName.$cacheMethodName('data:$dataName');\n");
-
-        classBuffer.writeln(
-            "$getCacheMethodName() => $localDataSourceName.$getCacheMethodName();\n");
+            "$getCacheMethodName() => sharedPreferences.getString('$key');\n");
       }
     }
 
@@ -243,51 +245,32 @@ class RepositoryTestGenerator
           final dataType = names.responseDataType(type);
 
           ///[Cache]
-          classBuffer.writeln("///[$cacheMethodName Success]");
+          classBuffer.writeln("///[$cacheMethodName Test]");
           classBuffer.writeln("test('$cacheMethodName', () async {");
           classBuffer.writeln(
-              "when($cacheMethodName()).thenAnswer((realInvocation) async => const Right(unit);");
+              "when($cacheMethodName()).thenAnswer((realInvocation) async => true);");
           classBuffer.writeln(
               "final res = await repository.$cacheMethodName(data:$dataName);");
           classBuffer.writeln("expect(res.rightOrNull(), unit);");
           classBuffer.writeln("verify($cacheMethodName());");
-          classBuffer
-              .writeln("verifyNoMoreInteractions($localDataSourceName);");
-          classBuffer.writeln("});\n");
-
-          classBuffer.writeln("///[$cacheMethodName Failure]");
-          classBuffer.writeln("test('$cacheMethodName', () async {");
-          classBuffer.writeln(
-              "when($cacheMethodName()).thenAnswer((realInvocation) async => const Left(failure);");
-          classBuffer.writeln(
-              "final res = await repository.$cacheMethodName(data:$dataName);");
-          classBuffer.writeln("expect(res.leftOrNull(), isA<Failure>());");
-          classBuffer.writeln("verify($cacheMethodName());");
-          classBuffer
-              .writeln("verifyNoMoreInteractions($localDataSourceName);");
+          classBuffer.writeln("verifyNoMoreInteractions(sharedPreferences);");
           classBuffer.writeln("});\n");
 
           ///[Get Cache]
-          classBuffer.writeln("///[$getCacheMethodName Success]");
+          classBuffer.writeln("///[$getCacheMethodName Test]");
           classBuffer.writeln("test('$getCacheMethodName', () async {");
           classBuffer.writeln(
-              "when($getCacheMethodName()).thenAnswer((realInvocation) => Right($dataName));\n");
+              "when($getCacheMethodName()).thenAnswer((realInvocation) => ");
+          if (type.contains('List')) {
+            classBuffer.writeln("jsonEncode($dataName.map((item)=>");
+            classBuffer.writeln("item.toJson()).toList()),);\n");
+          } else {
+            classBuffer.writeln("jsonEncode($dataName.toJson()),);\n");
+          }
           classBuffer.writeln("final res = repository.$getCacheMethodName();");
           classBuffer.writeln("expect(res.rightOrNull(),isA<$dataType>());");
           classBuffer.writeln("verify($getCacheMethodName());");
-          classBuffer
-              .writeln("verifyNoMoreInteractions($localDataSourceName);");
-          classBuffer.writeln("});\n");
-
-          classBuffer.writeln("///[$getCacheMethodName Failure]");
-          classBuffer.writeln("test('$getCacheMethodName', () async {");
-          classBuffer.writeln(
-              "when($getCacheMethodName()).thenAnswer((realInvocation) => Left(failure));\n");
-          classBuffer.writeln("final res = repository.$getCacheMethodName();");
-          classBuffer.writeln("expect(res.leftOrNull(),isA<Failure>());");
-          classBuffer.writeln("verify($getCacheMethodName());");
-          classBuffer
-              .writeln("verifyNoMoreInteractions($localDataSourceName);");
+          classBuffer.writeln("verifyNoMoreInteractions(sharedPreferences);");
           classBuffer.writeln("});\n");
         }
       }

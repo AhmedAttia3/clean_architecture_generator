@@ -19,8 +19,6 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
 
     ///[kPrint]
     final kPrint = StringBuffer();
-    kPrint.writeln('///[kPrint]');
-    kPrint.writeln('///[Implementation]');
     kPrint.writeln(Imports.create(
       filePath: buildStep.inputId.path,
       libs: [
@@ -29,9 +27,11 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         "import 'package:flutter/foundation.dart';",
       ],
     ));
+    kPrint.writeln('///[kPrint]');
+    kPrint.writeln('///[Implementation]');
     kPrint.writeln("void kPrint(dynamic data) {");
     kPrint.writeln("if (kDebugMode) {");
-    kPrint.writeln("_pr(data);");
+    kPrint.writeln("_pr(data.toString());");
     kPrint.writeln("} else if (data is Map) {");
     kPrint.writeln("_pr(jsonEncode(data));");
     kPrint.writeln("} else {");
@@ -51,8 +51,6 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
 
     ///[Network]
     final network = StringBuffer();
-    network.writeln('///[Network]');
-    network.writeln('///[Implementation]');
     network.writeln(Imports.create(
       filePath: buildStep.inputId.path,
       libs: [
@@ -60,6 +58,8 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         "import 'package:internet_connection_checker/internet_connection_checker.dart';",
       ],
     ));
+    network.writeln('///[Network]');
+    network.writeln('///[Implementation]');
     network.writeln("abstract class NetworkInfo {");
     network.writeln("Future<bool> get isConnected;");
     network.writeln("}\n\n");
@@ -76,9 +76,9 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
 
     ///[BaseUseCase]
     final baseUseCase = StringBuffer();
+    baseUseCase.writeln("import 'package:eitherx/eitherx.dart';");
     baseUseCase.writeln('///[BaseUseCase]');
     baseUseCase.writeln('///[Implementation]');
-    baseUseCase.writeln("import 'package:eitherx/eitherx.dart';");
     baseUseCase.writeln("abstract class BaseUseCase<RES, POS> {");
     baseUseCase.writeln("RES execute({POS? request});");
     baseUseCase.writeln("}");
@@ -99,8 +99,6 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
 
     ///[SafeApi]
     final safeApi = StringBuffer();
-    safeApi.writeln('///[SafeApi]');
-    safeApi.writeln('///[Implementation]');
     safeApi.writeln(Imports.create(
       filePath: buildStep.inputId.path,
       imports: ['Failure', 'print', 'network'],
@@ -110,6 +108,8 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         "import 'package:injectable/injectable.dart';",
       ],
     ));
+    safeApi.writeln('///[SafeApi]');
+    safeApi.writeln('///[Implementation]');
     safeApi.writeln("@injectable");
     safeApi.writeln("class SafeApi {");
     safeApi.writeln("final NetworkInfo networkInfo;");

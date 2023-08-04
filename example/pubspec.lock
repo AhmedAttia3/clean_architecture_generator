@@ -137,15 +137,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.3"
-  clean_architecture_generator:
-    dependency: "direct dev"
-    description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "95358620b612986bac50fbe66d8964d9c73e8424"
-      url: "https://github.com/ibrahimnashat/clean_architecture_generator.git"
-    source: git
-    version: "0.1.5"
   clock:
     dependency: transitive
     description:
