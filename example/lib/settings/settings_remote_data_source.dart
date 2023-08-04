@@ -24,7 +24,7 @@ abstract class SettingsRemoteDataSource {
     @Field('type') required String type,
   });
 
-  ///Prop [paging]
+  ///Prop [paging,cached]
   @GET("getSavedProducts")
   Future<BaseResponse<List<ProductModel>?>> getSavedProducts({
     @Query('page') required int page,
@@ -34,4 +34,11 @@ abstract class SettingsRemoteDataSource {
   ///Prop [cached]
   @GET("getSettings")
   Future<BaseResponse<SettingsModel?>> getSettings();
+
+  ///Prop [paging]
+  @GET("getApp")
+  Future<BaseResponse> getApp({
+    @Query('page') required int page,
+    @Query('limit') required int limit,
+  });
 }

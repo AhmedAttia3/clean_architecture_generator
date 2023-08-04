@@ -29,9 +29,9 @@ class AddFile {
     return '${projectDir.path}/$name';
   }
 
-  static String search(String fileName) {
+  static String? search(String fileName) {
     final name = names.camelCaseToUnderscore(fileName.split('/').last);
-    return Imports.importPath(name) ?? "";
+    return Imports.importPath(name);
   }
 
   static String getDirectories(String fileName) {
@@ -40,7 +40,7 @@ class AddFile {
 
   static void searchAndAddFile(String fileName, String content) {
     final path = search(fileName);
-    if (path.isEmpty) {
+    if (path == null) {
       save(fileName, content);
     }
   }
@@ -51,8 +51,8 @@ class AddFile {
     bool allowUpdates = false,
     String extension = 'dart',
   }) {
-    path = search(path);
-    if (path.isEmpty) {
+    final import = search(path);
+    if (import == null) {
       path = createPath(path, extension: extension);
       final dir = Directory(getDirectories(path));
       if (!dir.existsSync()) {
@@ -75,7 +75,7 @@ class AddFile {
         file.writeAsStringSync(content);
       }
     } else {
-      final file = File(path);
+      final file = File(import);
       if (!file.existsSync() || allowUpdates) {
         file.writeAsStringSync(content);
       }
