@@ -80,7 +80,10 @@ class CacheUseCaseGenerator
 
         ///[Imports]
         getCacheUseCase.writeln(Imports.create(
-          imports: [repositoryName],
+          imports: [
+            repositoryName,
+            getCacheUseCaseType,
+          ],
           filePath: buildStep.inputId.path,
           isUseCase: true,
         ));

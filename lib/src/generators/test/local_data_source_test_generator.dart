@@ -147,7 +147,7 @@ class LocalDataSourceTestGenerator
           classBuffer.writeln(
               "when($cacheMethodName()).thenAnswer((realInvocation) async => true);");
           classBuffer.writeln(
-              "final res = await repository.$cacheMethodName(data:$dataName);");
+              "final res = await $localDataSourceName.$cacheMethodName(data:$dataName);");
           classBuffer.writeln("expect(res.rightOrNull(), unit);");
           classBuffer.writeln("verify($cacheMethodName());");
           classBuffer.writeln("verifyNoMoreInteractions(sharedPreferences);");
@@ -164,7 +164,8 @@ class LocalDataSourceTestGenerator
           } else {
             classBuffer.writeln("jsonEncode($dataName.toJson()),);\n");
           }
-          classBuffer.writeln("final res = repository.$getCacheMethodName();");
+          classBuffer.writeln(
+              "final res = $localDataSourceName.$getCacheMethodName();");
           classBuffer.writeln("expect(res.rightOrNull(),isA<$dataType>());");
           classBuffer.writeln("verify($getCacheMethodName());");
           classBuffer.writeln("verifyNoMoreInteractions(sharedPreferences);");

@@ -31,7 +31,7 @@ class UseCaseTestGenerator
 
     for (var method in visitor.useCases) {
       final methodName = method.name;
-      final repositoryName = names.repositoryName(visitor.className);
+      final repositoryType = names.repositoryType(visitor.className);
       final useCaseType = names.useCaseType(methodName);
       final useCaseName = names.useCaseName(methodName);
       final requestType = names.requestName(methodName);
@@ -46,22 +46,22 @@ class UseCaseTestGenerator
         imports: [
           useCaseType,
           method.parameters.isEmpty ? "" : requestType,
-          repositoryName,
+          repositoryType,
         ],
         filePath: buildStep.inputId.path,
         isTest: true,
       ));
       usecase.writeln("import '$fileName.mocks.dart';");
       usecase.writeln('@GenerateNiceMocks([');
-      usecase.writeln('MockSpec<$repositoryName>(),');
+      usecase.writeln('MockSpec<$repositoryType>(),');
       usecase.writeln('])');
       usecase.writeln('void main() {');
       usecase.writeln('late $useCaseType $useCaseName;');
-      usecase.writeln('late $repositoryName repository;');
+      usecase.writeln('late $repositoryType repository;');
       usecase.writeln('late $type success;');
       usecase.writeln('late Failure failure;');
       usecase.writeln('setUp(() {');
-      usecase.writeln('repository = Mock$repositoryName();');
+      usecase.writeln('repository = Mock$repositoryType();');
       usecase.writeln('$useCaseName = $useCaseType(repository);');
       usecase.writeln("failure = Failure(1, 'message');");
       usecase.writeln("success = $type(");
