@@ -10,7 +10,7 @@ import 'package:source_gen/source_gen.dart';
 import '../../model_visitor.dart';
 
 class CacheUseCaseTestGenerator
-    extends GeneratorForAnnotation<ArchitectureAnnotation> {
+    extends GeneratorForAnnotation<ArchitectureTDDAnnotation> {
   final names = Names();
 
   @override

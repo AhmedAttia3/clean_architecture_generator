@@ -25,8 +25,12 @@ class Names {
     return "getCache${subUpperName(value)}";
   }
 
-  String key(String value) {
+  String keyValue(String value) {
     return subUpperName(value).toUpperCase();
+  }
+
+  String keyName(String value) {
+    return subUpperName(value);
   }
 
   String getCacheType(String value) {

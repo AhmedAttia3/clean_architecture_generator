@@ -1,7 +1,16 @@
 // ignore_for_file: constant_identifier_names
 
-class ArchitectureAnnotation {
+abstract class CleanAnnotation {}
+
+class ArchitectureAnnotation implements CleanAnnotation {
   const ArchitectureAnnotation();
 }
 
+class ArchitectureTDDAnnotation
+    implements CleanAnnotation, ArchitectureAnnotation {
+  const ArchitectureTDDAnnotation();
+}
+
 const GenerateArchitecture = ArchitectureAnnotation();
+
+const GenerateTDDArchitecture = ArchitectureTDDAnnotation();

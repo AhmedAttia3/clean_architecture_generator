@@ -89,8 +89,9 @@ class LocalDataSourceGenerator
       if (method.isCache) {
         final cacheMethodName = names.cacheName(method.name);
         final getCacheMethodName = names.getCacheName(method.name);
-        final key = names.key(method.name);
-        dataSourceImpl.writeln('final _$key = "${key.toUpperCase()}";');
+        final key = names.keyName(method.name);
+        dataSourceImpl
+            .writeln('final _$key = "${names.keyValue(method.name)}";');
 
         ///[cache]
         dataSourceImpl.writeln('@override');

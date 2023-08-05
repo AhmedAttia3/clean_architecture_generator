@@ -10,7 +10,7 @@ import 'package:source_gen/source_gen.dart';
 import '../../model_visitor.dart';
 
 class LocalDataSourceTestGenerator
-    extends GeneratorForAnnotation<ArchitectureAnnotation> {
+    extends GeneratorForAnnotation<ArchitectureTDDAnnotation> {
   final names = Names();
 
   @override
@@ -109,13 +109,14 @@ class LocalDataSourceTestGenerator
     for (var method in visitor.useCases) {
       if (method.isCache) {
         final methodName = method.name;
-        final key = names.key(methodName);
+        final key = names.keyName(methodName);
         final getCacheMethodName = names.getCacheName(methodName);
         final cacheMethodName = names.cacheName(methodName);
         final type = methodFormat.returnType(method.type);
         final modelType = names.baseModelName(type);
+        classBuffer.writeln("final _$key = ${names.keyValue(key)};");
         classBuffer.writeln(
-            "$cacheMethodName() => sharedPreferences.setString('$key',");
+            "$cacheMethodName() => sharedPreferences.setString(_$key,");
         final dataName = "${names.firstLower(modelType)}Cache";
         if (type.contains('List')) {
           classBuffer.writeln("jsonEncode($dataName.map((item)=>");
@@ -124,7 +125,7 @@ class LocalDataSourceTestGenerator
           classBuffer.writeln("jsonEncode($dataName.toJson()),);\n");
         }
         classBuffer.writeln(
-            "$getCacheMethodName() => sharedPreferences.getString('$key');\n");
+            "$getCacheMethodName() => sharedPreferences.getString(_$key);\n");
       }
     }
 
