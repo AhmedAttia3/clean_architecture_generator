@@ -40,24 +40,26 @@ class CacheCubitGenerator
         final cacheCubitType = names.getCacheCubitType(method.name);
         final cacheUseCaseName =
             names.useCaseName(names.getCacheName(method.name));
+        final cacheUseCaseType =
+            names.useCaseType(names.getCacheName(method.name));
 
         ///[Imports]
         getCacheCubit.writeln(Imports.create(
-          imports: [requestType, cacheUseCaseName],
+          imports: [requestType, cacheUseCaseType],
           filePath: buildStep.inputId.path,
           isCubit: true,
         ));
         getCacheCubit.writeln('@injectable');
         getCacheCubit
             .writeln('class $cacheCubitType extends Cubit<FlowState> {');
-        getCacheCubit.writeln('final $cacheCubitType _$cacheUseCaseName;');
+        getCacheCubit.writeln('final $cacheUseCaseType _$cacheUseCaseName;');
         if (responseType.contains('List')) {
           getCacheCubit.writeln('$responseType $varName = [];');
         } else {
           getCacheCubit.writeln('$responseType? $varName;');
         }
         getCacheCubit.writeln(
-            'GetCache$cacheCubitType(this._$cacheUseCaseName) : super(ContentState());');
+            '$cacheCubitType(this._$cacheUseCaseName) : super(ContentState());');
         getCacheCubit.writeln('void execute() {');
         getCacheCubit.writeln(
             'emit(LoadingState(type: StateRendererType.fullScreenLoading));');

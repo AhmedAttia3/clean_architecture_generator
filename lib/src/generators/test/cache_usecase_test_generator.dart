@@ -34,7 +34,7 @@ class CacheUseCaseTestGenerator
       final varType = names.varType(modelType);
       final responseType = names.responseType(type);
       final methodName = names.cacheName(method.name);
-      final repositoryName = names.repositoryName(visitor.className);
+      final repositoryType = names.repositoryType(visitor.className);
       final useCaseType = names.useCaseType(methodName);
       final useCaseName = names.useCaseName(methodName);
       final fileName = "${names.camelCaseToUnderscore(useCaseType)}_test";
@@ -45,22 +45,22 @@ class CacheUseCaseTestGenerator
         usecase.writeln(Imports.create(
           imports: [
             useCaseType,
-            repositoryName,
+            repositoryType,
           ],
           filePath: buildStep.inputId.path,
           isTest: true,
         ));
         usecase.writeln("import '$fileName.mocks.dart';");
         usecase.writeln('@GenerateNiceMocks([');
-        usecase.writeln('MockSpec<$repositoryName>(),');
+        usecase.writeln('MockSpec<$repositoryType>(),');
         usecase.writeln('])');
         usecase.writeln('void main() {');
         usecase.writeln('late $useCaseType $useCaseName;');
-        usecase.writeln('late $repositoryName repository;');
+        usecase.writeln('late $repositoryType repository;');
         usecase.writeln('late $responseType data;');
         usecase.writeln('late Failure failure;');
         usecase.writeln('setUp(() {');
-        usecase.writeln('repository = Mock$repositoryName();');
+        usecase.writeln('repository = Mock$repositoryType();');
         usecase.writeln('$useCaseName = $useCaseType(repository);');
         usecase.writeln("failure = Failure(1, 'message');");
         final model = names.camelCaseToUnderscore(names.baseModelName(type));
