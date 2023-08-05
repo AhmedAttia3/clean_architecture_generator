@@ -54,11 +54,12 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
       cubit.writeln('@injectable');
       cubit.writeln('class $cubitType extends Cubit<FlowState> {');
       cubit.writeln('final $useCaseType _${names.firstLower(useCaseType)};');
+      if (hasParams) cubit.writeln('final $requestType request;');
       if (method.isPaging) {
         cubit.writeln(
             'late final PagewiseLoadController<$baseModelType> pagewiseController;');
         cubit.writeln('$cubitType(this._${names.firstLower(useCaseType)},');
-        if (hasParams) cubit.writeln('$requestType(this.request,');
+        if (hasParams) cubit.writeln('this.request,');
         cubit.writeln(') : super(ContentState());');
         cubit.writeln('void init() {');
         cubit.writeln(
@@ -79,7 +80,7 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         cubit.writeln(
             'final res = await _${names.firstLower(useCaseType)}.execute(');
         if (hasParams) {
-          cubit.writeln("request : request),");
+          cubit.writeln("request : request");
         }
         cubit.writeln(');');
         cubit.writeln('res.left((failure) {');

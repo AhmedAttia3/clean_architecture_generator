@@ -107,7 +107,7 @@ class UseCaseTestGenerator
           "when(webService()).thenAnswer((realInvocation) async => Left(failure));");
       usecase.writeln("final res = await $useCaseName.execute(");
       if (method.parameters.isNotEmpty) {
-        usecase.writeln("request: const $request);");
+        usecase.writeln("request: $request);");
       } else {
         usecase.writeln(");");
       }
@@ -120,7 +120,7 @@ class UseCaseTestGenerator
           "when(webService()).thenAnswer((realInvocation) async => Right(success));");
       usecase.writeln("final res = await $useCaseName.execute(");
       if (method.parameters.isNotEmpty) {
-        usecase.writeln("request: const $request);");
+        usecase.writeln("request: $request);");
       } else {
         usecase.writeln(");");
       }
