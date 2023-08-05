@@ -21,8 +21,8 @@ class AddFile {
   }
 
   static void move(String fileName, String path, String oldPath) {
-    final oldFile = File('${getDirectories(oldPath)}/$fileName.dart');
-    final oldGFile = File('${getDirectories(oldPath)}/$fileName.g.dart');
+    final oldFile = File('$oldPath/$fileName.dart');
+    final oldGFile = File('$oldPath/$fileName.g.dart');
     final file = File('$path/$fileName.dart');
     final gFile = File('$path/$fileName.g.dart');
 
