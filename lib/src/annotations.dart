@@ -6,11 +6,10 @@ class ArchitectureAnnotation implements CleanAnnotation {
   const ArchitectureAnnotation();
 }
 
-class ArchitectureTDDAnnotation
-    implements CleanAnnotation, ArchitectureAnnotation {
+class ArchitectureTDDAnnotation implements ArchitectureAnnotation {
   const ArchitectureTDDAnnotation();
 }
 
-const GenerateArchitecture = ArchitectureAnnotation();
+const CleanArchitecture = ArchitectureAnnotation();
 
-const GenerateTDDArchitecture = ArchitectureTDDAnnotation();
+const TDDCleanArchitecture = ArchitectureTDDAnnotation();

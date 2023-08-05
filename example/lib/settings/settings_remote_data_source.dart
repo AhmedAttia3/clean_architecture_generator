@@ -9,7 +9,7 @@ import 'package:retrofit/retrofit.dart';
 
 part 'settings_remote_data_source.g.dart';
 
-@GenerateTDDArchitecture
+@TDDArchitecture
 @RestApi()
 abstract class SettingsRemoteDataSource {
   factory SettingsRemoteDataSource(Dio dio, {String baseUrl}) =
