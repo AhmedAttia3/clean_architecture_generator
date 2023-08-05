@@ -34,7 +34,7 @@ class UseCaseTestGenerator
       final repositoryType = names.repositoryType(visitor.className);
       final useCaseType = names.useCaseType(methodName);
       final useCaseName = names.useCaseName(methodName);
-      final requestType = names.requestName(methodName);
+      final requestType = names.requestType(methodName);
       final type = methodFormat.returnType(method.type);
       final modelType = names.baseModelName(type);
       final varType = names.varType(modelType);
