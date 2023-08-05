@@ -17,7 +17,7 @@ class RequestsGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     BuildStep buildStep,
   ) {
     final path =
-        "${AddFile.getDirectories(buildStep.inputId.path)}/domain/requests";
+        "${AddFile.getDirectories(buildStep.inputId.path)}/data/requests";
     final visitor = ModelVisitor();
     final names = Names();
     final methodFormat = MethodFormat();

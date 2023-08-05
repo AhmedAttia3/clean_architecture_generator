@@ -40,18 +40,18 @@ class CubitTestGenerator
 
       if (hasTextControllers) {
         parameters.removeWhere((item) {
-          final index =
-              method.emitSets.indexWhere((element) => element == item.name);
+          final index = method.emitSets
+              .indexWhere((element) => element.name == item.name);
           return index != -1;
         });
         parameters.removeWhere((item) {
           final index = method.textControllers
-              .indexWhere((element) => element == item.name);
+              .indexWhere((element) => element.name == item.name);
           return index != -1;
         });
         parameters.removeWhere((item) {
-          final index =
-              method.functionSets.indexWhere((element) => element == item.name);
+          final index = method.functionSets
+              .indexWhere((element) => element.name == item.name);
           return index != -1;
         });
       }
@@ -248,15 +248,17 @@ class CubitTestGenerator
         cubit.writeln("         when($useCaseName.execute($request))");
         cubit.writeln(
             "             .thenAnswer((realInvocation) async => Right(response));");
-        for (var fun in method.emitSets) {
-          cubit.writeln(
-              "         cubit.set${names.firstUpper(fun.name)}(${methodFormat.initData(fun.type, fun.name)});");
+        if (method.emitSets.isNotEmpty) {
+          for (var fun in method.emitSets) {
+            cubit.writeln(
+                "         cubit.set${names.firstUpper(fun.name)}(${methodFormat.initData(fun.type, fun.name)});");
+          }
+        } else {
+          for (var fun in method.functionSets) {
+            cubit.writeln(
+                "         cubit.set${names.firstUpper(fun.name)}(${methodFormat.initData(fun.type, fun.name)});");
+          }
         }
-        for (var fun in method.functionSets) {
-          cubit.writeln(
-              "         cubit.set${names.firstUpper(fun.name)}(${methodFormat.initData(fun.type, fun.name)});");
-        }
-
         cubit.writeln(
             "         cubit.execute(${methodFormat.parametersWithValues(parameters)});");
         cubit.writeln("       },");
@@ -285,13 +287,16 @@ class CubitTestGenerator
             "         when($useCaseName.execute($request)).thenAnswer(");
         cubit.writeln(
             "                 (realInvocation) async => Right(response..success = false));");
-        for (var fun in method.emitSets) {
-          cubit.writeln(
-              "         cubit.set${names.firstUpper(fun.name)}(${methodFormat.initData(fun.type, fun.name)});");
-        }
-        for (var fun in method.functionSets) {
-          cubit.writeln(
-              "         cubit.set${names.firstUpper(fun.name)}(${methodFormat.initData(fun.type, fun.name)});");
+        if (method.emitSets.isNotEmpty) {
+          for (var fun in method.emitSets) {
+            cubit.writeln(
+                "         cubit.set${names.firstUpper(fun.name)}(${methodFormat.initData(fun.type, fun.name)});");
+          }
+        } else {
+          for (var fun in method.functionSets) {
+            cubit.writeln(
+                "         cubit.set${names.firstUpper(fun.name)}(${methodFormat.initData(fun.type, fun.name)});");
+          }
         }
 
         cubit.writeln(
@@ -322,13 +327,16 @@ class CubitTestGenerator
         cubit.writeln("       when($useCaseName.execute($request))");
         cubit.writeln(
             "           .thenAnswer((realInvocation) async => Left(failure));");
-        for (var fun in method.emitSets) {
-          cubit.writeln(
-              "         cubit.set${names.firstUpper(fun.name)}(${methodFormat.initData(fun.type, fun.name)});");
-        }
-        for (var fun in method.functionSets) {
-          cubit.writeln(
-              "         cubit.set${names.firstUpper(fun.name)}(${methodFormat.initData(fun.type, fun.name)});");
+        if (method.emitSets.isNotEmpty) {
+          for (var fun in method.emitSets) {
+            cubit.writeln(
+                "         cubit.set${names.firstUpper(fun.name)}(${methodFormat.initData(fun.type, fun.name)});");
+          }
+        } else {
+          for (var fun in method.functionSets) {
+            cubit.writeln(
+                "         cubit.set${names.firstUpper(fun.name)}(${methodFormat.initData(fun.type, fun.name)});");
+          }
         }
 
         cubit.writeln(
