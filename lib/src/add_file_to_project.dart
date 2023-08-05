@@ -24,7 +24,7 @@ class AddFile {
     final oldFile = File('$oldPath/$fileName.dart');
     final oldGFile = File('$oldPath/$fileName.g.dart');
     final cleanArchitectureFile =
-        File('$oldPath/$fileName.clean_architecture.dart');
+        File('$oldPath/$fileName.clean_architecture.part');
 
     final file = File('$path/$fileName.dart');
     final gFile = File('$path/$fileName.g.dart');
