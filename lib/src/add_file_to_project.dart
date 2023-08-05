@@ -29,9 +29,6 @@ class AddFile {
 
     file.writeAsString(oldFile.readAsStringSync());
     gFile.writeAsString(oldGFile.readAsStringSync());
-
-    oldFile.delete();
-    oldGFile.delete();
   }
 
   static String createPath(
