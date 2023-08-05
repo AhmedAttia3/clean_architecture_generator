@@ -77,7 +77,7 @@ class CacheCubitGenerator
         getCacheCubit.writeln('}');
         getCacheCubit.writeln('}');
 
-        AddFile.save('$path/$cacheUseCaseName', getCacheCubit.toString());
+        AddFile.save('$path/$cacheCubitType', getCacheCubit.toString());
         cubits.writeln(getCacheCubit);
       }
     }
