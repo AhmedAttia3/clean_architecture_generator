@@ -39,10 +39,23 @@ class CubitTestGenerator
       String request = "";
 
       if (hasTextControllers) {
-        parameters.removeWhere((item) => method.emitSets.contains(item));
-        parameters.removeWhere((item) => method.textControllers.contains(item));
-        parameters.removeWhere((item) => method.functionSets.contains(item));
+        parameters.removeWhere((item) {
+          final index =
+              method.emitSets.indexWhere((element) => element == item.name);
+          return index != -1;
+        });
+        parameters.removeWhere((item) {
+          final index = method.textControllers
+              .indexWhere((element) => element == item.name);
+          return index != -1;
+        });
+        parameters.removeWhere((item) {
+          final index =
+              method.functionSets.indexWhere((element) => element == item.name);
+          return index != -1;
+        });
       }
+
       String requestType = '';
       if (hasRequest) {
         requestType = names.requestType(methodName);
@@ -64,6 +77,7 @@ class CubitTestGenerator
           libs: [
             "import 'dart:io';",
             "import 'dart:convert';",
+            hasTextControllers ? "import 'package:flutter/material.dart';" : "",
             "import 'package:bloc_test/bloc_test.dart';",
             "import 'package:eitherx/eitherx.dart';",
             "import 'package:flutter_test/flutter_test.dart';",
@@ -107,7 +121,7 @@ class CubitTestGenerator
       cubit.writeln("     $useCaseName = Mock$useCaseType();");
       if (hasRequest) {
         cubit.writeln(
-            "     request = $requestType(${methodFormat.parametersWithValues(method.parameters)});");
+            "     request = const $requestType(${methodFormat.parametersWithValues(method.parameters)});");
         request = "request : request";
       }
       cubit.writeln("///[${names.firstUpper(methodName)}]");
@@ -227,9 +241,22 @@ class CubitTestGenerator
           cubit.writeln(
               "         when(formState.validate()).thenAnswer((realInvocation) => true);");
         }
+        for (var con in method.textControllers) {
+          cubit.writeln(
+              "         when(${con.name}.text).thenAnswer((realInvocation) => ${methodFormat.initData(con.type, con.name)});");
+        }
         cubit.writeln("         when($useCaseName.execute($request))");
         cubit.writeln(
             "             .thenAnswer((realInvocation) async => Right(response));");
+        for (var fun in method.emitSets) {
+          cubit.writeln(
+              "         cubit.set${names.firstUpper(fun.name)}(${methodFormat.initData(fun.type, fun.name)});");
+        }
+        for (var fun in method.functionSets) {
+          cubit.writeln(
+              "         cubit.set${names.firstUpper(fun.name)}(${methodFormat.initData(fun.type, fun.name)});");
+        }
+
         cubit.writeln(
             "         cubit.execute(${methodFormat.parametersWithValues(parameters)});");
         cubit.writeln("       },");
@@ -250,14 +277,23 @@ class CubitTestGenerator
           cubit.writeln(
               "         when(formState.validate()).thenAnswer((realInvocation) => true);");
         }
+        for (var con in method.textControllers) {
+          cubit.writeln(
+              "         when(${con.name}.text).thenAnswer((realInvocation) => ${methodFormat.initData(con.type, con.name)});");
+        }
         cubit.writeln(
             "         when($useCaseName.execute($request)).thenAnswer(");
         cubit.writeln(
             "                 (realInvocation) async => Right(response..success = false));");
+        for (var fun in method.emitSets) {
+          cubit.writeln(
+              "         cubit.set${names.firstUpper(fun.name)}(${methodFormat.initData(fun.type, fun.name)});");
+        }
         for (var fun in method.functionSets) {
           cubit.writeln(
               "         cubit.set${names.firstUpper(fun.name)}(${methodFormat.initData(fun.type, fun.name)});");
         }
+
         cubit.writeln(
             "         cubit.execute(${methodFormat.parametersWithValues(parameters)});");
         cubit.writeln("       },");
@@ -278,9 +314,23 @@ class CubitTestGenerator
           cubit.writeln(
               "       when(formState.validate()).thenAnswer((realInvocation) => true);");
         }
+        for (var con in method.textControllers) {
+          cubit.writeln(
+              "         when(${con.name}.text).thenAnswer((realInvocation) => ${methodFormat.initData(con.type, con.name)});");
+        }
+
         cubit.writeln("       when($useCaseName.execute($request))");
         cubit.writeln(
             "           .thenAnswer((realInvocation) async => Left(failure));");
+        for (var fun in method.emitSets) {
+          cubit.writeln(
+              "         cubit.set${names.firstUpper(fun.name)}(${methodFormat.initData(fun.type, fun.name)});");
+        }
+        for (var fun in method.functionSets) {
+          cubit.writeln(
+              "         cubit.set${names.firstUpper(fun.name)}(${methodFormat.initData(fun.type, fun.name)});");
+        }
+
         cubit.writeln(
             "       cubit.execute(${methodFormat.parametersWithValues(parameters)});");
         cubit.writeln("     },");
