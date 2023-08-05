@@ -20,7 +20,7 @@ class LocalDataSourceGenerator
     BuildStep buildStep,
   ) {
     final path =
-        "${AddFile.getDirectories(buildStep.inputId.path)}/data/data-source";
+        "${AddFile.getDirectories(buildStep.inputId.path)}/data/data-sources";
     final visitor = ModelVisitor();
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);

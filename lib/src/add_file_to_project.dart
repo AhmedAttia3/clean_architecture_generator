@@ -20,6 +20,19 @@ class AddFile {
     );
   }
 
+  static void move(String fileName, String path, String oldPath) {
+    final oldFile = File('${getDirectories(oldPath)}/$fileName.dart');
+    final oldGFile = File('${getDirectories(oldPath)}/$fileName.g.dart');
+    final file = File('$path/$fileName.dart');
+    final gFile = File('$path/$fileName.g.dart');
+
+    file.writeAsString(oldFile.readAsStringSync());
+    gFile.writeAsString(oldGFile.readAsStringSync());
+
+    file.delete();
+    oldGFile.delete();
+  }
+
   static String createPath(
     String fileName, {
     String extension = 'dart',
@@ -57,8 +70,8 @@ class AddFile {
 
       ///[To handle files when move remote to data-source folder]
       if (!path.contains('local_data_source') &&
-          path.contains('data/data-source/')) {
-        path = path.replaceFirst("data/data-source/", "");
+          path.contains('data/data-sources/')) {
+        path = path.replaceFirst("data/data-sources/", "");
       }
       final dir = Directory(getDirectories(path));
       if (!dir.existsSync()) {
