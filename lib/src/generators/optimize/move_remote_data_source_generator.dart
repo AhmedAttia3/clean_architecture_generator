@@ -15,7 +15,7 @@ class MoveRemoteDataSourceGenerator
     final currentPath = AddFile.getDirectories(buildStep.inputId.path);
     final fileName =
         buildStep.inputId.path.split('/').last.replaceFirst('.dart', '');
-    final path = "$currentPath /data/data-sources";
+    final path = "$currentPath/data/data-sources";
 
     AddFile.move(fileName, path, currentPath);
     return '';
