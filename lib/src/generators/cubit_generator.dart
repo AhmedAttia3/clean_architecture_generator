@@ -105,11 +105,6 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
           cubit.writeln('final GlobalKey<FormState> formKey;');
         }
 
-        ///[initialize formKey for validation]
-        if (hasParams) {
-          cubit.writeln('final $requestType request;');
-        }
-
         ///[initialize controller for TextEditingController]
         for (var controller in method.textControllers) {
           cubit.writeln('final TextEditingController ${controller.name};');

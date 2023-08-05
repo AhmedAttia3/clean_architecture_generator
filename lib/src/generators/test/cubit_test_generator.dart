@@ -160,6 +160,7 @@ class CubitTestGenerator
       if (hasTextControllers) {
         cubit.writeln("     cubit = $cubitType(");
         cubit.writeln("     $useCaseName,");
+        if (hasRequest) cubit.writeln("     request,");
         cubit.writeln("     key,");
         for (var con in method.textControllers) {
           cubit.writeln("     ${con.name},");
@@ -263,6 +264,9 @@ class CubitTestGenerator
             "         cubit.execute(${methodFormat.parametersWithValues(parameters)});");
         cubit.writeln("       },");
         cubit.writeln("       expect: () => <FlowState>[");
+        if (method.emitSets.isNotEmpty) {
+          cubit.writeln("         ContentState(),");
+        }
         cubit.writeln(
             "         LoadingState(type: StateRendererType.popUpLoading),");
         cubit.writeln(
@@ -303,6 +307,9 @@ class CubitTestGenerator
             "         cubit.execute(${methodFormat.parametersWithValues(parameters)});");
         cubit.writeln("       },");
         cubit.writeln("       expect: () => <FlowState>[");
+        if (method.emitSets.isNotEmpty) {
+          cubit.writeln("         ContentState(),");
+        }
         cubit.writeln(
             "         LoadingState(type: StateRendererType.popUpLoading),");
         cubit.writeln(
@@ -343,6 +350,9 @@ class CubitTestGenerator
             "       cubit.execute(${methodFormat.parametersWithValues(parameters)});");
         cubit.writeln("     },");
         cubit.writeln("     expect: () => <FlowState>[");
+        if (method.emitSets.isNotEmpty) {
+          cubit.writeln("         ContentState(),");
+        }
         cubit.writeln(
             "       LoadingState(type: StateRendererType.popUpLoading),");
         cubit.writeln(
