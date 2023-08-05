@@ -7,7 +7,7 @@ import 'package:clean_architecture_generator/src/add_file_to_project.dart';
 import 'package:clean_architecture_generator/src/model_visitor.dart';
 import 'package:source_gen/source_gen.dart';
 
-import '../read_imports_file.dart';
+import '../imports_file.dart';
 
 class CacheUseCaseGenerator
     extends GeneratorForAnnotation<ArchitectureAnnotation> {

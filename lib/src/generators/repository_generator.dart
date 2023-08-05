@@ -6,8 +6,8 @@ import 'package:clean_architecture_generator/src/annotations.dart';
 import 'package:source_gen/source_gen.dart';
 
 import '../add_file_to_project.dart';
+import '../imports_file.dart';
 import '../model_visitor.dart';
-import '../read_imports_file.dart';
 
 class RepositoryGenerator
     extends GeneratorForAnnotation<ArchitectureAnnotation> {

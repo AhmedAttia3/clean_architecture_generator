@@ -1,7 +1,8 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:clean_architecture_generator/formatter/names.dart';
-import 'package:clean_architecture_generator/src/read_imports_file.dart';
+import 'package:clean_architecture_generator/src/imports_file.dart';
 
 class AddFile {
   static Names names = Names();
@@ -21,13 +22,17 @@ class AddFile {
   }
 
   static Future<void> move(String fileName, String path, String oldPath) async {
-    final dataSource_old = File('$oldPath/$fileName.dart');
-    final dataSource = File('$path/$fileName.dart');
+    try {
+      final dataSource_old = File('$oldPath/$fileName.dart');
+      final dataSource = File('$path/$fileName.dart');
 
-    final content = await dataSource_old.readAsString();
-    await dataSource.writeAsString(content);
+      final content = await dataSource_old.readAsString();
+      await dataSource.writeAsString(content);
 
-    await dataSource_old.delete();
+      await dataSource_old.delete();
+    } catch (e) {
+      log(e.toString());
+    }
   }
 
   static String createPath(

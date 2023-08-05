@@ -2,8 +2,8 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:clean_architecture_generator/src/add_file_to_project.dart';
 import 'package:clean_architecture_generator/src/annotations.dart';
+import 'package:clean_architecture_generator/src/imports_file.dart';
 import 'package:clean_architecture_generator/src/model_visitor.dart';
-import 'package:clean_architecture_generator/src/read_imports_file.dart';
 import 'package:source_gen/source_gen.dart';
 
 class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
