@@ -27,6 +27,7 @@ class CubitTestGenerator
     for (var method in visitor.useCases) {
       final methodName = method.name;
       final hasRequest = method.parameters.isNotEmpty;
+      final hasTextControllers = method.textControllers.isNotEmpty;
       final useCaseName = names.useCaseName(methodName);
       final useCaseType = names.useCaseType(methodName);
       final cubitType = names.cubitType(methodName);
@@ -35,8 +36,9 @@ class CubitTestGenerator
       final modelType = names.ModelType(returnType);
       final modelRuntimeType = names.modelRuntimeType(modelType);
       List<ParameterElement> parameters = method.parameters;
+      String request = "";
 
-      if (method.textControllers.isNotEmpty) {
+      if (hasTextControllers) {
         parameters.removeWhere((item) => method.emitSets.contains(item.name));
         parameters
             .removeWhere((item) => method.textControllers.contains(item.name));
@@ -72,7 +74,7 @@ class CubitTestGenerator
         ),
       );
       cubit.writeln(" @GenerateNiceMocks([");
-      if (method.textControllers.isNotEmpty) {
+      if (hasTextControllers) {
         cubit.writeln("   MockSpec<TextEditingController>(),");
         cubit.writeln("   MockSpec<GlobalKey<FormState>>(),");
         cubit.writeln("   MockSpec<FormState>(),");
@@ -85,7 +87,7 @@ class CubitTestGenerator
       for (var name in method.textControllers) {
         cubit.writeln("   late TextEditingController $name;");
       }
-      if (method.textControllers.isNotEmpty) {
+      if (hasTextControllers) {
         cubit.writeln("   late GlobalKey<FormState> key;");
         cubit.writeln("   late FormState formState;");
       }
@@ -98,7 +100,7 @@ class CubitTestGenerator
       for (var name in method.textControllers) {
         cubit.writeln("     $name = MockTextEditingController();");
       }
-      if (method.textControllers.isNotEmpty) {
+      if (hasTextControllers) {
         cubit.writeln("     key = MockGlobalKey();");
         cubit.writeln("     formState = MockFormState();");
       }
@@ -106,6 +108,7 @@ class CubitTestGenerator
       if (hasRequest) {
         cubit.writeln(
             "     request = $requestType(${methodFormat.parametersWithValues(method.parameters)});");
+        request = "request : request";
       }
       cubit.writeln("///[${names.firstUpper(methodName)}]");
       cubit.writeln('response = $returnType(');
@@ -140,7 +143,7 @@ class CubitTestGenerator
         }
       }
       cubit.writeln("     failure = Failure(1, '');");
-      if (method.textControllers.isNotEmpty) {
+      if (hasTextControllers) {
         cubit.writeln("     cubit = $cubitType(");
         cubit.writeln("     $useCaseName,");
         cubit.writeln("     key,");
@@ -158,8 +161,7 @@ class CubitTestGenerator
         cubit.writeln("       '$methodName failure METHOD',");
         cubit.writeln("       build: () => cubit,");
         cubit.writeln("       act: (cubit) {");
-        cubit
-            .writeln("         when($useCaseName.execute(request : request)))");
+        cubit.writeln("         when($useCaseName.execute($request))");
         cubit.writeln(
             "             .thenAnswer((realInvocation) async => Left(failure));");
         cubit.writeln(
@@ -176,8 +178,7 @@ class CubitTestGenerator
         cubit.writeln("       '$methodName success METHOD',");
         cubit.writeln("       build: () => cubit,");
         cubit.writeln("       act: (cubit) {");
-        cubit
-            .writeln("         when($useCaseName.execute(request : request)))");
+        cubit.writeln("         when($useCaseName.execute($request))");
         cubit.writeln(
             "             .thenAnswer((realInvocation) async => Right(response));");
         cubit.writeln("         cubit.init();");
@@ -218,11 +219,13 @@ class CubitTestGenerator
         cubit.writeln("       '$methodName success true status METHOD',");
         cubit.writeln("       build: () => cubit,");
         cubit.writeln("       act: (cubit) {");
-        cubit.writeln(
-            "         when(key.currentState).thenAnswer((realInvocation) => formState);");
-        cubit.writeln(
-            "         when(formState.validate()).thenAnswer((realInvocation) => true);");
-        cubit.writeln("         when($useCaseName.execute(request: request))");
+        if (hasTextControllers) {
+          cubit.writeln(
+              "         when(key.currentState).thenAnswer((realInvocation) => formState);");
+          cubit.writeln(
+              "         when(formState.validate()).thenAnswer((realInvocation) => true);");
+        }
+        cubit.writeln("         when($useCaseName.execute($request))");
         cubit.writeln(
             "             .thenAnswer((realInvocation) async => Right(response));");
         cubit.writeln(
@@ -239,12 +242,14 @@ class CubitTestGenerator
         cubit.writeln("       '$methodName success false status METHOD',");
         cubit.writeln("       build: () => cubit,");
         cubit.writeln("       act: (cubit) {");
+        if (hasTextControllers) {
+          cubit.writeln(
+              "         when(key.currentState).thenAnswer((realInvocation) => formState);");
+          cubit.writeln(
+              "         when(formState.validate()).thenAnswer((realInvocation) => true);");
+        }
         cubit.writeln(
-            "         when(key.currentState).thenAnswer((realInvocation) => formState);");
-        cubit.writeln(
-            "         when(formState.validate()).thenAnswer((realInvocation) => true);");
-        cubit.writeln(
-            "         when($useCaseName.execute(request: request)).thenAnswer(");
+            "         when($useCaseName.execute($request)).thenAnswer(");
         cubit.writeln(
             "                 (realInvocation) async => Right(response..success = false));");
         for (var fun in method.functionSets) {
@@ -260,17 +265,18 @@ class CubitTestGenerator
         cubit.writeln(
             "         ErrorState(type: StateRendererType.toastError, message: 'message')");
         cubit.writeln("       ],");
-        cubit.writeln("     );");
-        cubit.writeln("   });\n");
+        cubit.writeln("     );\n");
         cubit.writeln("   blocTest<$cubitType, FlowState>(");
         cubit.writeln("     '$methodName failure METHOD',");
         cubit.writeln("     build: () => cubit,");
         cubit.writeln("     act: (cubit) {");
-        cubit.writeln(
-            "       when(key.currentState).thenAnswer((realInvocation) => formState);");
-        cubit.writeln(
-            "       when(formState.validate()).thenAnswer((realInvocation) => true);");
-        cubit.writeln("       when($useCaseName.execute(request: request))");
+        if (hasTextControllers) {
+          cubit.writeln(
+              "       when(key.currentState).thenAnswer((realInvocation) => formState);");
+          cubit.writeln(
+              "       when(formState.validate()).thenAnswer((realInvocation) => true);");
+        }
+        cubit.writeln("       when($useCaseName.execute($request))");
         cubit.writeln(
             "           .thenAnswer((realInvocation) async => Left(failure));");
         cubit.writeln(
@@ -285,7 +291,14 @@ class CubitTestGenerator
         cubit.writeln("   );");
       }
       cubit.writeln("   });");
+
       cubit.writeln(" }");
+
+      cubit.writeln("///[FromJson]");
+      cubit.writeln("Map<String, dynamic> fromJson(String path) {");
+      cubit.writeln(
+          " return jsonDecode(File('test/expected/\$path.json').readAsStringSync());");
+      cubit.writeln("}");
 
       AddFile.save('$path/$fileName', cubit.toString());
     }

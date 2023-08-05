@@ -109,9 +109,9 @@ class CacheCubitTestGenerator
         cubit.writeln("       '$methodName failure METHOD',");
         cubit.writeln("       build: () => cubit,");
         cubit.writeln("       act: (cubit) {");
-        cubit.writeln("         when($useCaseName.execute()))");
+        cubit.writeln("         when($useCaseName.execute())");
         cubit.writeln(
-            "             .thenAnswer((realInvocation) async => Left(failure));");
+            "             .thenAnswer((realInvocation) => Left(failure));");
         cubit.writeln("         cubit.execute();");
         cubit.writeln("       },");
         cubit.writeln("       expect: () => <FlowState>[");
@@ -127,9 +127,9 @@ class CacheCubitTestGenerator
         cubit.writeln("       '$methodName success METHOD',");
         cubit.writeln("       build: () => cubit,");
         cubit.writeln("       act: (cubit) {");
-        cubit.writeln("         when($useCaseName.execute()))");
+        cubit.writeln("         when($useCaseName.execute())");
         cubit.writeln(
-            "             .thenAnswer((realInvocation) async => Right(response));");
+            "             .thenAnswer((realInvocation) => Right(response));");
         cubit.writeln("         cubit.execute();");
         cubit.writeln("       },");
         cubit.writeln("       expect: () => <FlowState>[");
@@ -141,7 +141,11 @@ class CacheCubitTestGenerator
 
         cubit.writeln("   });");
         cubit.writeln(" }");
-
+        cubit.writeln("///[FromJson]");
+        cubit.writeln("Map<String, dynamic> fromJson(String path) {");
+        cubit.writeln(
+            " return jsonDecode(File('test/expected/\$path.json').readAsStringSync());");
+        cubit.writeln("}");
         AddFile.save('$path/$fileName', cubit.toString());
       }
     }
