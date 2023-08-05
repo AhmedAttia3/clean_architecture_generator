@@ -30,7 +30,7 @@ class Names {
   }
 
   String keyName(String value) {
-    return subUpperName(value);
+    return subName(value);
   }
 
   String getCacheType(String value) {

@@ -114,7 +114,7 @@ class LocalDataSourceTestGenerator
         final cacheMethodName = names.cacheName(methodName);
         final type = methodFormat.returnType(method.type);
         final modelType = names.baseModelName(type);
-        classBuffer.writeln("final _$key = ${names.keyValue(key)};");
+        classBuffer.writeln("const _$key = '${names.keyValue(key)}';");
         classBuffer.writeln(
             "$cacheMethodName() => sharedPreferences.setString(_$key,");
         final dataName = "${names.firstLower(modelType)}Cache";
