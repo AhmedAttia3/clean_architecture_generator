@@ -23,8 +23,6 @@ class AddFile {
   static void move(String fileName, String path, String oldPath) {
     final oldFile = File('$oldPath/$fileName.dart');
     final oldGFile = File('$oldPath/$fileName.g.dart');
-    final cleanArchitectureFile =
-        File('$oldPath/$fileName.clean_architecture.part');
 
     final file = File('$path/$fileName.dart');
     final gFile = File('$path/$fileName.g.dart');
@@ -33,7 +31,6 @@ class AddFile {
     gFile.writeAsString(oldGFile.readAsStringSync());
 
     oldFile.delete();
-    cleanArchitectureFile.delete();
     oldGFile.delete();
   }
 
