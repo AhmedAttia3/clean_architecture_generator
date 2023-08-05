@@ -160,8 +160,8 @@ class CubitTestGenerator
       if (hasTextControllers) {
         cubit.writeln("     cubit = $cubitType(");
         cubit.writeln("     $useCaseName,");
-        if (hasRequest) cubit.writeln("     request,");
         cubit.writeln("     key,");
+        if (hasRequest) cubit.writeln("     request,");
         for (var con in method.textControllers) {
           cubit.writeln("     ${con.name},");
         }

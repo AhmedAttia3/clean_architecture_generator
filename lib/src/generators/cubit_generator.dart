@@ -216,7 +216,7 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         cubit.writeln('type: StateRendererType.contentState,');
         cubit.writeln('));');
         cubit.writeln('} else {');
-        cubit.writeln('emit(SuccessState(');
+        cubit.writeln('emit(ErrorState(');
         cubit.writeln('message: data.message,');
         cubit.writeln('type: StateRendererType.toastError,');
         cubit.writeln('));');
