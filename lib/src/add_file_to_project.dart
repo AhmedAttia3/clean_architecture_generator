@@ -20,15 +20,14 @@ class AddFile {
     );
   }
 
-  static void move(String fileName, String path, String oldPath) {
-    final oldFile = File('$oldPath/$fileName.dart');
-    final oldGFile = File('$oldPath/$fileName.g.dart');
+  static Future<void> move(String fileName, String path, String oldPath) async {
+    final currentPath = '$oldPath/$fileName.dart';
 
-    final file = File('$path/$fileName.dart');
-    final gFile = File('$path/$fileName.g.dart');
+    final dataSource = File('$path/$fileName.dart');
 
-    file.writeAsString(oldFile.readAsStringSync());
-    gFile.writeAsString(oldGFile.readAsStringSync());
+    await dataSource.copy(currentPath);
+
+    await File(currentPath).delete();
   }
 
   static String createPath(

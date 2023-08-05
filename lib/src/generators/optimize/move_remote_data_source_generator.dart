@@ -7,17 +7,17 @@ import 'package:source_gen/source_gen.dart';
 class MoveRemoteDataSourceGenerator
     extends GeneratorForAnnotation<ArchitectureAnnotation> {
   @override
-  String generateForAnnotatedElement(
+  Future<String> generateForAnnotatedElement(
     Element element,
     ConstantReader annotation,
     BuildStep buildStep,
-  ) {
+  ) async {
     final currentPath = AddFile.getDirectories(buildStep.inputId.path);
     final fileName =
         buildStep.inputId.path.split('/').last.replaceFirst('.dart', '');
     final path = "$currentPath/data/data-sources";
 
-    AddFile.move(fileName, path, currentPath);
+    await AddFile.move(fileName, path, currentPath);
     return '';
   }
 }
