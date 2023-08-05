@@ -31,11 +31,11 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
       final cubit = StringBuffer();
       final varName = names.subName(method.name);
       final hasParams = method.parameters.isNotEmpty;
-      final cubitName = '${names.firstUpper(method.name)}Cubit';
-      final useCaseName = '${names.firstUpper(method.name)}UseCase';
-      final requestName = '${names.firstUpper(method.name)}Request';
+      final cubitType = names.cacheType(method.name);
+      final useCaseType = names.useCaseType(method.name);
+      final requestType = names.requestType(method.name);
       final type = methodFormat.returnType(method.type);
-      final responseDataType = names.responseDataType(type);
+      final responseType = names.responseType(type);
       final baseModelType = names.baseModelName(type);
       final hasData = !type.contains('BaseResponse<dynamic>');
       final hasTextController = method.textControllers.isNotEmpty;
@@ -44,20 +44,20 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
 
       ///[Imports]
       cubit.writeln(Imports.create(
-        imports: [useCaseName, hasParams ? requestName : ""],
+        imports: [useCaseType, hasParams ? requestType : ""],
         filePath: buildStep.inputId.path,
         isCubit: true,
         isPaging: method.isPaging,
       ));
-      cubit.writeln('///[$cubitName]');
+      cubit.writeln('///[$cubitType]');
       cubit.writeln('///[Implementation]');
       cubit.writeln('@injectable');
-      cubit.writeln('class $cubitName extends Cubit<FlowState> {');
-      cubit.writeln('final $useCaseName _${names.firstLower(useCaseName)};');
+      cubit.writeln('class $cubitType extends Cubit<FlowState> {');
+      cubit.writeln('final $useCaseType _${names.firstLower(useCaseType)};');
       if (method.isPaging) {
         cubit.writeln(
             'late final PagewiseLoadController<$baseModelType> pagewiseController;');
-        cubit.writeln('$cubitName(this._${names.firstLower(useCaseName)},');
+        cubit.writeln('$cubitType(this._${names.firstLower(useCaseType)},');
         cubit.writeln(') : super(ContentState());');
         cubit.writeln('void init() {');
         cubit.writeln(
@@ -70,13 +70,13 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         cubit.writeln(');');
         cubit.writeln('}');
         cubit.writeln(
-            'Future<$responseDataType> execute(${methodFormat.parameters(method.parameters)}) async {');
-        cubit.writeln('$responseDataType $varName = [];');
+            'Future<$responseType> execute(${methodFormat.parameters(method.parameters)}) async {');
+        cubit.writeln('$responseType $varName = [];');
         cubit.writeln(
-            'final res = await _${names.firstLower(useCaseName)}.execute(');
+            'final res = await _${names.firstLower(useCaseType)}.execute(');
         if (hasParams) {
           cubit.writeln(
-              "request : $requestName(${methodFormat.passingParameters(method.parameters)}),");
+              "request : $requestType(${methodFormat.passingParameters(method.parameters)}),");
         }
         cubit.writeln(');');
         cubit.writeln('res.left((failure) {');
@@ -109,7 +109,7 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         }
 
         ///[initialize constructor]
-        cubit.writeln('$cubitName(this._${names.firstLower(useCaseName)},');
+        cubit.writeln('$cubitType(this._${names.firstLower(useCaseType)},');
         if (hasTextController) cubit.writeln('this.formKey,');
         for (var controller in method.textControllers) {
           cubit.writeln('this.${controller.name},');
@@ -118,10 +118,10 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
 
         ///[initialize var for data when cubit is get request]
         if (hasData) {
-          if (responseDataType.contains('List')) {
-            cubit.writeln('$responseDataType $varName = [];');
+          if (responseType.contains('List')) {
+            cubit.writeln('$responseType $varName = [];');
           } else {
-            cubit.writeln('$responseDataType? $varName;');
+            cubit.writeln('$responseType? $varName;');
           }
         }
         if (hasEmitSet) {
@@ -151,11 +151,11 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         cubit.writeln(
             'emit(LoadingState(type: StateRendererType.popUpLoading));');
         cubit.writeln(
-            'final res = await _${names.firstLower(useCaseName)}.execute(');
+            'final res = await _${names.firstLower(useCaseType)}.execute(');
 
         ///[add request]
         if (hasParams || hasTextController || hasFunctionSet || hasEmitSet) {
-          cubit.writeln("request : $requestName(");
+          cubit.writeln("request : $requestType(");
         }
 
         ///[add textEditController to request]
@@ -246,7 +246,7 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         cubit.writeln('}');
       }
 
-      AddFile.save('$path/$cubitName', cubit.toString());
+      AddFile.save('$path/$cubitType', cubit.toString());
       cubits.writeln(cubit);
     }
     return cubits.toString();

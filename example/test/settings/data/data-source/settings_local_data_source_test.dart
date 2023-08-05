@@ -6,6 +6,7 @@ import 'package:example/core/failure.dart';
 import 'package:example/core/network.dart';
 import 'package:example/core/safe_request_handler.dart';
 import 'package:example/settings/data/data-source/settings_local_data_source.dart';
+import 'package:example/settings/data/data-source/settings_local_data_source_impl.dart';
 import 'package:example/settings/data/repository/settings_remote_data_source_repository_impl.dart';
 import 'package:example/settings/domain/repository/settings_remote_data_source_repository.dart';
 import 'package:example/settings/models/base_response.dart';
@@ -15,85 +16,31 @@ import 'package:example/settings/settings_remote_data_source.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import 'settings_remote_data_source_repository_test.mocks.dart';
+import 'settings_local_data_source_test.mocks.dart';
 
 @GenerateNiceMocks([
-  MockSpec<SettingsRemoteDataSource>(),
-  MockSpec<NetworkInfo>(),
-  MockSpec<SettingsLocalDataSource>(),
+  MockSpec<SharedPreferences>(),
 ])
 void main() {
-  late SettingsRemoteDataSource dataSource;
-  late SettingsRemoteDataSourceRepository repository;
+  late SharedPreferences sharedPreferences;
   late Failure failure;
-  late SafeApi apiCall;
-  late NetworkInfo networkInfo;
   late SettingsLocalDataSource settingsLocalDataSource;
-  late BaseResponse<dynamic> saveProductResponse;
-  late BaseResponse<List<ProductModel>?> getSavedProductsResponse;
   late List<ProductModel> productModels;
-  late BaseResponse<SettingsModel?> getSettingsResponse;
   late SettingsModel settingsModels;
-  late BaseResponse<List<SettingsModel>?> getAppResponse;
-  late BaseResponse<int> getAAResponse;
   setUp(() {
-    settingsLocalDataSource = MockSettingsLocalDataSource();
+    sharedPreferences = MockSharedPreferences();
     failure = Failure(999, "Cache failure");
-    networkInfo = MockNetworkInfo();
-    apiCall = SafeApi(networkInfo);
-    dataSource = MockSettingsRemoteDataSource();
-    repository = SettingsRemoteDataSourceRepositoryImplement(
-      dataSource,
-      settingsLocalDataSource,
-      apiCall,
-    );
+    settingsLocalDataSource = SettingsLocalDataSourceImpl(sharedPreferences);
 
-    ///[SaveProduct]
-    saveProductResponse = BaseResponse<dynamic>(
-      message: 'message',
-      success: true,
-      data: null,
-    );
-
-    ///[GetSavedProducts]
-    getSavedProductsResponse = BaseResponse<List<ProductModel>?>(
-        message: 'message',
-        success: true,
-        data: List.generate(
-          2,
-          (index) => ProductModel.fromJson(fromJson('expected_product_model')),
-        ));
     productModels = List.generate(
       2,
       (index) => ProductModel.fromJson(fromJson('expected_product_model')),
     );
 
-    ///[GetSettings]
-    getSettingsResponse = BaseResponse<SettingsModel?>(
-      message: 'message',
-      success: true,
-      data: SettingsModel.fromJson(fromJson('expected_settings_model')),
-    );
     settingsModels =
         SettingsModel.fromJson(fromJson('expected_settings_model'));
-
-    ///[GetApp]
-    getAppResponse = BaseResponse<List<SettingsModel>?>(
-        message: 'message',
-        success: true,
-        data: List.generate(
-          2,
-          (index) =>
-              SettingsModel.fromJson(fromJson('expected_settings_model')),
-        ));
-
-    ///[GetAA]
-    getAAResponse = BaseResponse<int>(
-      message: 'message',
-      success: true,
-      data: 2,
-    );
   });
   saveProduct() => dataSource.saveProduct(
         productId: "productId",
@@ -103,35 +50,18 @@ void main() {
         page: 2,
         limit: 2,
       );
+
   cacheSavedProducts() =>
       settingsLocalDataSource.cacheSavedProducts(data: productModels);
 
   getCacheSavedProducts() => settingsLocalDataSource.getCacheSavedProducts();
 
-  getSettings() => dataSource.getSettings();
   cacheSettings() =>
       settingsLocalDataSource.cacheSettings(data: settingsModels);
 
   getCacheSettings() => settingsLocalDataSource.getCacheSettings();
 
-  getApp() => dataSource.getApp(
-        page: 2,
-        limit: 2,
-      );
-  getAA() => dataSource.getAA();
   group('SettingsRemoteDataSourceRepository Repository', () {
-    ///[No Internet Test]
-    test('No Internet', () async {
-      when(networkInfo.isConnected).thenAnswer((realInvocation) async => false);
-      final res = await repository.saveProduct(
-        productId: "productId",
-        type: "type",
-      );
-      expect(res.leftOrNull(), isA<Failure>());
-      verify(networkInfo.isConnected);
-      verifyNoMoreInteractions(networkInfo);
-    });
-
     ///[saveProduct Success Test]
     test('saveProduct Success', () async {
       when(networkInfo.isConnected).thenAnswer((realInvocation) async => true);

@@ -26,10 +26,9 @@ class LocalDataSourceGenerator
     element.visitChildren(visitor);
 
     final localDataSourceType = names.localDataSourceType(visitor.className);
-    final localDataSourceName = names.firstLower(localDataSourceType);
-    final localDataSourceImplType =
-        "${names.firstUpper(localDataSourceType)}Impl";
-    final localDataSourceImplName = names.firstLower(localDataSourceImplType);
+    final localDataSourceName = names.localDataSourceName(visitor.className);
+    final localDataSourceImplType = "${localDataSourceType}Impl";
+    final localDataSourceImplName = "${localDataSourceName}Impl";
 
     final dataSource = StringBuffer();
     final dataSourceImpl = StringBuffer();
@@ -44,16 +43,16 @@ class LocalDataSourceGenerator
     dataSource.writeln('abstract class $localDataSourceType {');
     for (var method in visitor.useCases) {
       final type = methodFormat.returnType(method.type);
-      final responseDataType = names.responseDataType(type);
+      final responseType = names.responseType(type);
 
       ///[cache save or get]
       if (method.isCache) {
-        final useCaseName =
-            names.firstUpper(method.name).replaceFirst('Get', '');
+        final cacheMethodName = names.cacheName(method.name);
+        final getCacheMethodName = names.getCacheName(method.name);
         dataSource.writeln(
-            'Future<Either<Failure, Unit>> cache$useCaseName({required $responseDataType data,});');
-        dataSource.writeln(
-            'Either<Failure, $responseDataType> getCache$useCaseName();');
+            'Future<Either<Failure, Unit>> $cacheMethodName({required $responseType data,});');
+        dataSource
+            .writeln('Either<Failure, $responseType> $getCacheMethodName();');
       }
     }
 
@@ -83,23 +82,23 @@ class LocalDataSourceGenerator
     dataSourceImpl.writeln(');\n');
     for (var method in visitor.useCases) {
       final type = methodFormat.returnType(method.type);
-      final responseDataType = names.responseDataType(type);
+      final responseDataType = names.responseType(type);
       final modelName = names.baseModelName(type);
 
       ///[cache save or get implement]
       if (method.isCache) {
-        final useCaseName =
-            names.firstUpper(method.name).replaceFirst('Get', '');
-        final key = names.firstLower(useCaseName);
+        final cacheMethodName = names.cacheName(method.name);
+        final getCacheMethodName = names.getCacheName(method.name);
+        final key = names.key(method.name);
         dataSourceImpl.writeln('final _$key = "${key.toUpperCase()}";');
 
         ///[cache]
         dataSourceImpl.writeln('@override');
         dataSourceImpl.writeln(
-            'Future<Either<Failure, Unit>> cache$useCaseName({required $responseDataType data,}) async {');
+            'Future<Either<Failure, Unit>> $cacheMethodName({required $responseDataType data,}) async {');
         dataSourceImpl.writeln('try {');
-        final cachedType = names.varType(responseDataType);
-        final dynamicType = cachedType == 'dynamic';
+        final dataType = names.varType(responseDataType);
+        final dynamicType = dataType == 'dynamic';
         if (dynamicType) {
           if (responseDataType.contains('List')) {
             dataSourceImpl.writeln(
@@ -110,7 +109,7 @@ class LocalDataSourceGenerator
           }
         } else {
           dataSourceImpl.writeln(
-              'await sharedPreferences.set${names.firstUpper(cachedType)}(_$key, data);');
+              'await sharedPreferences.set${names.firstUpper(dataType)}(_$key, data);');
         }
         dataSourceImpl.writeln('return const Right(unit);');
         dataSourceImpl.writeln('} catch (e) {');
@@ -121,11 +120,11 @@ class LocalDataSourceGenerator
         ///[get]
         dataSourceImpl.writeln('@override');
         dataSourceImpl.writeln(
-            'Either<Failure, $responseDataType> getCache$useCaseName(){');
+            'Either<Failure, $responseDataType> $getCacheMethodName(){');
         dataSourceImpl.writeln('try {');
         if (dynamicType) {
           dataSourceImpl.writeln(
-              "final res = sharedPreferences.getString(_$key) ?? ${initVaType(cachedType)};");
+              "final res = sharedPreferences.getString(_$key) ?? ${initVaType(dataType)};");
           if (responseDataType.contains('List')) {
             dataSourceImpl.writeln("$responseDataType data = [];");
             dataSourceImpl.writeln("for (var item in jsonDecode(res)) {");
@@ -138,7 +137,7 @@ class LocalDataSourceGenerator
           }
         } else {
           dataSourceImpl.writeln(
-              "final res = sharedPreferences.get${names.firstUpper(cachedType)}(_$key) ?? ${initVaType(cachedType)};");
+              "final res = sharedPreferences.get${names.firstUpper(dataType)}(_$key) ?? ${initVaType(dataType)};");
           dataSourceImpl.writeln('return Right(res);');
         }
         dataSourceImpl.writeln('} catch (e) {');

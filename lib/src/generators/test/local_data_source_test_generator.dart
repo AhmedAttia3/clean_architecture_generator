@@ -19,10 +19,9 @@ class LocalDataSourceTestGenerator
     ConstantReader annotation,
     BuildStep buildStep,
   ) {
-    const expectedPath = "test";
     final basePath = AddFile.getDirectories(buildStep.inputId.path)
         .replaceFirst('lib', 'test');
-    final path = "$basePath/domain/repository";
+    final path = "$basePath/data/data-sources";
     final visitor = ModelVisitor();
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);
@@ -37,45 +36,35 @@ class LocalDataSourceTestGenerator
       }
     }
 
-    final remoteDataSourceType = names.firstUpper(visitor.className);
-    final repositoryType = '${remoteDataSourceType}Repository';
-    final repositoryImplementType =
-        '${remoteDataSourceType}RepositoryImplement';
-    final fileName = "${names.camelCaseToUnderscore(repositoryType)}_test";
+    final localDataSourceType = names.localDataSourceType(visitor.className);
+    final localDataSourceName = names.localDataSourceName(visitor.className);
+    final fileName = "${names.camelCaseToUnderscore(localDataSourceType)}_test";
 
     ///[Imports]
     classBuffer.writeln(Imports.create(
-      imports: [
-        remoteDataSourceType,
-        '${repositoryType}Impl',
-        repositoryType,
-        "Network",
-      ],
-      filePath: buildStep.inputId.path,
       isTest: true,
-      hasCache: hasCache,
+      filePath: buildStep.inputId.path,
+      imports: [
+        localDataSourceType,
+        '${localDataSourceType}Impl',
+      ],
+      libs: ["import 'package:shared_preferences/shared_preferences.dart';"],
     ));
+
     classBuffer.writeln("import '$fileName.mocks.dart';");
     classBuffer.writeln('@GenerateNiceMocks([');
-    classBuffer.writeln('MockSpec<$remoteDataSourceType>(),');
-    classBuffer.writeln('MockSpec<NetworkInfo>(),');
     if (hasCache) classBuffer.writeln('MockSpec<SharedPreferences>(),');
     classBuffer.writeln('])');
     classBuffer.writeln('void main() {');
-    classBuffer.writeln('late $remoteDataSourceType dataSource;');
-    classBuffer.writeln('late $repositoryType repository;');
-    classBuffer.writeln('late SafeApi apiCall;');
-    classBuffer.writeln('late NetworkInfo networkInfo;');
+    classBuffer.writeln('late $localDataSourceType $localDataSourceName;');
     classBuffer.writeln('late SharedPreferences sharedPreferences;');
 
     for (var method in visitor.useCases) {
-      final methodName = method.name;
-      final type = methodFormat.returnType(method.type);
-      classBuffer.writeln('late $type ${methodName}Response;');
       if (method.isCache) {
+        final type = methodFormat.returnType(method.type);
         final modelType = names.baseModelName(type);
-        final dataType = names.responseDataType(type);
-        final dataName = "${names.firstLower(modelType)}s";
+        final dataType = names.responseType(type);
+        final dataName = "${names.firstLower(modelType)}Cache";
         classBuffer.writeln('late $dataType $dataName;');
       }
     }
@@ -84,49 +73,27 @@ class LocalDataSourceTestGenerator
     if (hasCache) {
       classBuffer.writeln('sharedPreferences = MockSharedPreferences();');
     }
-    classBuffer.writeln('networkInfo = MockNetworkInfo();');
-    classBuffer.writeln('apiCall = SafeApi(networkInfo);');
-    classBuffer.writeln('dataSource = Mock$remoteDataSourceType();');
-    classBuffer.writeln('repository = $repositoryImplementType(');
-    classBuffer.writeln('dataSource,');
-    classBuffer.writeln('apiCall,');
+    classBuffer.writeln('$localDataSourceName = ${localDataSourceType}Impl(');
     if (hasCache) classBuffer.writeln('sharedPreferences,');
     classBuffer.writeln(');');
 
     for (var method in visitor.useCases) {
-      final methodName = method.name;
-      final type = methodFormat.returnType(method.type);
-      final modelType = names.baseModelName(type);
-
-      classBuffer.writeln("///[${names.firstUpper(methodName)}]");
-      classBuffer.writeln('${methodName}Response = $type(');
-      classBuffer.writeln("message: 'message',");
-      classBuffer.writeln("success: true,");
-      if (type.contains('BaseResponse<dynamic>')) {
-        classBuffer.writeln("data: null,);");
-      } else {
-        final model = names.camelCaseToUnderscore(names.baseModelName(type));
-        AddFile.save(
-          "$expectedPath/expected/expected_$model",
-          '{}',
-          extension: 'json',
-        );
-        final decode = "fromJson('expected_$model')";
-        if (type.contains('List')) {
-          classBuffer.writeln("data: List.generate(");
-          classBuffer.writeln("2,");
-          classBuffer.writeln("(index) =>");
-          classBuffer.writeln("$modelType.fromJson($decode),");
-          classBuffer.writeln("));");
-        } else {
-          classBuffer.writeln("data: $modelType.fromJson($decode),);");
-        }
-      }
       if (method.isCache) {
+        final type = methodFormat.returnType(method.type);
+        final modelType = names.baseModelName(type);
+        final varType = names.varType(modelType);
         final model = names.camelCaseToUnderscore(names.baseModelName(type));
         final decode = "fromJson('expected_$model')";
-        final dataName = "${names.firstLower(modelType)}s";
-        if (type.contains('List')) {
+        final dataName = "${names.firstLower(modelType)}Cache";
+        if (varType == 'int' ||
+            varType == 'double' ||
+            varType == 'num' ||
+            varType == 'String' ||
+            varType == 'Map' ||
+            varType == 'bool') {
+          classBuffer.writeln(
+              "$dataName = ${methodFormat.initData(varType, 'name')};");
+        } else if (type.contains('List')) {
           classBuffer.writeln("$dataName = List.generate(");
           classBuffer.writeln("2,");
           classBuffer.writeln("(index) =>");
@@ -140,21 +107,16 @@ class LocalDataSourceTestGenerator
     classBuffer.writeln('});');
 
     for (var method in visitor.useCases) {
-      final methodName = method.name;
-      classBuffer.writeln(
-          "$methodName() => dataSource.$methodName(${methodFormat.parametersWithValues(method.parameters)});");
-
       if (method.isCache) {
-        final key = methodName.toUpperCase().replaceFirst('GET', '');
-        final getCacheMethodName =
-            "getCache${names.firstUpper(methodName).replaceFirst('Get', '')}";
-        final cacheMethodName =
-            "cache${names.firstUpper(methodName).replaceFirst('Get', '')}";
+        final methodName = method.name;
+        final key = names.key(methodName);
+        final getCacheMethodName = names.getCacheName(methodName);
+        final cacheMethodName = names.cacheName(methodName);
         final type = methodFormat.returnType(method.type);
         final modelType = names.baseModelName(type);
         classBuffer.writeln(
             "$cacheMethodName() => sharedPreferences.setString('$key',");
-        final dataName = "${names.firstLower(modelType)}s";
+        final dataName = "${names.firstLower(modelType)}Cache";
         if (type.contains('List')) {
           classBuffer.writeln("jsonEncode($dataName.map((item)=>");
           classBuffer.writeln("item.toJson()).toList()),);\n");
@@ -166,83 +128,18 @@ class LocalDataSourceTestGenerator
       }
     }
 
-    classBuffer.writeln("group('$repositoryType Repository', () {");
+    classBuffer.writeln("group('$localDataSourceType', () {");
     if (visitor.useCases.isNotEmpty) {
-      classBuffer.writeln("///[No Internet Test]");
-      classBuffer.writeln("test('No Internet', () async {");
-      classBuffer.writeln(
-          "when(networkInfo.isConnected).thenAnswer((realInvocation) async => false);");
-      final method = visitor.useCases.first;
-      if (method.parameters.isNotEmpty) {
-        final request = methodFormat.parametersWithValues(method.parameters);
-        classBuffer
-            .writeln("final res = await repository.${method.name}($request);");
-      } else {
-        classBuffer.writeln("final res = await repository.${method.name}();");
-      }
-      classBuffer.writeln("expect(res.leftOrNull(), isA<Failure>());");
-      classBuffer.writeln("verify(networkInfo.isConnected);");
-      classBuffer.writeln("verifyNoMoreInteractions(networkInfo);");
-      classBuffer.writeln("});\n");
-
       for (var method in visitor.useCases) {
-        final methodName = method.name;
-
-        ///[Function Success Test]
-        classBuffer.writeln("///[$methodName Success Test]");
-        classBuffer.writeln("test('$methodName Success', () async {");
-        classBuffer.writeln(
-            "when(networkInfo.isConnected).thenAnswer((realInvocation) async => true);");
-        classBuffer.writeln("when($methodName())");
-        classBuffer.writeln(
-            ".thenAnswer((realInvocation) async => ${methodName}Response);");
-        if (method.parameters.isNotEmpty) {
-          final request = methodFormat.parametersWithValues(method.parameters);
-          classBuffer
-              .writeln("final res = await repository.$methodName($request);");
-        } else {
-          classBuffer.writeln("final res = await repository.$methodName();");
-        }
-        classBuffer
-            .writeln("expect(res.rightOrNull(), ${methodName}Response);");
-        classBuffer.writeln("verify(networkInfo.isConnected);");
-        classBuffer.writeln("verify($methodName());");
-        classBuffer.writeln("verifyNoMoreInteractions(networkInfo);");
-        classBuffer.writeln("verifyNoMoreInteractions(dataSource);");
-        classBuffer.writeln("});\n");
-
-        ///[Function Failure Test]
-        classBuffer.writeln("///[$methodName Failure Test]");
-        classBuffer.writeln("test('$methodName Failure', () async {");
-        classBuffer.writeln(
-            "when(networkInfo.isConnected).thenAnswer((realInvocation) async => false);");
-        classBuffer.writeln("when($methodName())");
-        classBuffer.writeln(
-            ".thenAnswer((realInvocation) async => ${methodName}Response);");
-        if (method.parameters.isNotEmpty) {
-          final request = methodFormat.parametersWithValues(method.parameters);
-          classBuffer
-              .writeln("final res = await repository.$methodName($request);");
-        } else {
-          classBuffer.writeln("final res = await repository.$methodName();");
-        }
-        classBuffer.writeln("expect(res.leftOrNull(), isA<Failure>());");
-        classBuffer.writeln("verify(networkInfo.isConnected);");
-        classBuffer.writeln("verify($methodName());");
-        classBuffer.writeln("verifyNoMoreInteractions(networkInfo);");
-        classBuffer.writeln("verifyNoMoreInteractions(dataSource);");
-        classBuffer.writeln("});\n");
-
         ///[Cache Test]
         if (method.isCache) {
-          final getCacheMethodName =
-              "getCache${names.firstUpper(methodName).replaceFirst('Get', '')}";
-          final cacheMethodName =
-              "cache${names.firstUpper(methodName).replaceFirst('Get', '')}";
+          final methodName = method.name;
+          final getCacheMethodName = names.getCacheName(methodName);
+          final cacheMethodName = names.cacheName(methodName);
           final type = methodFormat.returnType(method.type);
           final modelType = names.baseModelName(type);
-          final dataName = "${names.firstLower(modelType)}s";
-          final dataType = names.responseDataType(type);
+          final dataName = "${names.firstLower(modelType)}Cache";
+          final dataType = names.responseType(type);
 
           ///[Cache]
           classBuffer.writeln("///[$cacheMethodName Test]");
@@ -283,7 +180,7 @@ class LocalDataSourceTestGenerator
         " return jsonDecode(File('test/expected/\$path.json').readAsStringSync());");
     classBuffer.writeln("}");
     AddFile.save(
-      '$path/${repositoryType}Test',
+      '$path/${localDataSourceType}Test',
       classBuffer.toString(),
       allowUpdates: true,
     );

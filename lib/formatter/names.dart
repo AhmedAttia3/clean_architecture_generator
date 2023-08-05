@@ -14,17 +14,95 @@ class Names {
     return value.replaceFirst('get', '');
   }
 
+  String subUpperName(String value) {
+    if (value.contains('get')) {
+      return firstUpper(value.replaceFirst('get', ''));
+    }
+    return value.replaceFirst('get', '');
+  }
+
+  String getCacheName(String value) {
+    return "getCache${subUpperName(value)}";
+  }
+
+  String key(String value) {
+    return subUpperName(value).toUpperCase();
+  }
+
+  String getCacheType(String value) {
+    return "GetCache${subUpperName(value)}";
+  }
+
+  String cacheName(String value) {
+    return "cache${subUpperName(value)}";
+  }
+
+  String cacheType(String value) {
+    return "Cache${subUpperName(value)}";
+  }
+
+  String getCacheCubitName(String value) {
+    return "getCache${subUpperName(value)}Cubit";
+  }
+
+  String getCacheCubitType(String value) {
+    return "GetCache${subUpperName(value)}Cubit";
+  }
+
+  String cacheCubitName(String value) {
+    return "cache${subUpperName(value)}Cubit";
+  }
+
+  String cacheCubitType(String value) {
+    return "Cache${subUpperName(value)}Cubit";
+  }
+
+  String requestName(String value) {
+    return "${firstLower(value)}Request";
+  }
+
+  String requestType(String value) {
+    return "${firstUpper(value)}Request";
+  }
+
+  String useCaseName(String value) {
+    return "${firstLower(value)}UseCase";
+  }
+
+  String useCaseType(String value) {
+    return "${firstUpper(value)}UseCase";
+  }
+
+  String cubitType(String value) {
+    return "${firstUpper(value)}Cubit";
+  }
+
+  String cubitName(String value) {
+    return "${firstLower(value)}Cubit";
+  }
+
+  String repositoryName(String value) {
+    return '${firstLower(value)}Repository';
+  }
+
+  String repositoryType(String value) {
+    return '${firstUpper(value)}Repository';
+  }
+
+  String repositoryImplName(String value) {
+    return '${firstLower(value)}RepositoryImplement';
+  }
+
+  String repositoryImplType(String value) {
+    return '${firstUpper(value)}RepositoryImplement';
+  }
+
   String modelName(String value) {
     return value.split('<').elementAt(1).replaceAll('>', "");
   }
 
   String baseModelName(String value) {
-    return value
-        .replaceFirst('BaseResponse<', "")
-        .replaceFirst('>', "")
-        .replaceFirst('List<', '')
-        .replaceFirst('>', '')
-        .replaceFirst('?', '');
+    return value.replaceFirst('?', '').replaceAll('>', '').split('<').last;
   }
 
   String varType(dynamic type) {
@@ -40,7 +118,7 @@ class Names {
     return 'dynamic';
   }
 
-  String responseDataType(String value) {
+  String responseType(String value) {
     return value
         .replaceFirst('BaseResponse<', "")
         .replaceFirst('>', "")
@@ -57,6 +135,16 @@ class Names {
 
   String localDataSourceType(String value) {
     String type = firstUpper(value);
+    if (type.contains('RemoteDataSource')) {
+      type = type.replaceFirst('RemoteDataSource', "LocalDataSource");
+    } else {
+      type = "${type}LocalDataSource";
+    }
+    return type;
+  }
+
+  String localDataSourceName(String value) {
+    String type = firstLower(value);
     if (type.contains('RemoteDataSource')) {
       type = type.replaceFirst('RemoteDataSource', "LocalDataSource");
     } else {

@@ -29,58 +29,60 @@ class RepositoryGenerator
     final repository = StringBuffer();
     final clientService = names.firstLower(visitor.className);
 
-    final repositoryName = '${names.firstUpper(visitor.className)}Repository';
-    final repositoryNameImplement = '${repositoryName}Implement';
+    final localDataSourceType = names.localDataSourceType(visitor.className);
+    final localDataSourceName = names.localDataSourceName(visitor.className);
+    final remoteDataSourceType = names.firstUpper(visitor.className);
+    final repositoryType = names.repositoryType(remoteDataSourceType);
+    final repositoryImplementType =
+        names.repositoryImplType(remoteDataSourceType);
 
     ///[Imports]
     repository.writeln(Imports.create(
       filePath: buildStep.inputId.path,
     ));
     repository.writeln('///[Implementation]');
-    repository.writeln('abstract class $repositoryName {');
+    repository.writeln('abstract class $repositoryType {');
     bool hasCache = false;
     for (var method in visitor.useCases) {
-      final useCaseName = names.firstLower(method.name);
+      final methodName = names.firstLower(method.name);
       final type = methodFormat.returnType(method.type);
-      final responseDataType = names.responseDataType(type);
+      final responseType = names.responseType(type);
       repository.writeln(
-          'Future<Either<Failure, $type>> $useCaseName(${methodFormat.parameters(method.parameters)});');
+          'Future<Either<Failure, $type>> $methodName(${methodFormat.parameters(method.parameters)});');
 
       ///[cache save or get]
       if (method.isCache) {
         hasCache = true;
-        final useCaseName =
-            names.firstUpper(method.name).replaceFirst('Get', '');
+        final getCacheMethodName = names.getCacheName(methodName);
+        final cacheMethodName = names.cacheName(methodName);
         repository.writeln(
-            'Future<Either<Failure, Unit>> cache$useCaseName({required $responseDataType data,});');
-        repository.writeln(
-            'Either<Failure, $responseDataType> getCache$useCaseName();');
+            'Future<Either<Failure, Unit>> $cacheMethodName({required $responseType data,});');
+        repository
+            .writeln('Either<Failure, $responseType> $getCacheMethodName();');
       }
     }
     repository.writeln('}\n');
 
     AddFile.save(
-      '$abstractRepoPath/$repositoryName',
+      '$abstractRepoPath/$repositoryType',
       repository.toString(),
       allowUpdates: true,
     );
 
     final repositoryImpl = StringBuffer();
-    final localDataSourceType = names.localDataSourceType(visitor.className);
-    final localDataSourceName = names.firstLower(localDataSourceType);
 
     ///[Imports]
     repositoryImpl.writeln(Imports.create(
-      imports: [repositoryName, clientService, localDataSourceType],
+      imports: [repositoryType, clientService, localDataSourceType],
       hasCache: hasCache,
       filePath: buildStep.inputId.path,
       isRepo: true,
     ));
-    repositoryImpl.writeln('///[$repositoryNameImplement]');
+    repositoryImpl.writeln('///[$repositoryImplementType]');
     repositoryImpl.writeln('///[Implementation]');
-    repositoryImpl.writeln('@Injectable(as:$repositoryName)');
+    repositoryImpl.writeln('@Injectable(as:$repositoryType)');
     repositoryImpl
-        .writeln('class $repositoryNameImplement implements $repositoryName {');
+        .writeln('class $repositoryImplementType implements $repositoryType {');
     repositoryImpl.writeln('final ${visitor.className} $clientService;');
 
     ///[add cache]
@@ -90,7 +92,7 @@ class RepositoryGenerator
     }
 
     repositoryImpl.writeln('final SafeApi api;');
-    repositoryImpl.writeln('const $repositoryNameImplement(');
+    repositoryImpl.writeln('const $repositoryImplementType(');
     repositoryImpl.writeln('this.$clientService,');
 
     ///[add cache]
@@ -101,12 +103,12 @@ class RepositoryGenerator
     repositoryImpl.writeln(');\n');
 
     for (var method in visitor.useCases) {
-      final useCaseName = names.firstLower(method.name);
+      final methodName = names.firstLower(method.name);
       final type = methodFormat.returnType(method.type);
-      final responseDataType = names.responseDataType(type);
+      final responseType = names.responseType(type);
       repositoryImpl.writeln('@override');
       repositoryImpl.writeln(
-          'Future<Either<Failure, $type>> $useCaseName(${methodFormat.parameters(method.parameters)})async {');
+          'Future<Either<Failure, $type>> $methodName(${methodFormat.parameters(method.parameters)})async {');
       repositoryImpl.writeln('return await api<$type>(');
 
       repositoryImpl.writeln(
@@ -115,29 +117,29 @@ class RepositoryGenerator
 
       ///[cache save or get implement]
       if (method.isCache) {
-        final useCaseName =
-            names.firstUpper(method.name).replaceFirst('Get', '');
+        final cacheMethodName = names.cacheName(method.name);
+        final getCacheMethodName = names.getCacheName(method.name);
 
         ///[cache]
         repositoryImpl.writeln('@override');
         repositoryImpl.writeln(
-            'Future<Either<Failure, Unit>> cache$useCaseName({required $responseDataType data,}) async {');
+            'Future<Either<Failure, Unit>> $cacheMethodName({required $responseType data,}) async {');
         repositoryImpl.writeln(
-            'return await $localDataSourceName.cache$useCaseName(data: data);');
+            'return await $localDataSourceName.$cacheMethodName(data: data);');
         repositoryImpl.writeln('}\n');
 
         ///[get]
         repositoryImpl.writeln('@override');
-        repositoryImpl.writeln(
-            'Either<Failure, $responseDataType> getCache$useCaseName(){');
         repositoryImpl
-            .writeln('return $localDataSourceName.getCache$useCaseName();');
+            .writeln('Either<Failure, $responseType> $getCacheMethodName(){');
+        repositoryImpl
+            .writeln('return $localDataSourceName.$getCacheMethodName();');
         repositoryImpl.writeln('}\n');
       }
     }
     repositoryImpl.writeln('}\n');
     AddFile.save(
-      '$implRepoPath/${repositoryName}Impl',
+      '$implRepoPath/${repositoryType}Impl',
       repositoryImpl.toString(),
       allowUpdates: true,
     );

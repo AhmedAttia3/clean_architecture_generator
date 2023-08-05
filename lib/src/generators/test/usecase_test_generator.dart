@@ -31,10 +31,10 @@ class UseCaseTestGenerator
 
     for (var method in visitor.useCases) {
       final methodName = method.name;
-      final repositoryName = '${names.firstUpper(visitor.className)}Repository';
-      final useCaseType = '${names.firstUpper(method.name)}UseCase';
-      final useCaseName = '${names.firstLower(method.name)}UseCase';
-      final requestName = '${names.firstUpper(method.name)}Request';
+      final repositoryName = names.repositoryName(visitor.className);
+      final useCaseType = names.useCaseType(methodName);
+      final useCaseName = names.useCaseName(methodName);
+      final requestType = names.requestName(methodName);
       final type = methodFormat.returnType(method.type);
       final modelType = names.baseModelName(type);
       final varType = names.varType(modelType);
@@ -45,7 +45,7 @@ class UseCaseTestGenerator
       usecase.writeln(Imports.create(
         imports: [
           useCaseType,
-          method.parameters.isEmpty ? "" : requestName,
+          method.parameters.isEmpty ? "" : requestType,
           repositoryName,
         ],
         filePath: buildStep.inputId.path,
@@ -98,7 +98,7 @@ class UseCaseTestGenerator
       usecase.writeln("});\n");
 
       final request =
-          "$requestName(${methodFormat.parametersWithValues(method.parameters)})";
+          "$requestType(${methodFormat.parametersWithValues(method.parameters)})";
       usecase.writeln(
           "webService() => repository.$methodName(${methodFormat.parametersWithValues(method.parameters)});\n");
       usecase.writeln("group('$useCaseType ', () {");

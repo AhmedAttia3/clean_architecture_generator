@@ -24,33 +24,32 @@ class UseCaseGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);
 
-    final repositoryName = '${names.firstUpper(visitor.className)}Repository';
+    final repositoryType = names.repositoryType(visitor.className);
 
     ///[UseCase]
     final classBuffer = StringBuffer();
     for (var method in visitor.useCases) {
       final useCase = StringBuffer();
       final noParams = method.parameters.isEmpty;
-      final useCaseName = '${names.firstUpper(method.name)}UseCase';
-      final requestName =
-          noParams ? 'Void' : '${names.firstUpper(method.name)}Request';
+      final useCaseType = names.useCaseType(method.name);
+      final requestName = noParams ? 'Void' : names.requestType(method.name);
       final methodName = names.firstLower(method.name);
       final type = methodFormat.returnType(method.type);
       useCase.writeln('///[Implementation]');
 
       ///[Imports]
       useCase.writeln(Imports.create(
-        imports: [repositoryName, noParams ? "" : requestName],
+        imports: [repositoryType, noParams ? "" : requestName],
         filePath: buildStep.inputId.path,
         isUseCase: noParams,
       ));
-      useCase.writeln('///[$useCaseName]');
+      useCase.writeln('///[$useCaseType]');
       useCase.writeln('///[Implementation]');
       useCase.writeln('@injectable');
       useCase.writeln(
-          'class $useCaseName implements BaseUseCase<Future<Either<Failure, $type>>,$requestName>{');
-      useCase.writeln('final $repositoryName repository;');
-      useCase.writeln('const $useCaseName(');
+          'class $useCaseType implements BaseUseCase<Future<Either<Failure, $type>>,$requestName>{');
+      useCase.writeln('final $repositoryType repository;');
+      useCase.writeln('const $useCaseType(');
       useCase.writeln('this.repository,');
       useCase.writeln(');\n');
       useCase.writeln('@override');
@@ -67,7 +66,7 @@ class UseCaseGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
       useCase.writeln('}\n');
       useCase.writeln('}\n');
 
-      AddFile.save('$path/$useCaseName', useCase.toString());
+      AddFile.save('$path/$useCaseType', useCase.toString());
       classBuffer.write(useCase);
     }
     return classBuffer.toString();

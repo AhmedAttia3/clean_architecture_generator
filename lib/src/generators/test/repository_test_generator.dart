@@ -22,7 +22,7 @@ class RepositoryTestGenerator
     const expectedPath = "test";
     final basePath = AddFile.getDirectories(buildStep.inputId.path)
         .replaceFirst('lib', 'test');
-    final path = "$basePath/domain/repository";
+    final path = "$basePath/data/repository";
     final visitor = ModelVisitor();
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);
@@ -39,11 +39,11 @@ class RepositoryTestGenerator
     }
 
     final localDataSourceType = names.localDataSourceType(visitor.className);
-    final localDataSourceName = names.firstLower(localDataSourceType);
+    final localDataSourceName = names.localDataSourceName(visitor.className);
     final remoteDataSourceType = names.firstUpper(visitor.className);
-    final repositoryType = '${remoteDataSourceType}Repository';
+    final repositoryType = names.repositoryType(remoteDataSourceType);
     final repositoryImplementType =
-        '${remoteDataSourceType}RepositoryImplement';
+        names.repositoryImplType(remoteDataSourceType);
     final fileName = "${names.camelCaseToUnderscore(repositoryType)}_test";
 
     ///[Imports]
@@ -79,7 +79,7 @@ class RepositoryTestGenerator
       classBuffer.writeln('late $type ${methodName}Response;');
       if (method.isCache) {
         final modelType = names.baseModelName(type);
-        final dataType = names.responseDataType(type);
+        final dataType = names.responseType(type);
         final dataName = "${names.firstLower(modelType)}s";
         classBuffer.writeln('late $dataType $dataName;');
       }
@@ -140,7 +140,15 @@ class RepositoryTestGenerator
         final model = names.camelCaseToUnderscore(names.baseModelName(type));
         final decode = "fromJson('expected_$model')";
         final dataName = "${names.firstLower(modelType)}s";
-        if (type.contains('List')) {
+        if (varType == 'int' ||
+            varType == 'double' ||
+            varType == 'num' ||
+            varType == 'String' ||
+            varType == 'Map' ||
+            varType == 'bool') {
+          classBuffer.writeln(
+              "$dataName = ${methodFormat.initData(varType, 'name')};");
+        } else if (type.contains('List')) {
           classBuffer.writeln("$dataName = List.generate(");
           classBuffer.writeln("2,");
           classBuffer.writeln("(index) =>");
@@ -159,10 +167,8 @@ class RepositoryTestGenerator
           "$methodName() => dataSource.$methodName(${methodFormat.parametersWithValues(method.parameters)});");
 
       if (method.isCache) {
-        final getCacheMethodName =
-            "getCache${names.firstUpper(methodName).replaceFirst('Get', '')}";
-        final cacheMethodName =
-            "cache${names.firstUpper(methodName).replaceFirst('Get', '')}";
+        final getCacheMethodName = names.getCacheName(methodName);
+        final cacheMethodName = names.cacheName(methodName);
         final type = methodFormat.returnType(method.type);
         final modelType = names.baseModelName(type);
         final dataName = "${names.firstLower(modelType)}s";
@@ -243,14 +249,12 @@ class RepositoryTestGenerator
 
         ///[Cache Test]
         if (method.isCache) {
-          final getCacheMethodName =
-              "getCache${names.firstUpper(methodName).replaceFirst('Get', '')}";
-          final cacheMethodName =
-              "cache${names.firstUpper(methodName).replaceFirst('Get', '')}";
+          final getCacheMethodName = names.getCacheName(methodName);
+          final cacheMethodName = names.cacheName(methodName);
           final type = methodFormat.returnType(method.type);
           final modelType = names.baseModelName(type);
           final dataName = "${names.firstLower(modelType)}s";
-          final dataType = names.responseDataType(type);
+          final dataType = names.responseType(type);
 
           ///[Cache]
           classBuffer.writeln("///[$cacheMethodName Success]");

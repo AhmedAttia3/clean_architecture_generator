@@ -30,40 +30,38 @@ class CacheCubitGenerator
 
     for (var method in visitor.useCases) {
       final varName = names.subName(method.name);
-      final cubitName = '${names.firstUpper(method.name)}Cubit';
-      final useCaseName = '${names.firstUpper(method.name)}UseCase';
-      final requestName = '${names.firstUpper(method.name)}Request';
+      final requestType = names.requestType(method.name);
       final type = methodFormat.returnType(method.type);
-      final responseDataType = names.responseDataType(type);
+      final responseType = names.responseType(type);
 
       ///[get cache]
       if (method.isCache) {
         final getCacheCubit = StringBuffer();
-        final cacheCubitName = cubitName.replaceFirst('Get', '');
-        final cacheUseCaseName = useCaseName.replaceFirst('Get', '');
+        final cacheCubitType = names.getCacheCubitType(method.name);
+        final cacheUseCaseName =
+            names.useCaseName(names.getCacheName(method.name));
 
         ///[Imports]
         getCacheCubit.writeln(Imports.create(
-          imports: [requestName, 'GetCache$cacheUseCaseName'],
+          imports: [requestType, cacheUseCaseName],
           filePath: buildStep.inputId.path,
           isCubit: true,
         ));
         getCacheCubit.writeln('@injectable');
-        getCacheCubit.writeln(
-            'class GetCache$cacheCubitName extends Cubit<FlowState> {');
         getCacheCubit
-            .writeln('final GetCache$cacheUseCaseName _get$cacheUseCaseName;');
-        if (responseDataType.contains('List')) {
-          getCacheCubit.writeln('$responseDataType $varName = [];');
+            .writeln('class $cacheCubitType extends Cubit<FlowState> {');
+        getCacheCubit.writeln('final $cacheCubitType _$cacheUseCaseName;');
+        if (responseType.contains('List')) {
+          getCacheCubit.writeln('$responseType $varName = [];');
         } else {
-          getCacheCubit.writeln('$responseDataType? $varName;');
+          getCacheCubit.writeln('$responseType? $varName;');
         }
         getCacheCubit.writeln(
-            'GetCache$cacheCubitName(this._get$cacheUseCaseName) : super(ContentState());');
+            'GetCache$cacheCubitType(this._$cacheUseCaseName) : super(ContentState());');
         getCacheCubit.writeln('void execute() {');
         getCacheCubit.writeln(
             'emit(LoadingState(type: StateRendererType.fullScreenLoading));');
-        getCacheCubit.writeln('final res =  _get$cacheUseCaseName.execute();');
+        getCacheCubit.writeln('final res =  _$cacheUseCaseName.execute();');
         getCacheCubit.writeln('res.right((data) {');
         getCacheCubit.writeln('$varName = data;');
         getCacheCubit.writeln('emit(ContentState());');
@@ -77,7 +75,7 @@ class CacheCubitGenerator
         getCacheCubit.writeln('}');
         getCacheCubit.writeln('}');
 
-        AddFile.save('$path/GetCache$cacheCubitName', getCacheCubit.toString());
+        AddFile.save('$path/$cacheUseCaseName', getCacheCubit.toString());
         cubits.writeln(getCacheCubit);
       }
     }

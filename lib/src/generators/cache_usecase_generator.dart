@@ -34,11 +34,14 @@ class CacheUseCaseGenerator
       if (method.isCache) {
         final useCase = StringBuffer();
         final noParams = method.parameters.isEmpty;
-        final methodName =
-            names.firstUpper(method.name).replaceFirst('Get', '');
-        final useCaseName = '${methodName}UseCase';
+        final cacheMethodName = names.cacheName(method.name);
+        final getCacheMethodName = names.getCacheName(method.name);
+        final cacheUseCaseType =
+            names.useCaseType(names.cacheType(method.name));
+        final getCacheUseCaseType =
+            names.useCaseType(names.getCacheType(method.name));
         final type = methodFormat.returnType(method.type);
-        final responseDataType = names.responseDataType(type);
+        final responseType = names.responseType(type);
 
         ///[cache]
         final cacheUseCase = StringBuffer();
@@ -50,27 +53,27 @@ class CacheUseCaseGenerator
           isUseCase: noParams,
           hasCache: true,
         ));
-        cacheUseCase.writeln('///[Cache$useCaseName]');
+        cacheUseCase.writeln('///[$cacheUseCaseType]');
         cacheUseCase.writeln('///[Implementation]');
         cacheUseCase.writeln('@injectable');
         cacheUseCase.writeln(
-            'class Cache$useCaseName implements BaseUseCase<Future<Either<Failure, Unit>>,$responseDataType> {');
+            'class $cacheUseCaseType implements BaseUseCase<Future<Either<Failure, Unit>>,$responseType> {');
         cacheUseCase.writeln('final $repositoryName repository;');
-        cacheUseCase.writeln('const Cache$useCaseName(');
+        cacheUseCase.writeln('const $cacheUseCaseType(');
         cacheUseCase.writeln('this.repository,');
         cacheUseCase.writeln(');\n');
         cacheUseCase.writeln('@override');
         cacheUseCase.writeln(
-            'Future<Either<Failure, Unit>> execute({$responseDataType? request,}) async {');
+            'Future<Either<Failure, Unit>> execute({$responseType? request,}) async {');
         cacheUseCase.writeln('if(request != null){');
-        cacheUseCase.writeln('return await repository.cache$methodName');
+        cacheUseCase.writeln('return await repository.$cacheMethodName');
         cacheUseCase.writeln('(data: request);');
         cacheUseCase.writeln('}');
         cacheUseCase.writeln('return const Right(unit);');
         cacheUseCase.writeln('}\n');
         cacheUseCase.writeln('}\n');
         useCase.writeln(cacheUseCase);
-        AddFile.save('$path/Cache$useCaseName', cacheUseCase.toString());
+        AddFile.save('$path/$cacheUseCaseType', cacheUseCase.toString());
 
         ///[get]
         final getCacheUseCase = StringBuffer();
@@ -81,23 +84,23 @@ class CacheUseCaseGenerator
           filePath: buildStep.inputId.path,
           isUseCase: true,
         ));
-        getCacheUseCase.writeln('///[GetCache$useCaseName]');
+        getCacheUseCase.writeln('///[$getCacheUseCaseType]');
         getCacheUseCase.writeln('///[Implementation]');
         getCacheUseCase.writeln('@injectable');
         getCacheUseCase.writeln(
-            'class GetCache$useCaseName implements BaseUseCase<Either<Failure, $responseDataType>, Void?>{');
+            'class $getCacheUseCaseType implements BaseUseCase<Either<Failure, $responseType>, Void?>{');
         getCacheUseCase.writeln('final $repositoryName repository;');
-        getCacheUseCase.writeln('const GetCache$useCaseName(');
+        getCacheUseCase.writeln('const $getCacheUseCaseType(');
         getCacheUseCase.writeln('this.repository,');
         getCacheUseCase.writeln(');\n');
         getCacheUseCase.writeln('@override');
         getCacheUseCase.writeln(
-            'Either<Failure, $responseDataType> execute({Void? request,}) {');
-        getCacheUseCase.writeln('return repository.getCache$methodName();');
+            'Either<Failure, $responseType> execute({Void? request,}) {');
+        getCacheUseCase.writeln('return repository.$getCacheMethodName();');
         getCacheUseCase.writeln('}\n');
         getCacheUseCase.writeln('}\n');
         useCase.writeln(getCacheUseCase);
-        AddFile.save('$path/GetCache$useCaseName', getCacheUseCase.toString());
+        AddFile.save('$path/$getCacheMethodName', getCacheUseCase.toString());
         classBuffer.write(useCase);
       }
     }
