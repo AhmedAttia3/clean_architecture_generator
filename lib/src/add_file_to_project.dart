@@ -66,7 +66,7 @@ class AddFile {
     bool allowUpdates = false,
     String extension = 'dart',
   }) {
-    final import = search(path);
+    String? import = search(path);
     if (import == null) {
       path = createPath(path, extension: extension);
 
@@ -96,6 +96,11 @@ class AddFile {
         file.writeAsStringSync(content);
       }
     } else {
+      ///[To handle files when move remote to data-source folder]
+      if (!import.contains('local_data_source') &&
+          import.contains('data/data-sources/')) {
+        import = import.replaceAll("data/data-sources/", "");
+      }
       final file = File(import);
       if (allowUpdates) file.writeAsStringSync(content);
     }
