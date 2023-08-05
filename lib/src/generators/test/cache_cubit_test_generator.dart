@@ -118,7 +118,7 @@ class CacheCubitTestGenerator
         cubit.writeln("       },");
         cubit.writeln("       expect: () => <FlowState>[");
         cubit.writeln(
-            "         LoadingState(type: StateRendererType.popUpLoading),");
+            "         LoadingState(type: StateRendererType.fullScreenLoading),");
         cubit.writeln("         ErrorState(");
         cubit.writeln("           type: StateRendererType.toastError,");
         cubit.writeln("           message: failure.message,");
@@ -136,7 +136,7 @@ class CacheCubitTestGenerator
         cubit.writeln("       },");
         cubit.writeln("       expect: () => <FlowState>[");
         cubit.writeln(
-            "         LoadingState(type: StateRendererType.popUpLoading),");
+            "         LoadingState(type: StateRendererType.fullScreenLoading),");
         cubit.writeln("       ContentState(),");
         cubit.writeln("       ],");
         cubit.writeln("     );");

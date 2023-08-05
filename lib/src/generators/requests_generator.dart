@@ -1,7 +1,9 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
+import 'package:clean_architecture_generator/formatter/method_format.dart';
 import 'package:clean_architecture_generator/formatter/names.dart';
 import 'package:clean_architecture_generator/src/annotations.dart';
+import 'package:clean_architecture_generator/src/imports_file.dart';
 import 'package:source_gen/source_gen.dart';
 
 import '../add_file_to_project.dart';
@@ -18,6 +20,7 @@ class RequestsGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         "${AddFile.getDirectories(buildStep.inputId.path)}/domain/requests";
     final visitor = ModelVisitor();
     final names = Names();
+    final methodFormat = MethodFormat();
     element.visitChildren(visitor);
 
     final requests = StringBuffer();
@@ -30,20 +33,29 @@ class RequestsGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
       final requestType = names.requestType(method.name);
 
       ///[Imports]
-      request.writeln("import 'package:json_annotation/json_annotation.dart';");
       request.writeln(
-          "part '${names.camelCaseToUnderscore(requestType)}.g.dart';");
+        Imports.create(
+          filePath: buildStep.inputId.path,
+          libs: [
+            "import 'package:json_annotation/json_annotation.dart';\n",
+            "import 'package:injectable/injectable.dart';\n",
+            "part '${names.camelCaseToUnderscore(requestType)}.g.dart';\n"
+          ],
+        ),
+      );
       request.writeln('///[$requestType]');
       request.writeln('///[Implementation]');
+      request.writeln('@injectable');
       request.writeln('@JsonSerializable()');
       request.writeln('class $requestType {');
       for (var pram in method.parameters) {
-        request.writeln('final ${pram.type} ${pram.name};');
+        request.writeln('${pram.type} ${pram.name};');
       }
       if (method.parameters.isNotEmpty) {
-        request.writeln('const $requestType({');
+        request.writeln('$requestType({');
         for (var pram in method.parameters) {
-          request.writeln('required this.${pram.name},');
+          request.writeln(
+              'this.${pram.name}=${methodFormat.initData(pram.type.toString(), pram.name)},');
         }
         request.writeln('});\n');
       } else {

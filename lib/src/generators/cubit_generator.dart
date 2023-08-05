@@ -58,6 +58,7 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         cubit.writeln(
             'late final PagewiseLoadController<$baseModelType> pagewiseController;');
         cubit.writeln('$cubitType(this._${names.firstLower(useCaseType)},');
+        if (hasParams) cubit.writeln('$requestType(this.request,');
         cubit.writeln(') : super(ContentState());');
         cubit.writeln('void init() {');
         cubit.writeln(
@@ -72,11 +73,13 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         cubit.writeln(
             'Future<$responseType> execute(${methodFormat.parameters(method.parameters)}) async {');
         cubit.writeln('$responseType $varName = [];');
+        for (var parma in method.parameters) {
+          cubit.writeln('request.${parma.name} = ${parma.name};');
+        }
         cubit.writeln(
             'final res = await _${names.firstLower(useCaseType)}.execute(');
         if (hasParams) {
-          cubit.writeln(
-              "request : $requestType(${methodFormat.passingParameters(method.parameters)}),");
+          cubit.writeln("request : request),");
         }
         cubit.writeln(');');
         cubit.writeln('res.left((failure) {');
@@ -101,6 +104,11 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
           cubit.writeln('final GlobalKey<FormState> formKey;');
         }
 
+        ///[initialize formKey for validation]
+        if (hasParams) {
+          cubit.writeln('final $requestType request;');
+        }
+
         ///[initialize controller for TextEditingController]
         for (var controller in method.textControllers) {
           cubit.writeln('final TextEditingController ${controller.name};');
@@ -111,6 +119,7 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         ///[initialize constructor]
         cubit.writeln('$cubitType(this._${names.firstLower(useCaseType)},');
         if (hasTextController) cubit.writeln('this.formKey,');
+        if (hasParams) cubit.writeln('this.request,');
         for (var controller in method.textControllers) {
           cubit.writeln('this.${controller.name},');
         }
@@ -148,28 +157,19 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         if (hasTextController) {
           cubit.writeln('if (formKey.currentState!.validate()) {');
         }
-        cubit.writeln(
-            'emit(LoadingState(type: StateRendererType.popUpLoading));');
-        cubit.writeln(
-            'final res = await _${names.firstLower(useCaseType)}.execute(');
-
-        ///[add request]
-        if (hasParams || hasTextController || hasFunctionSet || hasEmitSet) {
-          cubit.writeln("request : $requestType(");
-        }
 
         ///[add textEditController to request]
         if (hasTextController) {
           for (var controller in method.textControllers) {
-            cubit.writeln('${controller.name} :');
+            cubit.writeln('request.${controller.name} =');
             if (controller.type == 'int') {
-              cubit.writeln('int.parse(${controller.name}.text),');
+              cubit.writeln('int.parse(${controller.name}.text);');
             } else if (controller.type == 'double') {
-              cubit.writeln('double.parse(${controller.name}.text),');
+              cubit.writeln('double.parse(${controller.name}.text);');
             } else if (controller.type == 'num') {
-              cubit.writeln('num.parse(${controller.name}.text),');
+              cubit.writeln('num.parse(${controller.name}.text);');
             } else {
-              cubit.writeln('${controller.name}.text,');
+              cubit.writeln('${controller.name}.text;');
             }
           }
         }
@@ -177,24 +177,30 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         if (hasEmitSet) {
           ///[add variables to request]
           for (var function in method.emitSets) {
-            cubit.writeln('${function.name} : ${function.name},');
+            cubit.writeln('request.${function.name} = ${function.name};');
           }
         } else if (hasFunctionSet) {
           ///[add variables to request]
           for (var function in method.functionSets) {
-            cubit.writeln('${function.name} : ${function.name},');
+            cubit.writeln('request.${function.name} = ${function.name};');
           }
         }
 
         ///[add params to request]
-        if (hasParams) {
-          cubit.writeln(methodFormat.passingParameters(method.parameters));
+        for (var parma in method.parameters) {
+          cubit.writeln('request.${parma.name} = ${parma.name};');
         }
 
-        ///[add end of request params]
+        cubit.writeln(
+            'emit(LoadingState(type: StateRendererType.popUpLoading));');
+        cubit.writeln(
+            'final res = await _${names.firstLower(useCaseType)}.execute(');
+
+        ///[add request]
         if (hasParams || hasTextController || hasFunctionSet || hasEmitSet) {
-          cubit.writeln("),");
+          cubit.writeln("request : request");
         }
+
         cubit.writeln(');');
         cubit.writeln('res.left((failure) {');
         cubit.writeln('emit(ErrorState(');
