@@ -9,7 +9,7 @@ import 'package:retrofit/retrofit.dart';
 
 part 'settings_remote_data_source.g.dart';
 
-@TDDArchitecture
+@TDDCleanArchitecture
 @RestApi()
 abstract class SettingsRemoteDataSource {
   factory SettingsRemoteDataSource(Dio dio, {String baseUrl}) =
@@ -42,6 +42,6 @@ abstract class SettingsRemoteDataSource {
     @Query('limit') required int limit,
   });
 
-  @GET("getApp")
-  Future<BaseResponse<int>> getAA();
+  @GET("getSetUp")
+  Future<BaseResponse<int>> getSetUp();
 }

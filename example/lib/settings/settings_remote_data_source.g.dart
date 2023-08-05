@@ -169,7 +169,7 @@ class _SettingsRemoteDataSource implements SettingsRemoteDataSource {
   }
 
   @override
-  Future<BaseResponse<int>> getAA() async {
+  Future<BaseResponse<int>> getSetUp() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -182,7 +182,7 @@ class _SettingsRemoteDataSource implements SettingsRemoteDataSource {
     )
             .compose(
               _dio.options,
-              'getApp',
+              'getSetUp',
               queryParameters: queryParameters,
               data: _data,
             )
