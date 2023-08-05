@@ -21,13 +21,13 @@ class AddFile {
   }
 
   static Future<void> move(String fileName, String path, String oldPath) async {
-    final currentPath = '$oldPath/$fileName.dart';
-
+    final dataSource_old = File('$oldPath/$fileName.dart');
     final dataSource = File('$path/$fileName.dart');
 
-    await dataSource.copy(currentPath);
+    final content = await dataSource_old.readAsString();
+    await dataSource.writeAsString(content);
 
-    await File(currentPath).delete();
+    await dataSource_old.delete();
   }
 
   static String createPath(
