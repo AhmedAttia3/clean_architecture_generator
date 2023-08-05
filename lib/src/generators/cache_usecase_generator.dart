@@ -103,7 +103,7 @@ class CacheUseCaseGenerator
         getCacheUseCase.writeln('}\n');
         getCacheUseCase.writeln('}\n');
         useCase.writeln(getCacheUseCase);
-        AddFile.save('$path/$getCacheMethodName', getCacheUseCase.toString());
+        AddFile.save('$path/$getCacheUseCaseType', getCacheUseCase.toString());
         classBuffer.write(useCase);
       }
     }
