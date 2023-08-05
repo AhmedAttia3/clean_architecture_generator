@@ -31,7 +31,7 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
       final cubit = StringBuffer();
       final varName = names.subName(method.name);
       final hasParams = method.parameters.isNotEmpty;
-      final cubitType = names.cacheType(method.name);
+      final cubitType = names.cubitType(method.name);
       final useCaseType = names.useCaseType(method.name);
       final requestType = names.requestType(method.name);
       final type = methodFormat.returnType(method.type);
