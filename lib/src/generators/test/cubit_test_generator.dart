@@ -121,7 +121,7 @@ class CubitTestGenerator
       cubit.writeln("     $useCaseName = Mock$useCaseType();");
       if (hasRequest) {
         cubit.writeln(
-            "     request = const $requestType(${methodFormat.parametersWithValues(method.parameters)});");
+            "     request = $requestType(${methodFormat.parametersWithValues(method.parameters)});");
         request = "request : request";
       }
       cubit.writeln("///[${names.firstUpper(methodName)}]");
@@ -167,7 +167,9 @@ class CubitTestGenerator
         }
         cubit.writeln("     );");
       } else {
-        cubit.writeln("     cubit = $cubitType($useCaseName);");
+        cubit.writeln("     cubit = $cubitType($useCaseName,");
+        if (hasRequest) cubit.writeln("     request,");
+        cubit.writeln("     );");
       }
       cubit.writeln("   });");
       cubit.writeln(" group('$cubitType CUBIT', () {");
