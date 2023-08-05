@@ -62,8 +62,8 @@ class LocalDataSourceTestGenerator
     for (var method in visitor.useCases) {
       if (method.isCache) {
         final type = methodFormat.returnType(method.type);
-        final modelType = names.baseModelName(type);
-        final dataType = names.responseType(type);
+        final modelType = names.ModelType(type);
+        final dataType = methodFormat.responseType(type);
         final dataName = "${names.firstLower(modelType)}Cache";
         classBuffer.writeln('late $dataType $dataName;');
       }
@@ -80,9 +80,9 @@ class LocalDataSourceTestGenerator
     for (var method in visitor.useCases) {
       if (method.isCache) {
         final type = methodFormat.returnType(method.type);
-        final modelType = names.baseModelName(type);
-        final varType = names.varType(modelType);
-        final model = names.camelCaseToUnderscore(names.baseModelName(type));
+        final modelType = names.ModelType(type);
+        final varType = names.modelRuntimeType(modelType);
+        final model = names.camelCaseToUnderscore(names.ModelType(type));
         final decode = "fromJson('expected_$model')";
         final dataName = "${names.firstLower(modelType)}Cache";
         if (varType == 'int' ||
@@ -113,7 +113,7 @@ class LocalDataSourceTestGenerator
         final getCacheMethodName = names.getCacheName(methodName);
         final cacheMethodName = names.cacheName(methodName);
         final type = methodFormat.returnType(method.type);
-        final modelType = names.baseModelName(type);
+        final modelType = names.ModelType(type);
         classBuffer.writeln("const _$key = '${names.keyValue(key)}';");
         classBuffer.writeln(
             "$cacheMethodName() => sharedPreferences.setString(_$key,");
@@ -138,9 +138,9 @@ class LocalDataSourceTestGenerator
           final getCacheMethodName = names.getCacheName(methodName);
           final cacheMethodName = names.cacheName(methodName);
           final type = methodFormat.returnType(method.type);
-          final modelType = names.baseModelName(type);
+          final modelType = names.ModelType(type);
           final dataName = "${names.firstLower(modelType)}Cache";
-          final dataType = names.responseType(type);
+          final dataType = methodFormat.responseType(type);
 
           ///[Cache]
           classBuffer.writeln("///[$cacheMethodName Test]");

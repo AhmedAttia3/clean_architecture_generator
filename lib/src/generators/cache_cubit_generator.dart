@@ -32,7 +32,7 @@ class CacheCubitGenerator
       final varName = names.subName(method.name);
       final requestType = names.requestType(method.name);
       final type = methodFormat.returnType(method.type);
-      final responseType = names.responseType(type);
+      final responseType = methodFormat.responseType(type);
 
       ///[get cache]
       if (method.isCache) {

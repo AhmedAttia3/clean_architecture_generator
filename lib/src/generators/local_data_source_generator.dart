@@ -43,7 +43,7 @@ class LocalDataSourceGenerator
     dataSource.writeln('abstract class $localDataSourceType {');
     for (var method in visitor.useCases) {
       final type = methodFormat.returnType(method.type);
-      final responseType = names.responseType(type);
+      final responseType = methodFormat.responseType(type);
 
       ///[cache save or get]
       if (method.isCache) {
@@ -82,8 +82,8 @@ class LocalDataSourceGenerator
     dataSourceImpl.writeln(');\n');
     for (var method in visitor.useCases) {
       final type = methodFormat.returnType(method.type);
-      final responseDataType = names.responseType(type);
-      final modelName = names.baseModelName(type);
+      final responseDataType = methodFormat.responseType(type);
+      final modelName = names.ModelType(type);
 
       ///[cache save or get implement]
       if (method.isCache) {
@@ -98,7 +98,7 @@ class LocalDataSourceGenerator
         dataSourceImpl.writeln(
             'Future<Either<Failure, Unit>> $cacheMethodName({required $responseDataType data,}) async {');
         dataSourceImpl.writeln('try {');
-        final dataType = names.varType(responseDataType);
+        final dataType = names.modelRuntimeType(responseDataType);
         final dynamicType = dataType == 'dynamic';
         if (dynamicType) {
           if (responseDataType.contains('List')) {

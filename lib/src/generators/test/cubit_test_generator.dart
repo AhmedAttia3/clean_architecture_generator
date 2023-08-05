@@ -1,8 +1,12 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
+import 'package:clean_architecture_generator/formatter/method_format.dart';
+import 'package:clean_architecture_generator/formatter/names.dart';
 import 'package:clean_architecture_generator/src/annotations.dart';
+import 'package:clean_architecture_generator/src/imports_file.dart';
 import 'package:source_gen/source_gen.dart';
 
+import '../../add_file_to_project.dart';
 import '../../model_visitor.dart';
 
 class CubitTestGenerator
@@ -13,190 +17,279 @@ class CubitTestGenerator
     ConstantReader annotation,
     BuildStep buildStep,
   ) {
-    // final basePath =
-    //     AddFile.path(buildStep.inputId.path).replaceFirst('lib', 'test');
-    // final path = "$basePath/repository/use-cases";
+    final basePath = AddFile.getDirectories(buildStep.inputId.path)
+        .replaceFirst('lib', 'test');
+    final path = "$basePath/presentation/logic";
     final visitor = ModelVisitor();
-    //   final names = Names();
-    //final methodFormat = MethodFormat();
     element.visitChildren(visitor);
-    final haveKeyValidator =
-        visitor.classParams.values.contains('GlobalKey<FormState>');
+    final methodFormat = MethodFormat();
+    final names = Names();
+    for (var method in visitor.useCases) {
+      final methodName = method.name;
+      final hasRequest = method.parameters.isNotEmpty;
+      final useCaseName = names.useCaseName(methodName);
+      final useCaseType = names.useCaseType(methodName);
+      final cubitType = names.cubitType(methodName);
+      final fileName = "${names.camelCaseToUnderscore(cubitType)}_test";
+      final returnType = methodFormat.returnType(method.type);
+      final modelType = names.ModelType(returnType);
+      final modelRuntimeType = names.modelRuntimeType(modelType);
+      List<ParameterElement> parameters = method.parameters;
 
-    final classBuffer = StringBuffer();
-    // final repository = names.firstLower(visitor.className);
-    classBuffer.writeln('@GenerateNiceMocks([');
-    for (var param in visitor.classParamsType) {
-      classBuffer.writeln('MockSpec<$param>(),');
-    }
-    if (haveKeyValidator) {
-      classBuffer.writeln('MockSpec<FormState>(),');
-    }
-    classBuffer.writeln('])');
-    classBuffer.writeln('void main() {');
-    classBuffer.writeln("late ${visitor.className} cubit;");
-    for (var param in visitor.classParams.entries) {
-      classBuffer.writeln('late ${param.value} ${param.key};');
-    }
-    if (haveKeyValidator) {
-      classBuffer.writeln('late FormState formState;');
-    }
-    classBuffer.writeln('setUp(() async {');
-    for (var param in visitor.classParams.entries) {
-      classBuffer.writeln('${param.key} = Mock${param.value}();');
-    }
-    if (haveKeyValidator) {
-      classBuffer.writeln('formState = MockFormState();');
+      if (method.textControllers.isNotEmpty) {
+        parameters.removeWhere((item) => method.emitSets.contains(item.name));
+        parameters
+            .removeWhere((item) => method.textControllers.contains(item.name));
+        parameters
+            .removeWhere((item) => method.functionSets.contains(item.name));
+      }
+      String requestType = '';
+      if (hasRequest) {
+        requestType = names.requestType(methodName);
+      }
+      final cubit = StringBuffer();
+
+      cubit.writeln(
+        Imports.create(
+          filePath: buildStep.inputId.path,
+          imports: [
+            cubitType,
+            useCaseType,
+            requestType,
+            "base_response",
+            "state_renderer",
+            "states",
+            "failure",
+          ],
+          libs: [
+            "import 'package:bloc_test/bloc_test.dart';",
+            "import 'package:eitherx/eitherx.dart';",
+            "import 'package:flutter_test/flutter_test.dart';",
+            "import 'package:mockito/annotations.dart';",
+            "import 'package:mockito/mockito.dart';",
+            "import '$fileName.mocks.dart';",
+          ],
+        ),
+      );
+      cubit.writeln(" @GenerateNiceMocks([");
+      if (method.textControllers.isNotEmpty) {
+        cubit.writeln("   MockSpec<TextEditingController>(),");
+        cubit.writeln("   MockSpec<GlobalKey<FormState>>(),");
+        cubit.writeln("   MockSpec<FormState>(),");
+      }
+      cubit.writeln("   MockSpec<$useCaseType>(),");
+      cubit.writeln(" ])");
+      cubit.writeln(" void main() {");
+      cubit.writeln("   late $cubitType cubit;");
+      cubit.writeln("   late $useCaseType $useCaseName;");
+      for (var name in method.textControllers) {
+        cubit.writeln("   late TextEditingController $name;");
+      }
+      if (method.textControllers.isNotEmpty) {
+        cubit.writeln("   late GlobalKey<FormState> key;");
+        cubit.writeln("   late FormState formState;");
+      }
+      if (hasRequest) {
+        cubit.writeln("   late $requestType request;");
+      }
+      cubit.writeln("   late $returnType response;");
+      cubit.writeln("   late Failure failure;");
+      cubit.writeln("   setUp(() async {");
+      for (var name in method.textControllers) {
+        cubit.writeln("     $name = MockTextEditingController();");
+      }
+      if (method.textControllers.isNotEmpty) {
+        cubit.writeln("     key = MockGlobalKey();");
+        cubit.writeln("     formState = MockFormState();");
+      }
+      cubit.writeln("     $useCaseName = Mock$useCaseType();");
+      if (hasRequest) {
+        cubit.writeln(
+            "     request = $requestType(${methodFormat.parametersWithValues(method.parameters)});");
+      }
+      cubit.writeln("///[${names.firstUpper(methodName)}]");
+      cubit.writeln('response = $returnType(');
+      cubit.writeln("message: 'message',");
+      cubit.writeln("success: true,");
+      if (modelRuntimeType == 'int' ||
+          modelRuntimeType == 'double' ||
+          modelRuntimeType == 'num' ||
+          modelRuntimeType == 'String' ||
+          modelRuntimeType == 'Map' ||
+          modelRuntimeType == 'bool') {
+        cubit.writeln(
+            "data: ${methodFormat.initData(modelRuntimeType, 'name')},);");
+      } else if (returnType.contains('BaseResponse<dynamic>')) {
+        cubit.writeln("data: null,);");
+      } else {
+        final model = names.camelCaseToUnderscore(names.ModelType(returnType));
+        AddFile.save(
+          "test/expected/expected_$model",
+          '{}',
+          extension: 'json',
+        );
+        final decode = "fromJson('expected_$model')";
+        if (returnType.contains('List')) {
+          cubit.writeln("data: List.generate(");
+          cubit.writeln("2,");
+          cubit.writeln("(index) =>");
+          cubit.writeln("$modelType.fromJson($decode),");
+          cubit.writeln("));");
+        } else {
+          cubit.writeln("data: $modelType.fromJson($decode),);");
+        }
+      }
+      cubit.writeln("     failure = Failure(1, '');");
+      if (method.textControllers.isNotEmpty) {
+        cubit.writeln("     cubit = $cubitType(");
+        cubit.writeln("     $useCaseName,");
+        cubit.writeln("     key,");
+        for (var name in method.textControllers) {
+          cubit.writeln("     $name,");
+        }
+        cubit.writeln("     );");
+      } else {
+        cubit.writeln("     cubit = $cubitType($useCaseName);");
+      }
+      cubit.writeln("   });");
+      cubit.writeln(" group('$cubitType CUBIT', () {");
+      if (method.isPaging) {
+        cubit.writeln("     blocTest<$cubitType, FlowState>(");
+        cubit.writeln("       '$methodName failure METHOD',");
+        cubit.writeln("       build: () => cubit,");
+        cubit.writeln("       act: (cubit) {");
+        cubit
+            .writeln("         when($useCaseName.execute(request : request)))");
+        cubit.writeln(
+            "             .thenAnswer((realInvocation) async => Left(failure));");
+        cubit.writeln(
+            "         cubit.execute(${methodFormat.parametersWithValues(parameters)});");
+        cubit.writeln("       },");
+        cubit.writeln("       expect: () => <FlowState>[");
+        cubit.writeln("         ErrorState(");
+        cubit.writeln("           type: StateRendererType.toastError,");
+        cubit.writeln("           message: failure.message,");
+        cubit.writeln("         )");
+        cubit.writeln("       ],");
+        cubit.writeln("     );");
+        cubit.writeln("     blocTest<$cubitType, FlowState>(");
+        cubit.writeln("       '$methodName success METHOD',");
+        cubit.writeln("       build: () => cubit,");
+        cubit.writeln("       act: (cubit) {");
+        cubit
+            .writeln("         when($useCaseName.execute(request : request)))");
+        cubit.writeln(
+            "             .thenAnswer((realInvocation) async => Right(response));");
+        cubit.writeln("         cubit.init();");
+        cubit.writeln(
+            "         cubit.execute(${methodFormat.parametersWithValues(parameters)});");
+        cubit.writeln("       },");
+        cubit.writeln("       expect: () => <FlowState>[],");
+        cubit.writeln("     );");
+      } else {
+        cubit.writeln("     blocTest<$cubitType, FlowState>(");
+        cubit.writeln("       '$methodName validation error METHOD',");
+        cubit.writeln("       build: () => cubit,");
+        cubit.writeln("       act: (cubit) {");
+        cubit.writeln(
+            "         when(key.currentState).thenAnswer((realInvocation) => formState);");
+        cubit.writeln(
+            "         when(formState.validate()).thenAnswer((realInvocation) => false);");
+        cubit.writeln(
+            "         cubit.execute(${methodFormat.parametersWithValues(parameters)});");
+        cubit.writeln("       },");
+        cubit.writeln("       expect: () => <FlowState>[],");
+        cubit.writeln("     );\n");
+
+        for (var fun in method.emitSets) {
+          cubit.writeln("     blocTest<$cubitType, FlowState>(");
+          cubit.writeln("       'set${names.firstUpper(fun.name)}',");
+          cubit.writeln("       build: () => cubit,");
+          cubit.writeln("       act: (cubit) {");
+          cubit.writeln(
+              "         cubit.set${names.firstUpper(fun.name)}(${methodFormat.initData(fun.type, fun.name)});");
+          cubit.writeln("       },");
+          cubit.writeln("       expect: () => <FlowState>[");
+          cubit.writeln("         ContentState(),");
+          cubit.writeln("       ],");
+          cubit.writeln("     );\n");
+        }
+        cubit.writeln("     blocTest<$cubitType, FlowState>(");
+        cubit.writeln("       '$methodName success true status METHOD',");
+        cubit.writeln("       build: () => cubit,");
+        cubit.writeln("       act: (cubit) {");
+        cubit.writeln(
+            "         when(key.currentState).thenAnswer((realInvocation) => formState);");
+        cubit.writeln(
+            "         when(formState.validate()).thenAnswer((realInvocation) => true);");
+        cubit.writeln("         when($useCaseName.execute(request: request))");
+        cubit.writeln(
+            "             .thenAnswer((realInvocation) async => Right(response));");
+        cubit.writeln(
+            "         cubit.execute(${methodFormat.parametersWithValues(parameters)});");
+        cubit.writeln("       },");
+        cubit.writeln("       expect: () => <FlowState>[");
+        cubit.writeln(
+            "         LoadingState(type: StateRendererType.popUpLoading),");
+        cubit.writeln(
+            "         SuccessState(message: 'message', type: StateRendererType.contentState)");
+        cubit.writeln("       ],");
+        cubit.writeln("     );");
+        cubit.writeln("     blocTest<$cubitType, FlowState>(");
+        cubit.writeln("       '$methodName success false status METHOD',");
+        cubit.writeln("       build: () => cubit,");
+        cubit.writeln("       act: (cubit) {");
+        cubit.writeln(
+            "         when(key.currentState).thenAnswer((realInvocation) => formState);");
+        cubit.writeln(
+            "         when(formState.validate()).thenAnswer((realInvocation) => true);");
+        cubit.writeln(
+            "         when($useCaseName.execute(request: request)).thenAnswer(");
+        cubit.writeln(
+            "                 (realInvocation) async => Right(response..success = false));");
+        for (var fun in method.functionSets) {
+          cubit.writeln(
+              "         cubit.set${names.firstUpper(fun.name)}(${methodFormat.initData(fun.type, fun.name)});");
+        }
+        cubit.writeln(
+            "         cubit.execute(${methodFormat.parametersWithValues(parameters)});");
+        cubit.writeln("       },");
+        cubit.writeln("       expect: () => <FlowState>[");
+        cubit.writeln(
+            "         LoadingState(type: StateRendererType.popUpLoading),");
+        cubit.writeln(
+            "         ErrorState(type: StateRendererType.toastError, message: 'message')");
+        cubit.writeln("       ],");
+        cubit.writeln("     );");
+        cubit.writeln("   });\n");
+        cubit.writeln("   blocTest<$cubitType, FlowState>(");
+        cubit.writeln("     '$methodName failure METHOD',");
+        cubit.writeln("     build: () => cubit,");
+        cubit.writeln("     act: (cubit) {");
+        cubit.writeln(
+            "       when(key.currentState).thenAnswer((realInvocation) => formState);");
+        cubit.writeln(
+            "       when(formState.validate()).thenAnswer((realInvocation) => true);");
+        cubit.writeln("       when($useCaseName.execute(request: request))");
+        cubit.writeln(
+            "           .thenAnswer((realInvocation) async => Left(failure));");
+        cubit.writeln(
+            "       cubit.execute(${methodFormat.parametersWithValues(parameters)});");
+        cubit.writeln("     },");
+        cubit.writeln("     expect: () => <FlowState>[");
+        cubit.writeln(
+            "       LoadingState(type: StateRendererType.popUpLoading),");
+        cubit.writeln(
+            "       ErrorState(type: StateRendererType.toastError, message: failure.message)");
+        cubit.writeln("     ],");
+        cubit.writeln("   );");
+      }
+      cubit.writeln("   });");
+      cubit.writeln(" }");
+
+      AddFile.save('$path/$fileName', cubit.toString());
     }
 
-    ///[cubit init start]
-    classBuffer.writeln('cubit = ${visitor.className}(');
-    for (var param in visitor.constructorParams) {
-      classBuffer.writeln('${param.name},');
-    }
-    classBuffer.writeln(');');
-
-    ///[cubit init end]
-    classBuffer.writeln('});');
-
-    ///[test]
-    classBuffer.writeln("group('${visitor.className} CUBIT', () {");
-    for (var fun in visitor.useCases) {
-      classBuffer.writeln("blocTest<${visitor.className}, FlowState>(");
-      classBuffer.writeln("'${fun.name} METHOD',");
-      classBuffer.writeln("build: () => cubit,");
-      classBuffer.writeln("act: (cubit) {");
-      classBuffer.writeln(
-          "when(${fun.name}.execute()).thenAnswer((realInvocation) => Right(successResponse));");
-      classBuffer.writeln("cubit.${fun.name}();");
-      classBuffer.writeln("},");
-      classBuffer.writeln("expect: () => <FlowState>[");
-      classBuffer.writeln("],");
-      classBuffer.writeln(");");
-
-      classBuffer.writeln("print('${fun.declaration.toString()}');");
-      classBuffer.writeln("print('${fun.parameters.toString()}');");
-
-//
-
-//         ContentState(data: user),
-//
-//     );
-    }
-    classBuffer.writeln('});');
-    classBuffer.writeln('}');
-    return classBuffer.toString();
+    return '';
   }
 }
-
-//   late BaseResponse<UserModel?> response;
-//   late UserModel user;
-//
-//   setUp(() async {
-//     editProfileRequest = EditProfileRequest(
-//       phone: 'phone',
-//       email: 'email',
-//       fullName: 'fullName',
-//     );
-//     user = UserModel.fromJson(Encode.set('expected_user_model'));
-//     response = BaseResponse<UserModel?>.fromJson(
-//       Encode.set('expected_auth_success_response'),
-//           (json) => UserModel.fromJson(json as Map<String, dynamic>),
-//     );
-//
-//   });
-//
-//   group('EditProfileCubit CUBIT', () {
-//     blocTest<EditProfileCubit, FlowState>(
-//       'getProfile METHOD',
-//       build: () => cubit,
-//       act: (cubit) {
-//         when(getProfile.execute()).thenAnswer((realInvocation) => Right(user));
-//
-//         cubit.info();
-//       },
-//       expect: () => <FlowState>[
-//         ContentState(data: user),
-//       ],
-//     );
-//
-//     blocTest<EditProfileCubit, FlowState>(
-//       'editProfile validation false METHOD',
-//       build: () => cubit,
-//       act: (cubit) {
-//         when(key.currentState).thenAnswer((realInvocation) => formState);
-//         when(formState.validate()).thenAnswer((realInvocation) => false);
-//         when(cubit.isChanged()).thenAnswer((realInvocation) => false);
-//       },
-//       expect: () => <FlowState>[],
-//     );
-//
-//     blocTest<EditProfileCubit, FlowState>(
-//       'editProfile success true status METHOD',
-//       build: () => cubit,
-//       act: (cubit) {
-//         when(key.currentState).thenAnswer((realInvocation) => formState);
-//         when(formState.validate()).thenAnswer((realInvocation) => true);
-//         when(saveProfile.execute(user: user))
-//             .thenAnswer((realInvocation) async => const Right(unit));
-//         when(editProfile.execute(request: editProfileRequest))
-//             .thenAnswer((realInvocation) async => Right(response));
-//
-//         cubit.editProfile(
-//           onPhoneChanged: () {},
-//           onEmailChanged: () {},
-//           onNameOrNoThing: () {},
-//         );
-//       },
-//       expect: () => <FlowState>[
-//         LoadingState(type: StateRendererType.popUpLoading),
-//         SuccessState(
-//             message: 'User Logged In sucssfully',
-//             type: StateRendererType.contentState)
-//       ],
-//     );
-//
-//     blocTest<EditProfileCubit, FlowState>(
-//       'editProfile success false status METHOD',
-//       build: () => cubit,
-//       act: (cubit) {
-//         when(key.currentState).thenAnswer((realInvocation) => formState);
-//         when(formState.validate()).thenAnswer((realInvocation) => true);
-//         when(editProfile.execute(request: editProfileRequest)).thenAnswer(
-//                 (realInvocation) async => Right(response..success = false));
-//
-//         cubit.editProfile(
-//           onPhoneChanged: () {},
-//           onEmailChanged: () {},
-//           onNameOrNoThing: () {},
-//         );
-//       },
-//       expect: () => <FlowState>[
-//         LoadingState(type: StateRendererType.popUpLoading),
-//         ErrorState(
-//             type: StateRendererType.toastError,
-//             message: 'User Logged In sucssfully')
-//       ],
-//     );
-//
-//     blocTest<EditProfileCubit, FlowState>(
-//       'editProfile failure METHOD',
-//       build: () => cubit,
-//       act: (cubit) {
-//         when(key.currentState).thenAnswer((realInvocation) => formState);
-//         when(formState.validate()).thenAnswer((realInvocation) => true);
-//         when(editProfile.execute(request: editProfileRequest))
-//             .thenAnswer((realInvocation) async => Left(Failure(0, 'message')));
-//
-//         cubit.editProfile(
-//           onPhoneChanged: () {},
-//           onEmailChanged: () {},
-//           onNameOrNoThing: () {},
-//         );
-//       },
-//       expect: () => <FlowState>[
-//         LoadingState(type: StateRendererType.popUpLoading),
-//         ErrorState(type: StateRendererType.toastError, message: 'message')
-//       ],
-//     );
-//   });

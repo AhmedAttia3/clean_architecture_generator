@@ -36,8 +36,8 @@ class UseCaseTestGenerator
       final useCaseName = names.useCaseName(methodName);
       final requestType = names.requestType(methodName);
       final type = methodFormat.returnType(method.type);
-      final modelType = names.baseModelName(type);
-      final varType = names.varType(modelType);
+      final modelType = names.ModelType(type);
+      final varType = names.modelRuntimeType(modelType);
       final fileName = "${names.camelCaseToUnderscore(useCaseType)}_test";
       final usecase = StringBuffer();
 
@@ -77,7 +77,7 @@ class UseCaseTestGenerator
       } else if (type.contains('BaseResponse<dynamic>')) {
         usecase.writeln("data: null,);");
       } else {
-        final model = names.camelCaseToUnderscore(names.baseModelName(type));
+        final model = names.camelCaseToUnderscore(names.ModelType(type));
         AddFile.save(
           "$expectedPath/expected/expected_$model",
           '{}',

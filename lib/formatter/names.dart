@@ -105,11 +105,11 @@ class Names {
     return value.split('<').elementAt(1).replaceAll('>', "");
   }
 
-  String baseModelName(String value) {
+  String ModelType(String value) {
     return value.replaceFirst('?', '').replaceAll('>', '').split('<').last;
   }
 
-  String varType(dynamic type) {
+  String modelRuntimeType(dynamic type) {
     type = type.toString();
     if (type == "int" ||
         type == "String" ||
@@ -120,13 +120,6 @@ class Names {
       return type;
     }
     return 'dynamic';
-  }
-
-  String responseType(String value) {
-    return value
-        .replaceFirst('BaseResponse<', "")
-        .replaceFirst('>', "")
-        .replaceFirst('?', '');
   }
 
   String camelCaseToUnderscore(String input) {

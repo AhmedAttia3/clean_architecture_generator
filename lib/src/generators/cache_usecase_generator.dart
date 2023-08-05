@@ -41,7 +41,7 @@ class CacheUseCaseGenerator
         final getCacheUseCaseType =
             names.useCaseType(names.getCacheType(method.name));
         final type = methodFormat.returnType(method.type);
-        final responseType = names.responseType(type);
+        final responseType = methodFormat.responseType(type);
 
         ///[cache]
         final cacheUseCase = StringBuffer();

@@ -46,6 +46,13 @@ class MethodFormat {
         .replaceFirst('?>>', '>?>');
   }
 
+  String responseType(String value) {
+    return value
+        .replaceFirst('BaseResponse<', "")
+        .replaceFirst('>', "")
+        .replaceFirst('?', '');
+  }
+
   dynamic initData(String type, String name) {
     if (type == 'String') {
       return '"$name"';

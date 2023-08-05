@@ -11,6 +11,7 @@ import 'src/generators/optimize/move_remote_data_source_generator.dart';
 import 'src/generators/optimize/optimize_generator.dart';
 import 'src/generators/repository_generator.dart';
 import 'src/generators/requests_generator.dart';
+import 'src/generators/test/cache_cubit_test_generator.dart';
 import 'src/generators/test/cache_usecase_test_generator.dart';
 import 'src/generators/test/cubit_test_generator.dart';
 import 'src/generators/test/get_cache_usecase_test_generator.dart';
@@ -21,7 +22,7 @@ import 'src/generators/usecase_generator.dart';
 
 export 'src/annotations.dart';
 
-Builder generateArchitecture(BuilderOptions options) => SharedPartBuilder(
+Builder generateCleanArchitecture(BuilderOptions options) => SharedPartBuilder(
       [
         OptimizeGenerator(),
         RequestsGenerator(),
@@ -39,6 +40,7 @@ Builder generateArchitecture(BuilderOptions options) => SharedPartBuilder(
         CacheUseCaseTestGenerator(),
         GetCacheUseCaseTestGenerator(),
         CubitTestGenerator(),
+        CacheCubitTestGenerator(),
 
         ///[Move Remote data source]
         MoveRemoteDataSourceGenerator()

@@ -46,7 +46,7 @@ class RepositoryGenerator
     for (var method in visitor.useCases) {
       final methodName = names.firstLower(method.name);
       final type = methodFormat.returnType(method.type);
-      final responseType = names.responseType(type);
+      final responseType = methodFormat.responseType(type);
       repository.writeln(
           'Future<Either<Failure, $type>> $methodName(${methodFormat.parameters(method.parameters)});');
 
@@ -105,7 +105,7 @@ class RepositoryGenerator
     for (var method in visitor.useCases) {
       final methodName = names.firstLower(method.name);
       final type = methodFormat.returnType(method.type);
-      final responseType = names.responseType(type);
+      final responseType = methodFormat.responseType(type);
       repositoryImpl.writeln('@override');
       repositoryImpl.writeln(
           'Future<Either<Failure, $type>> $methodName(${methodFormat.parameters(method.parameters)})async {');

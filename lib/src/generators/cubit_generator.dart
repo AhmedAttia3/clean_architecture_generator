@@ -35,8 +35,8 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
       final useCaseType = names.useCaseType(method.name);
       final requestType = names.requestType(method.name);
       final type = methodFormat.returnType(method.type);
-      final responseType = names.responseType(type);
-      final baseModelType = names.baseModelName(type);
+      final responseType = methodFormat.responseType(type);
+      final baseModelType = names.ModelType(type);
       final hasData = !type.contains('BaseResponse<dynamic>');
       final hasTextController = method.textControllers.isNotEmpty;
       final hasFunctionSet = method.functionSets.isNotEmpty;

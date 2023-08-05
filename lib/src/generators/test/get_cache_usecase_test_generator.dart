@@ -34,9 +34,9 @@ class GetCacheUseCaseTestGenerator
       final useCaseType = names.useCaseType(methodName);
       final useCaseName = names.useCaseName(methodName);
       final type = methodFormat.returnType(method.type);
-      final modelType = names.baseModelName(type);
-      final varType = names.varType(modelType);
-      final responseType = names.responseType(type);
+      final modelType = names.ModelType(type);
+      final varType = names.modelRuntimeType(modelType);
+      final responseType = methodFormat.responseType(type);
       final fileName = "${names.camelCaseToUnderscore(useCaseType)}_test";
       final usecase = StringBuffer();
       if (method.isCache) {
@@ -63,7 +63,7 @@ class GetCacheUseCaseTestGenerator
         usecase.writeln('repository = Mock$repositoryType();');
         usecase.writeln('$useCaseName = $useCaseType(repository);');
         usecase.writeln("failure = Failure(1, 'message');");
-        final model = names.camelCaseToUnderscore(names.baseModelName(type));
+        final model = names.camelCaseToUnderscore(names.ModelType(type));
         final decode =
             "jsonDecode(File('test/expected/expected_$model.json').readAsStringSync())";
         if (varType == 'int' ||
