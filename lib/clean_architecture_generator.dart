@@ -21,6 +21,7 @@ import 'src/generators/test/usecase_test_generator.dart';
 import 'src/generators/usecase_generator.dart';
 
 export 'src/annotations.dart';
+export 'src/generators/main/clean_architecture_set_up.dart';
 
 Builder generateCleanArchitecture(BuilderOptions options) => SharedPartBuilder(
       [

@@ -1,0 +1,2 @@
+import 'package:clean_architecture_generator/clean_architecture_generator.dart';
+class SetUp implements CleanAr
