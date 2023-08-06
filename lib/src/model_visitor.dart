@@ -13,8 +13,11 @@ class ModelVisitor extends SimpleElementVisitor<void> {
 
   @override
   void visitClassElement(ClassElement element) {
-    final cleanMethods = element.getGetter('methods');
-    data = cleanMethods;
+    data =
+        element.fields.map((e) => e.declaration.toString()).toList().toString();
+    data += element.augmented.getGetter('methods').toString();
+    data += element.getGetter('methods').toString();
+    data += element.declaration.toString();
     super.visitClassElement(element);
   }
 
