@@ -20,11 +20,12 @@ class ModelVisitor extends SimpleElementVisitor<void> {
 
   @override
   void visitMethodElement(MethodElement element) {
-    data += "${element.declaration.toString()}";
-    data += "${element.source.fullName.toString()}";
-    data += "${element.source.uri.data?.parameters.toString()}";
-    data += "${element.source.toString()}";
-    data += "${element.returnType.toString()}";
+    data += "${element.declaration.toString()} declaration";
+    data += "${element.source.fullName.toString()} source fullName";
+    data +=
+        "${element.source.uri.data?.parameters.toString()} source parameters";
+    data += "${element.source.toString()} source";
+    data += "${element.returnType.toString()} returnType";
     final parameters = [...element.parameters];
     final type = element.returnType.toString();
     final name = element.name.toString();
