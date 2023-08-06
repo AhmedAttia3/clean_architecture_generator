@@ -12,16 +12,6 @@ class ModelVisitor extends SimpleElementVisitor<void> {
   dynamic data;
 
   @override
-  void visitClassElement(ClassElement element) {
-    data =
-        element.fields.map((e) => e.declaration.toString()).toList().toString();
-    data += element.augmented.getGetter('methods').toString();
-    data += element.getGetter('methods').toString();
-    data += element.declaration.toString();
-    super.visitClassElement(element);
-  }
-
-  @override
   void visitConstructorElement(ConstructorElement element) {
     final returnType = element.returnType.toString();
     className = returnType.replaceFirst('*', '');
@@ -30,6 +20,9 @@ class ModelVisitor extends SimpleElementVisitor<void> {
 
   @override
   void visitMethodElement(MethodElement element) {
+    data += element.declaration.toString();
+    data += element.source.toString();
+    data += element.returnType.toString();
     final parameters = [...element.parameters];
     final type = element.returnType.toString();
     final name = element.name.toString();
