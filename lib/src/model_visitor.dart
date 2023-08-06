@@ -9,7 +9,7 @@ List<String> paths = [];
 class ModelVisitor extends SimpleElementVisitor<void> {
   String className = '';
   List<UseCaseModel> useCases = [];
-  dynamic data;
+  String data = "";
 
   @override
   void visitConstructorElement(ConstructorElement element) {
