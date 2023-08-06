@@ -7,7 +7,6 @@ import 'src/generators/cache_cubit_generator.dart';
 import 'src/generators/cache_usecase_generator.dart';
 import 'src/generators/cubit_generator.dart';
 import 'src/generators/local_data_source_generator.dart';
-import 'src/generators/optimize/move_remote_data_source_generator.dart';
 import 'src/generators/optimize/optimize_generator.dart';
 import 'src/generators/repository_generator.dart';
 import 'src/generators/requests_generator.dart';
@@ -44,8 +43,8 @@ Builder generateCleanArchitecture(BuilderOptions options) => SharedPartBuilder(
         CubitTestGenerator(),
         CacheCubitTestGenerator(),
 
-        ///[Move Remote data source]
-        MoveRemoteDataSourceGenerator()
+        // ///[Move Remote data source]
+        // MoveRemoteDataSourceGenerator()
       ],
       'clean_architecture',
       // formatOutput: (code) {
