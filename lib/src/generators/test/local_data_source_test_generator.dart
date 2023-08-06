@@ -19,11 +19,9 @@ class LocalDataSourceTestGenerator
     ConstantReader annotation,
     BuildStep buildStep,
   ) {
-    String path = AddFile.getDirectories(buildStep.inputId.path)
+    final basePath = AddFile.getDirectories(buildStep.inputId.path)
         .replaceFirst('lib', 'test');
-    if (!path.contains("data/data-sources")) {
-      path += "$path/data/data-sources";
-    }
+    final path = "$basePath/data/data-sources";
     final visitor = ModelVisitor();
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);

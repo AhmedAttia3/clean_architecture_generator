@@ -16,6 +16,9 @@ class ModelVisitor extends GeneralizingElementVisitor<void> {
   visitConstructorElement(ConstructorElement element) {
     final returnType = element.returnType.toString();
     className = returnType.replaceFirst('*', '');
+    if (!className.contains('RemoteDataSource')) {
+      className = "${className}RemoteDataSource";
+    }
   }
 
   @override

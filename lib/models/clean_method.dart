@@ -8,7 +8,7 @@ enum ParamProp { none, Set, EmitSet, TextController }
 
 enum ParamDataType { String, Int, Num, List }
 
-class CleanMethod<T> {
+class CleanMethod {
   final String name;
   final String response;
   final String endPoint;
@@ -29,7 +29,7 @@ class CleanMethod<T> {
   });
 }
 
-class CleanMethodModel<T> extends CleanMethod<T> {
+class CleanMethodModel extends CleanMethod {
   CleanMethodModel({
     required super.name,
     required super.endPoint,
