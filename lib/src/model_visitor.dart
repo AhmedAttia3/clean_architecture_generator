@@ -26,7 +26,7 @@ class ModelVisitor extends GeneralizingElementVisitor<void> {
     for (var method in methods) {
       useCases.add(
         UseCaseModel(
-          type: method.type,
+          type: method.response,
           name: method.name,
           parameters: method.parameters
               .map((e) => CommendType(name: e.name, type: e.dataType.name))
@@ -68,9 +68,6 @@ class ModelVisitor extends GeneralizingElementVisitor<void> {
     cleans.removeWhere((item) => item.isEmpty);
     List<CleanMethodModel> methods = [];
     for (var method in cleans) {
-      final cleanMethodType = method.substring(1, method.indexOf(">"));
-      method = method.replaceFirst("<$cleanMethodType>", "");
-
       method = method
           .replaceAll('Param(', '{"')
           .replaceAll('MethodType.', '"')
@@ -90,8 +87,7 @@ class ModelVisitor extends GeneralizingElementVisitor<void> {
           .replaceAll('true"', 'true')
           .replaceAll('false"', 'false');
 
-      methods.add(CleanMethodModel.fromJson(
-          jsonDecode(method)..['type'] = cleanMethodType));
+      methods.add(CleanMethodModel.fromJson(jsonDecode(method)));
     }
 
     return methods;

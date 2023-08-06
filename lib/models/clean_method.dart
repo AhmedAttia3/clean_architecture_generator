@@ -10,6 +10,7 @@ enum ParamDataType { String, Int, Num, List }
 
 class CleanMethod<T> {
   final String name;
+  final String response;
   final String endPoint;
   final MethodType methodType;
   final RequestType requestType;
@@ -19,6 +20,7 @@ class CleanMethod<T> {
   const CleanMethod({
     required this.name,
     required this.endPoint,
+    required this.response,
     this.methodType = MethodType.POST,
     this.requestType = RequestType.Fields,
     this.isCache = false,
@@ -28,12 +30,10 @@ class CleanMethod<T> {
 }
 
 class CleanMethodModel<T> extends CleanMethod<T> {
-  final String type;
-
   CleanMethodModel({
     required super.name,
     required super.endPoint,
-    required this.type,
+    required super.response,
     super.isCache,
     super.isPaging,
     super.methodType,
@@ -58,7 +58,7 @@ class CleanMethodModel<T> extends CleanMethod<T> {
     }
 
     return CleanMethodModel(
-      type: map['type'],
+      response: map['response'],
       name: map['name'],
       endPoint: map['endPoint'],
       isPaging: map['isPaging'] ?? false,

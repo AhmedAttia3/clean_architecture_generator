@@ -138,11 +138,11 @@ packages:
     source: hosted
     version: "2.0.3"
   clean_architecture_generator:
-    dependency: "direct main"
+    dependency: "direct dev"
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "948688a61a82e179f90ce10140a27824728de0e9"
+      resolved-ref: be9a4238822b56b5b1180f27472b842f5560dcc5
       url: "https://github.com/ibrahimnashat/clean_architecture_generator.git"
     source: git
     version: "0.1.5"
