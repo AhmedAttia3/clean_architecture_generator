@@ -13,12 +13,10 @@ class CleanMethod<T> {
   final RequestType requestType;
   final List<Param> parameters;
   final bool isPaging, isCache;
-  final T response;
 
   const CleanMethod({
     required this.name,
     required this.endPoint,
-    required this.response,
     this.methodType = MethodType.POST,
     this.requestType = RequestType.OneFiled,
     this.isCache = false,

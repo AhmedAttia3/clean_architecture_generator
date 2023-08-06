@@ -20,6 +20,7 @@ import 'src/generators/test/repository_test_generator.dart';
 import 'src/generators/test/usecase_test_generator.dart';
 import 'src/generators/usecase_generator.dart';
 
+export 'models/clean_method.dart';
 export 'src/annotations.dart';
 export 'src/generators/main/clean_architecture_set_up.dart';
 
