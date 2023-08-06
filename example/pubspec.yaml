@@ -46,6 +46,8 @@ dependencies:
   dio: ^5.0.3
   shared_preferences: ^2.2.0
   internet_connection_checker: ^1.0.0+1
+  clean_architecture_generator:
+    git: https://github.com/ibrahimnashat/clean_architecture_generator.git
 
 
 dev_dependencies:
