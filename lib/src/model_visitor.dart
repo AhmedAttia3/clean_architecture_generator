@@ -29,7 +29,7 @@ class ModelVisitor extends GeneralizingElementVisitor<void> {
     for (var method in methods) {
       useCases.add(
         UseCaseModel(
-          type: method.response,
+          type: "Future<${method.response}>",
           name: method.name,
           parameters: method.parameters
               .map((e) => CommendType(name: e.name, type: e.dataType.name))
