@@ -8,21 +8,21 @@ List<String> paths = [];
 
 class ModelVisitor extends SimpleElementVisitor<void> {
   String className = '';
-  Map<String, String> classParams = {};
-  List<String> classParamsType = [];
   List<UseCaseModel> useCases = [];
-  List<ParameterElement> constructorParams = [];
+  dynamic data;
+
+  @override
+  void visitClassElement(ClassElement element) {
+    final cleanMethods = element.augmented.getGetter('methods');
+    data = cleanMethods;
+    super.visitClassElement(element);
+  }
 
   @override
   void visitConstructorElement(ConstructorElement element) {
     final returnType = element.returnType.toString();
     className = returnType.replaceFirst('*', '');
     paths.add(className);
-    constructorParams = element.declaration.parameters;
-    for (var param in constructorParams) {
-      classParamsType.add(param.type.toString());
-      classParams[param.type.toString()] = param.name;
-    }
   }
 
   @override

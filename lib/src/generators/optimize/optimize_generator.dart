@@ -291,6 +291,6 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
 
     AddFile.searchAndAddFile('$path/fold', fold.toString());
 
-    return '';
+    return '${visitor.data.toString()}';
   }
 }

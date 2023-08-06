@@ -46,7 +46,7 @@ Builder generateCleanArchitecture(BuilderOptions options) => SharedPartBuilder(
         MoveRemoteDataSourceGenerator()
       ],
       'clean_architecture',
-      formatOutput: (code) {
-        return '#BUILD DONE SUCCESSFULLY';
-      },
+      // formatOutput: (code) {
+      //   return '#BUILD DONE SUCCESSFULLY';
+      // },
     );
