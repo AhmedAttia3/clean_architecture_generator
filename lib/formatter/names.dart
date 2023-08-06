@@ -11,14 +11,14 @@ class Names {
     if (value.contains('get')) {
       return firstLower(value.replaceFirst('get', ''));
     }
-    return value.replaceFirst('get', '');
+    return firstLower(value);
   }
 
   String subUpperName(String value) {
     if (value.contains('get')) {
       return firstUpper(value.replaceFirst('get', ''));
     }
-    return value.replaceFirst('get', '');
+    return firstUpper(value);
   }
 
   String getCacheName(String value) {

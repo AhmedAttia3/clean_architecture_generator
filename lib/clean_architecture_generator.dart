@@ -29,8 +29,8 @@ Builder generateCleanArchitecture(BuilderOptions options) => SharedPartBuilder(
         RequestsGenerator(),
         LocalDataSourceGenerator(),
         RepositoryGenerator(),
-        CacheUseCaseGenerator(),
         UseCaseGenerator(),
+        CacheUseCaseGenerator(),
         CubitGenerator(),
         CacheCubitGenerator(),
 
