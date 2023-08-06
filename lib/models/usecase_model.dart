@@ -1,10 +1,7 @@
-import 'package:analyzer/dart/element/element.dart';
-
 class UseCaseModel {
   final String type;
   final String name;
-  final MethodElement declaration;
-  final List<ParameterElement> parameters;
+  final List<CommendType> parameters;
   final bool isPaging, isCache;
   List<CommendType> functionSets = [];
   List<CommendType> emitSets = [];
@@ -14,7 +11,6 @@ class UseCaseModel {
     required this.type,
     required this.name,
     required this.parameters,
-    required this.declaration,
     required this.isPaging,
     required this.isCache,
     required this.functionSets,

@@ -129,22 +129,21 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
             cubit.writeln('$responseType? $varName;');
           }
         }
-        if (hasEmitSet) {
-          ///[initialize variable for set emit function]
-          for (var function in method.emitSets) {
-            cubit.write('${function.type} ${function.name}');
-            cubit.write(initVaType(function.type));
-            method.parameters
-                .removeWhere((element) => function.name == element.name);
-          }
-        } else if (hasFunctionSet) {
-          ///[initialize variable for set function]
-          for (var function in method.functionSets) {
-            cubit.write('${function.type} ${function.name}');
-            cubit.write(initVaType(function.type));
-            method.parameters
-                .removeWhere((element) => function.name == element.name);
-          }
+
+        ///[initialize variable for set emit function]
+        for (var function in method.emitSets) {
+          cubit.write('${function.type} ${function.name}');
+          cubit.write(initVaType(function.type));
+          method.parameters
+              .removeWhere((element) => function.name == element.name);
+        }
+
+        ///[initialize variable for set function]
+        for (var function in method.functionSets) {
+          cubit.write('${function.type} ${function.name}');
+          cubit.write(initVaType(function.type));
+          method.parameters
+              .removeWhere((element) => function.name == element.name);
         }
 
         cubit.writeln('\n');
@@ -170,16 +169,14 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
           }
         }
 
-        if (hasEmitSet) {
-          ///[add variables to request]
-          for (var function in method.emitSets) {
-            cubit.writeln('request.${function.name} = ${function.name};');
-          }
-        } else if (hasFunctionSet) {
-          ///[add variables to request]
-          for (var function in method.functionSets) {
-            cubit.writeln('request.${function.name} = ${function.name};');
-          }
+        ///[add variables to request]
+        for (var function in method.emitSets) {
+          cubit.writeln('request.${function.name} = ${function.name};');
+        }
+
+        ///[add variables to request]
+        for (var function in method.functionSets) {
+          cubit.writeln('request.${function.name} = ${function.name};');
         }
 
         ///[add params to request]
@@ -226,23 +223,21 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
 
         if (hasTextController) cubit.writeln('}');
 
-        if (hasEmitSet) {
-          ///[create emit set]
-          for (var function in method.emitSets) {
-            cubit.writeln(
-                'void set${names.firstUpper(function.name)}(${function.type} value){');
-            cubit.writeln('${function.name} = value;');
-            cubit.writeln('emit(ContentState());');
-            cubit.writeln('}');
-          }
-        } else if (hasFunctionSet) {
-          ///[create set function]
-          for (var function in method.functionSets) {
-            cubit.writeln(
-                'void set${names.firstUpper(function.name)}(${function.type} value){');
-            cubit.writeln('${function.name} = value;');
-            cubit.writeln('}');
-          }
+        ///[create emit set]
+        for (var function in method.emitSets) {
+          cubit.writeln(
+              'void set${names.firstUpper(function.name)}(${function.type} value){');
+          cubit.writeln('${function.name} = value;');
+          cubit.writeln('emit(ContentState());');
+          cubit.writeln('}');
+        }
+
+        ///[create set function]
+        for (var function in method.functionSets) {
+          cubit.writeln(
+              'void set${names.firstUpper(function.name)}(${function.type} value){');
+          cubit.writeln('${function.name} = value;');
+          cubit.writeln('}');
         }
 
         cubit.writeln('}');

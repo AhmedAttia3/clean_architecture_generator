@@ -6,6 +6,8 @@ enum ParamType { Filed, Query, Path }
 
 enum ParamProp { none, Set, EmitSet, TextController }
 
+enum ParamDataType { String, Int, Num, List }
+
 class CleanMethod<T> {
   final String name;
   final String endPoint;
@@ -23,8 +25,23 @@ class CleanMethod<T> {
     this.isPaging = false,
     this.parameters = const [],
   });
+}
 
-  factory CleanMethod.fromJson(Map<String, dynamic> map) {
+class CleanMethodModel<T> extends CleanMethod<T> {
+  final String type;
+
+  CleanMethodModel({
+    required super.name,
+    required super.endPoint,
+    required this.type,
+    super.isCache,
+    super.isPaging,
+    super.methodType,
+    super.parameters,
+    super.requestType,
+  });
+
+  factory CleanMethodModel.fromJson(Map<String, dynamic> map) {
     final methodTypeIndex = MethodType.values
         .indexWhere((element) => element.name == map['methodType']);
     final requestTypeIndex = RequestType.values
@@ -40,14 +57,15 @@ class CleanMethod<T> {
       params.add(Param.fromJson(item));
     }
 
-    return CleanMethod(
+    return CleanMethodModel(
+      type: map['type'],
       name: map['name'],
       endPoint: map['endPoint'],
+      isPaging: map['isPaging'] ?? false,
+      isCache: map['isCache'] ?? false,
       methodType: methodType,
       requestType: requestType,
       parameters: params,
-      isPaging: map['isPaging'] ?? false,
-      isCache: map['isCache'] ?? false,
     );
   }
 }
@@ -56,12 +74,14 @@ class Param {
   final String name;
   final ParamType type;
   final ParamProp prop;
+  final ParamDataType dataType;
   final bool isRequired;
 
   const Param({
     required this.name,
-    required this.type,
-    required this.prop,
+    this.type = ParamType.Filed,
+    this.prop = ParamProp.none,
+    this.dataType = ParamDataType.String,
     this.isRequired = true,
   });
 
@@ -70,15 +90,20 @@ class Param {
         ParamType.values.indexWhere((element) => element.name == json['type']);
     final propIndex =
         ParamProp.values.indexWhere((element) => element.name == json['prop']);
+    final dataTypeIndex = ParamDataType.values
+        .indexWhere((element) => element.name == json['dataType']);
 
     final paramType = ParamType.values[typeIndex == -1 ? 0 : typeIndex];
     final paramProp = ParamProp.values[propIndex == -1 ? 0 : propIndex];
+    final dataType =
+        ParamDataType.values[dataTypeIndex == -1 ? 0 : dataTypeIndex];
 
     return Param(
       name: json['name'],
+      isRequired: json['isRequired'] ?? true,
       type: paramType,
       prop: paramProp,
-      isRequired: json['isRequired'] ?? true,
+      dataType: dataType,
     );
   }
 }

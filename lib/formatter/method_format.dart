@@ -1,9 +1,9 @@
-import 'package:analyzer/dart/element/element.dart';
+import 'package:clean_architecture_generator/models/usecase_model.dart';
 
 class MethodFormat {
   String space = " " * 15;
 
-  String parameters(List<ParameterElement> parameters) {
+  String parameters(List<CommendType> parameters) {
     String data = '{';
     for (var para in parameters) {
       data += 'required ${para.type.toString()} ${para.name.toString()},';
@@ -14,7 +14,7 @@ class MethodFormat {
     return "$data }";
   }
 
-  String requestParameters(List<ParameterElement> parameters) {
+  String requestParameters(List<CommendType> parameters) {
     String data = '';
     for (var para in parameters) {
       data += '${para.name.toString()}: request!.${para.name.toString()},';
@@ -22,7 +22,7 @@ class MethodFormat {
     return data;
   }
 
-  String passingParameters(List<ParameterElement> parameters) {
+  String passingParameters(List<CommendType> parameters) {
     String data = '';
     for (var para in parameters) {
       data += '${para.name.toString()}: ${para.name.toString()},';
@@ -30,7 +30,7 @@ class MethodFormat {
     return data;
   }
 
-  String parametersWithValues(List<ParameterElement> parameters) {
+  String parametersWithValues(List<CommendType> parameters) {
     String data = '';
     for (var para in parameters) {
       data +=

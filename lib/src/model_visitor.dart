@@ -5,127 +5,95 @@ import 'dart:io';
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/visitor.dart';
+import 'package:clean_architecture_generator/models/clean_method.dart';
 import 'package:clean_architecture_generator/models/usecase_model.dart';
-
-import '../models/clean_method.dart';
 
 class ModelVisitor extends GeneralizingElementVisitor<void> {
   String className = '';
   List<UseCaseModel> useCases = [];
-  String data = "";
 
   @override
-  void visitConstructorElement(ConstructorElement element) {
+  visitConstructorElement(ConstructorElement element) {
     final returnType = element.returnType.toString();
     className = returnType.replaceFirst('*', '');
   }
 
   @override
-  void visitMethodElement(MethodElement element) {
+  visitMethodElement(MethodElement element) {
     final path =
         element.declaration.source.toString().replaceFirst("/example/", "");
-    final method = File(path).readAsStringSync();
+    final methods = getCleanMethods(path);
+    for (var method in methods) {
+      useCases.add(
+        UseCaseModel(
+          type: method.type,
+          name: method.name,
+          parameters: method.parameters
+              .map((e) => CommendType(name: e.name, type: e.dataType.name))
+              .toList(),
+          functionSets: method.parameters
+              .where((e) => e.prop == ParamProp.Set)
+              .map((e) => CommendType(name: e.name, type: e.dataType.name))
+              .toList(),
+          textControllers: method.parameters
+              .where((e) => e.prop == ParamProp.TextController)
+              .map((e) => CommendType(name: e.name, type: e.dataType.name))
+              .toList(),
+          emitSets: method.parameters
+              .where((e) => e.prop == ParamProp.EmitSet)
+              .map((e) => CommendType(name: e.name, type: e.dataType.name))
+              .toList(),
+          isCache: method.isCache,
+          isPaging: method.isPaging,
+        ),
+      );
+    }
+    return null;
+  }
+
+  List<CleanMethodModel> getCleanMethods(String path) {
+    final file = File(path).readAsStringSync();
     final pattern = RegExp('\\s+');
-    final items = method
-        .substring(method.indexOf('['), method.indexOf('];') + 1)
-        .trim()
+    String items = file
+        .replaceAll(";", "#")
         .replaceAll("\n", "")
         .replaceAll(pattern, "")
-        .replaceAll('const', "")
-        .replaceAll(")", '"}')
-        .replaceAll('CleanMethod(', '{"')
-        .replaceAll(',', ',"')
-        .replaceAll('Param(', '{"')
-        .replaceAll('MethodType.', '"')
-        .replaceAll('RequestType.', '"')
-        .replaceAll('ParamType.', '"')
-        .replaceAll('ParamProp.', '"')
-        .replaceAll(':', '":')
-        .replaceAll("'", '"')
-        .replaceAll(',', '",')
-        .replaceAll('""', '"')
-        .replaceAll(',"}', "}")
-        .replaceAll('","]"', "]")
-        .replaceAll('","]', "]")
-        .replaceAll('}","{', "},{");
+        .trim()
+        .replaceAll("methods(){return", "!");
+    items = items
+        .substring(items.indexOf('!') + 2, items.lastIndexOf('#') - 1)
+        .replaceAll('const', "");
 
-    List<CleanMethod> methods = [];
-    for (var item in jsonDecode(items)) {
-      methods.add(CleanMethod.fromJson(item));
+    final cleans = items.split("CleanMethod");
+    cleans.removeWhere((item) => item.isEmpty);
+    List<CleanMethodModel> methods = [];
+    for (var method in cleans) {
+      final cleanMethodType = method.substring(1, method.indexOf(">"));
+      method = method.replaceFirst("<$cleanMethodType>", "");
+
+      method = method
+          .replaceAll('Param(', '{"')
+          .replaceAll('MethodType.', '"')
+          .replaceAll('RequestType.', '"')
+          .replaceAll('ParamType.', '"')
+          .replaceAll('ParamProp.', '"')
+          .replaceAll('ParamDataType.', '"')
+          .replaceAll('(', '{"')
+          .replaceAll(')', '}')
+          .replaceAll(':', '":')
+          .replaceAll(',', ',"')
+          .replaceAll("'", '"')
+          .replaceAll(",", '",')
+          .replaceAll('""', '"')
+          .replaceAll(',"}","', '},')
+          .replaceAll(',]"},', ']}')
+          .replaceAll('true"', 'true')
+          .replaceAll('false"', 'false');
+
+      methods.add(CleanMethodModel.fromJson(
+          jsonDecode(method)..['type'] = cleanMethodType));
     }
 
-    data += methods.map((e) => e.name).toList().toString();
-
-    final parameters = [...element.parameters];
-    final type = element.returnType.toString();
-    final name = element.name.toString();
-    final comment = element.documentationComment ?? '';
-    final prop = propIn(comment: comment, name: 'Prop');
-    final textControllers =
-        varsIn(comment: comment, name: 'TextController', params: parameters);
-
-    final functionSets =
-        varsIn(comment: comment, name: 'FunctionSet', params: parameters);
-
-    final emitSets =
-        varsIn(comment: comment, name: 'EmitSet', params: parameters);
-
-    useCases.add(
-      UseCaseModel(
-        type: type,
-        name: name,
-        parameters: parameters,
-        declaration: element.declaration,
-        functionSets: functionSets,
-        textControllers: textControllers,
-        emitSets: emitSets,
-        isCache: prop.contains('cached'),
-        isPaging: prop.contains('paging'),
-      ),
-    );
-    super.visitMethodElement(element);
-  }
-
-  List<CommendType> varsIn({
-    required String comment,
-    required String name,
-    required List<ParameterElement> params,
-  }) {
-    List<CommendType> items = [];
-    final vars = propIn(comment: comment, name: name);
-    if (vars.isNotEmpty) {
-      for (var item in vars) {
-        final index = params.indexWhere((element) => element.name == item);
-        if (index != -1) {
-          items.add(
-            CommendType(
-              name: item,
-              type: params[index].type.toString(),
-            ),
-          );
-        }
-      }
-    }
-    return items;
-  }
-
-  List<String> propIn({
-    required String comment,
-    required String name,
-  }) {
-    if (comment.contains('///$name')) {
-      final commends = comment.split('///');
-      final index = commends.indexWhere((item) => item.contains(name));
-      if (index != -1) {
-        return commends[index]
-            .replaceFirst(name, '')
-            .replaceAll(' ', '')
-            .replaceAll('\n', '')
-            .replaceAll('[', '')
-            .replaceAll(']', '')
-            .split(',');
-      }
-    }
-    return [];
+    return methods;
   }
 }
