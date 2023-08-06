@@ -30,18 +30,18 @@ Builder generateCleanArchitecture(BuilderOptions options) => SharedPartBuilder(
         LocalDataSourceGenerator(),
         RepositoryGenerator(),
         UseCaseGenerator(),
-        CacheUseCaseGenerator(),
         CubitGenerator(),
+        CacheUseCaseGenerator(),
         CacheCubitGenerator(),
 
         ///[Test]
         RepositoryTestGenerator(),
         LocalDataSourceTestGenerator(),
         UseCaseTestGenerator(),
-        CacheUseCaseTestGenerator(),
-        GetCacheUseCaseTestGenerator(),
         CubitTestGenerator(),
+        CacheUseCaseTestGenerator(),
         CacheCubitTestGenerator(),
+        GetCacheUseCaseTestGenerator(),
 
         // ///[Move Remote data source]
         // MoveRemoteDataSourceGenerator()
