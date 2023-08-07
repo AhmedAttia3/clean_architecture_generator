@@ -76,7 +76,7 @@ class UseCaseGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
             .writeln('(${methodFormat.requestParameters(method.parameters)});');
       } else {
         if (method.parameters.isNotEmpty) {
-          useCase.writeln('(request : request);');
+          useCase.writeln('(request : request!);');
         } else {
           useCase.writeln('();');
         }
