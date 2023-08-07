@@ -170,7 +170,7 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
             if (method.hasRequest) {
               cubit.writeln('request.${controller.name} =');
             } else {
-              cubit.writeln('final ${controller.type}  ${controller.name} =');
+              cubit.writeln('final _${controller.name} =');
             }
             if (controller.type == 'int') {
               cubit.writeln('int.parse(${controller.name}.text);');
@@ -187,27 +187,23 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         ///[add variables to request]
         for (var function in method.emitSets) {
           if (method.hasRequest) {
-            cubit.writeln('request.${function.name} =');
-          } else {
-            cubit.writeln('final ${function.type}  ${function.name} =');
+            cubit.writeln('request.${function.name} = ${function.name};');
           }
         }
 
         ///[add variables to request]
         for (var function in method.functionSets) {
           if (method.hasRequest) {
-            cubit.writeln('request.${function.name} =');
-          } else {
-            cubit.writeln('final ${function.type}  ${function.name} =');
+            cubit.writeln('request.${function.name} = ${function.name};');
           }
         }
 
         ///[add params to request]
         for (var parma in method.parameters) {
           if (method.hasRequest) {
-            cubit.writeln('request.${parma.name} =');
+            cubit.writeln('request.${parma.name} = ${parma.name};');
           } else {
-            cubit.writeln('final ${parma.type}  ${parma.name} =');
+            cubit.writeln('final _${parma.name} = ${parma.name};');
           }
         }
 
@@ -222,8 +218,21 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
             cubit.writeln("request : request");
           }
         } else {
+          for (var controller in method.textControllers) {
+            cubit.writeln('${controller.name} : _${controller.name},');
+          }
+
+          ///[add variables to request]
+          for (var function in method.emitSets) {
+            cubit.writeln('${function.name} : ${function.name},');
+          }
+
+          ///[add variables to request]
+          for (var function in method.functionSets) {
+            cubit.writeln('${function.name} : ${function.name},');
+          }
           for (var parma in method.parameters) {
-            cubit.writeln('${parma.name} : ${parma.name}');
+            cubit.writeln('${parma.name} : ${parma.name},');
           }
         }
 

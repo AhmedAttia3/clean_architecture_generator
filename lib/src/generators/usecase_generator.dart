@@ -37,7 +37,7 @@ class UseCaseGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     final classBuffer = StringBuffer();
     for (var method in visitor.useCases) {
       final useCase = StringBuffer();
-      final noParams = method.hasRequest;
+      final noParams = !method.hasRequest;
       final useCaseType = names.useCaseType(method.name);
       final requestName = noParams ? 'Void' : names.requestType(method.name);
       final methodName = names.firstLower(method.name);
