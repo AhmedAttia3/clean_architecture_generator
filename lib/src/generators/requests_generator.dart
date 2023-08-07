@@ -1,8 +1,8 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
+import 'package:clean_architecture_generator/clean_architecture_generator.dart';
 import 'package:clean_architecture_generator/formatter/method_format.dart';
 import 'package:clean_architecture_generator/formatter/names.dart';
-import 'package:clean_architecture_generator/src/annotations.dart';
 import 'package:clean_architecture_generator/src/imports_file.dart';
 import 'package:source_gen/source_gen.dart';
 
@@ -26,7 +26,7 @@ class RequestsGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     final requests = StringBuffer();
 
     for (var method in visitor.useCases) {
-      if (!method.hasRequest) {
+      if (!method.hasRequest && method.requestType != RequestType.Body) {
         continue;
       }
       final request = StringBuffer();

@@ -68,34 +68,28 @@ class RemoteDataSourceGenerator
         if (method.methodType == MethodType.POST_MULTI_PART) {
           for (var param in method.requestParameters) {
             remoteDataSource.writeln(
-                "         @${param.type.name}(name: ${param.dataType == ParamDataType.List ? "${param.key}[]" : "${param.key}"}) ${param.isRequired ? "required ${param.dataType.name}" : "${param.dataType.name}?"}  ${param.name},");
+                "         @Part(name: ${param.dataType == ParamDataType.List ? "${param.key}[]" : "${param.key}"}) ${param.isRequired ? "required ${param.dataType.name}" : "${param.dataType.name}?"}  ${param.name},");
           }
         } else {
           for (var param in method.requestParameters) {
-            if (method.type != RequestType.Body) {
-              remoteDataSource.writeln(
-                  "         @${param.type.name}('${param.key}') ${param.isRequired ? "required ${param.dataType.name}" : "${param.dataType.name}?"}  ${param.name},");
-            } else {
-              remoteDataSource.writeln(
-                  "        @Body() ${param.isRequired ? "required ${param.dataType.name}" : "${param.dataType.name}?"}  ${param.name},");
-            }
+            remoteDataSource.writeln(
+                "         @${param.type.name}('${param.key}') ${param.isRequired ? "required ${param.dataType.name}" : "${param.dataType.name}?"}  ${param.name},");
           }
         }
       } else {
         final request = names.requestType(method.name);
-        if (method.requestParameters.length > 1) {
-          for (var param in method.requestParameters) {
-            if (method.type != RequestType.Body) {
-              remoteDataSource.writeln(
-                  "         @${param.type.name}('${param.key}') ${param.isRequired ? "required ${param.dataType.name}" : "${param.dataType.name}?"}  ${param.name},");
-            }
+        bool hasRequest = false;
+        for (var param in method.requestParameters) {
+          if (param.type == ParamType.Query || param.type == ParamType.Path) {
+            remoteDataSource.writeln(
+                "         @${param.type.name}('${param.key}') ${param.isRequired ? "required ${param.dataType.name}" : "${param.dataType.name}?"}  ${param.name},");
+          } else {
+            hasRequest = true;
           }
+        }
+        if (hasRequest) {
           remoteDataSource
               .writeln("         @Body() required $request request,");
-        } else {
-          final param = method.requestParameters.first;
-          remoteDataSource.writeln(
-              "        @Body() ${param.isRequired ? "required ${param.dataType.name}" : "${param.dataType.name}?"}  ${param.name},");
         }
       }
       remoteDataSource.writeln("     });\n");

@@ -73,7 +73,7 @@ class UseCaseGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
       if (method.requestType == RequestType.Fields && method.hasRequest) {
         useCase
             .writeln('(${methodFormat.requestParameters(method.parameters)});');
-      } else if (method.requestType == RequestType.Body && method.hasRequest) {
+      } else if (method.requestType == RequestType.Body) {
         useCase.writeln('(request : request!);');
       } else if (method.parameters.length == 1) {
         useCase.writeln('(${method.parameters.first.name} : request!);');
