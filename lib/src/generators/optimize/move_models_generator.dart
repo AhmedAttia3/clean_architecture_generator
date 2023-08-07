@@ -23,7 +23,7 @@ class MoveModelsGenerator
     content += currentPath;
     content += path;
     for (var model in models) {
-      final filename = model.split('/').last;
+      final filename = model.split('\\').last;
       content += filename;
       await AddFile.move(filename, path, currentPath);
     }
