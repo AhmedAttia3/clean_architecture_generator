@@ -50,6 +50,8 @@ class ModelVisitor extends GeneralizingElementVisitor<void> {
               .toList(),
           isCache: method.isCache,
           isPaging: method.isPaging,
+          requestType: method.requestType,
+          methodType: method.methodType,
         ),
       );
     }

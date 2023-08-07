@@ -17,8 +17,8 @@ class RemoteDataSourceGenerator
     ConstantReader annotation,
     BuildStep buildStep,
   ) {
-    final basePath = AddFile.getDirectories(buildStep.inputId.path);
-    final path = "$basePath/data/data-sources";
+    final path =
+        "${AddFile.getDirectories(buildStep.inputId.path)}/data/data-sources";
     final visitor = ModelVisitor();
     final names = Names();
     final methodFormat = MethodFormat();
@@ -68,7 +68,12 @@ class RemoteDataSourceGenerator
     }
 
     remoteDataSource.writeln(" }");
-    AddFile.save('$path/$fileName', remoteDataSource.toString());
+
+    AddFile.save(
+      '$path/$fileName',
+      remoteDataSource.toString(),
+      allowUpdates: true,
+    );
 
     return "";
   }

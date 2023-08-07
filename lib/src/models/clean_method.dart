@@ -2,7 +2,7 @@ enum MethodType { POST, GET, DELETE, PATCH, POST_MULTI_PART }
 
 enum RequestType { Fields, Body }
 
-enum ParamType { Filed, Query, Path }
+enum ParamType { Field, Query, Path }
 
 enum ParamProp { none, Set, EmitSet, TextController }
 
@@ -79,7 +79,7 @@ class Param {
 
   const Param({
     required this.name,
-    this.type = ParamType.Filed,
+    this.type = ParamType.Field,
     this.prop = ParamProp.none,
     this.dataType = ParamDataType.String,
     this.isRequired = true,
