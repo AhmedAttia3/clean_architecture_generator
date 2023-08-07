@@ -62,7 +62,7 @@ class RemoteDataSourceGenerator
       if (method.requestType == RequestType.Fields) {
         for (var param in method.requestParameters) {
           remoteDataSource.writeln(
-              "         @${param.type.name}('${param.name}') ${param.isRequired ? "required" : ""} ${param.dataType.name} ${param.name},");
+              "         @${param.type.name}('${param.key}') ${param.isRequired ? "required" : ""} ${param.dataType.name} ${param.name},");
         }
       } else {
         final request = names.requestType(method.name);
