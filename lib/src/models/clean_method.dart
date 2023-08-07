@@ -2,11 +2,11 @@ enum MethodType { POST, GET, DELETE, PATCH, POST_MULTI_PART }
 
 enum RequestType { Fields, Body }
 
-enum ParamType { Field, Query, Path }
+enum ParamType { Field, Query, Path, Part, Body }
 
 enum ParamProp { none, Set, EmitSet, TextController }
 
-enum ParamDataType { String, Int, Num, List }
+enum ParamDataType { String, int, double, num, List }
 
 class CleanMethod {
   final String name;

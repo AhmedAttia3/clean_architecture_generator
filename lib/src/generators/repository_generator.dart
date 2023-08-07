@@ -67,8 +67,14 @@ class RepositoryGenerator
             'Future<Either<Failure, $type>> $methodName(${methodFormat.parameters(method.parameters)});');
       } else {
         final request = names.requestType(method.name);
-        repository.writeln(
-            'Future<Either<Failure, $type>> $methodName({required $request request});');
+        repository.writeln('Future<Either<Failure, $type>> $methodName({');
+        for (var param in method.requestParameters) {
+          if (param.type != ParamType.Body) {
+            repository
+                .writeln('required ${param.dataType.name} ${param.name},');
+          }
+        }
+        repository.writeln('required $request request});');
       }
 
       ///[cache save or get]
@@ -148,7 +154,13 @@ class RepositoryGenerator
         repositoryImpl.writeln('return await api<$type>(');
 
         repositoryImpl.writeln(
-            'apiCall: $clientService.${method.name}(request: request),);');
+            'apiCall: $clientService.${method.name}(request: request,');
+        for (var param in method.requestParameters) {
+          if (param.type != ParamType.Body) {
+            repositoryImpl.writeln('${param.name} : request.${param.name},');
+          }
+        }
+        repositoryImpl.writeln(' ),);');
         repositoryImpl.writeln('}\n');
       }
 

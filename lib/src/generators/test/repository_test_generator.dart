@@ -189,7 +189,13 @@ class RepositoryTestGenerator
         classBuffer.writeln(
             '$requestName = $requestType(${methodFormat.parametersWithValues(method.parameters)});');
         classBuffer.writeln(
-            "$methodName() => dataSource.$methodName(request : $requestName);");
+            "$methodName() => dataSource.$methodName(request : $requestName,");
+        for (var param in method.requestParameters) {
+          if (param.type != ParamType.Body) {
+            classBuffer.writeln('${param.name} : $requestName.${param.name},');
+          }
+        }
+        classBuffer.writeln(");");
       }
 
       if (method.isCache) {
@@ -227,6 +233,7 @@ class RepositoryTestGenerator
 
       for (var method in visitor.useCases) {
         final methodName = method.name;
+        final requestName = names.requestName(method.name);
 
         ///[Function Success Test]
         classBuffer.writeln("///[$methodName Success Test]");
@@ -243,9 +250,15 @@ class RepositoryTestGenerator
             classBuffer
                 .writeln("final res = await repository.$methodName($request);");
           } else {
-            final requestName = names.requestName(method.name);
             classBuffer.writeln(
-                "final res = await repository.$methodName(request: $requestName);");
+                "final res = await repository.$methodName(request: $requestName,");
+            for (var param in method.requestParameters) {
+              if (param.type != ParamType.Body) {
+                classBuffer
+                    .writeln('${param.name} : $requestName.${param.name},');
+              }
+            }
+            classBuffer.writeln(");");
           }
         } else {
           classBuffer.writeln("final res = await repository.$methodName();");
@@ -273,9 +286,15 @@ class RepositoryTestGenerator
             classBuffer
                 .writeln("final res = await repository.$methodName($request);");
           } else {
-            final requestName = names.requestName(method.name);
             classBuffer.writeln(
-                "final res = await repository.$methodName(request: $requestName);");
+                "final res = await repository.$methodName(request: $requestName,");
+            for (var param in method.requestParameters) {
+              if (param.type != ParamType.Body) {
+                classBuffer
+                    .writeln('${param.name} : $requestName.${param.name},');
+              }
+            }
+            classBuffer.writeln(");");
           }
         } else {
           classBuffer.writeln("final res = await repository.$methodName();");

@@ -56,19 +56,37 @@ class RemoteDataSourceGenerator
     remoteDataSource.writeln(" _$fileName;");
 
     for (var method in visitor.useCases) {
-      remoteDataSource
-          .writeln("     @${method.methodType.name}('${method.endPoint}')");
+      if (method.methodType == MethodType.POST_MULTI_PART) {
+        remoteDataSource.writeln("     @MultiPart()')");
+        remoteDataSource.writeln("     @POST('${method.endPoint}')");
+      } else {
+        remoteDataSource
+            .writeln("     @${method.methodType.name}('${method.endPoint}')");
+      }
       remoteDataSource.writeln("     ${method.type} ${method.name}({");
       if (method.requestType == RequestType.Fields) {
-        for (var param in method.requestParameters) {
-          remoteDataSource.writeln(
-              "         @${param.type.name}('${param.key}') ${param.isRequired ? "required" : ""} ${param.dataType.name} ${param.name},");
+        if (method.methodType == MethodType.POST_MULTI_PART) {
+          for (var param in method.requestParameters) {
+            remoteDataSource.writeln(
+                "         @${param.type.name}(name: ${param.dataType == ParamDataType.List ? "${param.key}[]" : "${param.key}"}) ${param.isRequired ? "required ${param.dataType.name}" : "${param.dataType.name}?"}  ${param.name},");
+          }
+        } else {
+          for (var param in method.requestParameters) {
+            remoteDataSource.writeln(
+                "         @${param.type.name}('${param.key}') ${param.isRequired ? "required ${param.dataType.name}" : "${param.dataType.name}?"}  ${param.name},");
+          }
         }
       } else {
         final request = names.requestType(method.name);
+        for (var param in method.requestParameters) {
+          if (param.type != ParamType.Body) {
+            remoteDataSource.writeln(
+                "         @${param.type.name}('${param.key}') ${param.isRequired ? "required ${param.dataType.name}" : "${param.dataType.name}?"}  ${param.name},");
+          }
+        }
         remoteDataSource.writeln("         @Body() required $request request,");
       }
-      remoteDataSource.writeln("     });");
+      remoteDataSource.writeln("     });\n");
     }
 
     remoteDataSource.writeln(" }");
