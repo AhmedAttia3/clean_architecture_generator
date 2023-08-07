@@ -26,6 +26,13 @@ class CacheCubitGenerator
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);
 
+    List<String> imports = [];
+    for (var method in visitor.useCases) {
+      final returnType = methodFormat.returnType(method.type);
+      final type = methodFormat.responseType(returnType);
+      imports.add(type);
+    }
+
     final cubits = StringBuffer();
 
     for (var method in visitor.useCases) {
@@ -45,8 +52,7 @@ class CacheCubitGenerator
 
         ///[Imports]
         getCacheCubit.writeln(Imports.create(
-          imports: [requestType, cacheUseCaseType],
-          filePath: buildStep.inputId.path,
+          imports: [requestType, cacheUseCaseType, ...imports],
           isCubit: true,
         ));
         getCacheCubit.writeln('@injectable');

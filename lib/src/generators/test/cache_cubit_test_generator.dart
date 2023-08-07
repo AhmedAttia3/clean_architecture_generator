@@ -24,6 +24,14 @@ class CacheCubitTestGenerator
     element.visitChildren(visitor);
     final methodFormat = MethodFormat();
     final names = Names();
+
+    List<String> imports = [];
+    for (var method in visitor.useCases) {
+      final returnType = methodFormat.returnType(method.type);
+      final type = methodFormat.responseType(returnType);
+      imports.add(type);
+    }
+
     for (var method in visitor.useCases) {
       if (method.isCache) {
         final methodName = names.getCacheName(method.name);
@@ -39,7 +47,6 @@ class CacheCubitTestGenerator
 
         cubit.writeln(
           Imports.create(
-            filePath: buildStep.inputId.path,
             imports: [
               cubitType,
               useCaseType,
@@ -47,6 +54,7 @@ class CacheCubitTestGenerator
               "state_renderer",
               "states",
               "failure",
+              ...imports,
             ],
             libs: [
               "import 'dart:io';",

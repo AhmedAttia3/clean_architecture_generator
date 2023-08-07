@@ -33,10 +33,16 @@ class LocalDataSourceGenerator
     final dataSource = StringBuffer();
     final dataSourceImpl = StringBuffer();
 
+    List<String> imports = [];
+    for (var method in visitor.useCases) {
+      final returnType = methodFormat.returnType(method.type);
+      final type = methodFormat.responseType(returnType);
+      imports.add(type);
+    }
+
     ///[Imports]
     dataSource.writeln(Imports.create(
-      imports: [],
-      filePath: buildStep.inputId.path,
+      imports: imports,
       isLocalDataSource: true,
     ));
     dataSource.writeln('///[Implementation]');
@@ -66,8 +72,10 @@ class LocalDataSourceGenerator
 
     ///[Imports]
     dataSourceImpl.writeln(Imports.create(
-      imports: [localDataSourceName],
-      filePath: buildStep.inputId.path,
+      imports: [
+        localDataSourceName,
+        ...imports,
+      ],
       isLocalDataSource: true,
     ));
 

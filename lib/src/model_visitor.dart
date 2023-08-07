@@ -5,8 +5,8 @@ import 'dart:io';
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/visitor.dart';
-import 'package:clean_architecture_generator/models/clean_method.dart';
-import 'package:clean_architecture_generator/models/usecase_model.dart';
+import 'package:clean_architecture_generator/clean_architecture_generator.dart';
+import 'package:clean_architecture_generator/src/models/usecase_model.dart';
 
 class ModelVisitor extends GeneralizingElementVisitor<void> {
   String className = '';
@@ -31,6 +31,8 @@ class ModelVisitor extends GeneralizingElementVisitor<void> {
         UseCaseModel(
           type: "Future<${method.response}>",
           name: method.name,
+          endPoint: method.endPoint,
+          requestParameters: method.parameters,
           parameters: method.parameters
               .map((e) => CommendType(name: e.name, type: e.dataType.name))
               .toList(),

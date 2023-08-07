@@ -27,6 +27,13 @@ class UseCaseTestGenerator
         .replaceFirst('lib', 'test');
     final path = "$basePath/domain/use-cases";
 
+    List<String> imports = [];
+    for (var method in visitor.useCases) {
+      final returnType = methodFormat.returnType(method.type);
+      final type = methodFormat.responseType(returnType);
+      imports.add(type);
+    }
+
     final classBuffer = StringBuffer();
 
     for (var method in visitor.useCases) {
@@ -47,8 +54,9 @@ class UseCaseTestGenerator
           useCaseType,
           method.parameters.isEmpty ? "" : requestType,
           repositoryType,
+          ...imports,
+          'base_response',
         ],
-        filePath: buildStep.inputId.path,
         isTest: true,
       ));
       usecase.writeln("import '$fileName.mocks.dart';");

@@ -36,10 +36,20 @@ class RepositoryGenerator
     final repositoryImplementType =
         names.repositoryImplType(remoteDataSourceType);
 
+    List<String> imports = [];
+    for (var method in visitor.useCases) {
+      final returnType = methodFormat.returnType(method.type);
+      final type = methodFormat.responseType(returnType);
+      imports.add(type);
+    }
+
     ///[Imports]
-    repository.writeln(Imports.create(
-      filePath: buildStep.inputId.path,
-    ));
+    repository.writeln(
+      Imports.create(
+        imports: imports,
+      ),
+    );
+
     repository.writeln('///[Implementation]');
     repository.writeln('abstract class $repositoryType {');
     bool hasCache = false;
@@ -73,9 +83,14 @@ class RepositoryGenerator
 
     ///[Imports]
     repositoryImpl.writeln(Imports.create(
-      imports: [repositoryType, clientService, localDataSourceType],
+      imports: [
+        repositoryType,
+        clientService,
+        localDataSourceType,
+        ...imports,
+        'base_response'
+      ],
       hasCache: hasCache,
-      filePath: buildStep.inputId.path,
       isRepo: true,
     ));
     repositoryImpl.writeln('///[$repositoryImplementType]');

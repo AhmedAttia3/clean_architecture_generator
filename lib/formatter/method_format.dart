@@ -1,4 +1,4 @@
-import 'package:clean_architecture_generator/models/usecase_model.dart';
+import 'package:clean_architecture_generator/src/models/usecase_model.dart';
 
 class MethodFormat {
   String space = " " * 15;

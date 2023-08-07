@@ -26,10 +26,15 @@ class LocalDataSourceTestGenerator
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);
     final classBuffer = StringBuffer();
+
+    List<String> imports = [];
     bool hasCache = false;
 
     ///[HasCache]
     for (var method in visitor.useCases) {
+      final returnType = methodFormat.returnType(method.type);
+      final type = methodFormat.responseType(returnType);
+      imports.add(type);
       if (method.isCache) {
         hasCache = true;
         break;
@@ -43,12 +48,14 @@ class LocalDataSourceTestGenerator
     ///[Imports]
     classBuffer.writeln(Imports.create(
       isTest: true,
-      filePath: buildStep.inputId.path,
       imports: [
         localDataSourceType,
         '${localDataSourceType}Impl',
+        ...imports,
       ],
-      libs: ["import 'package:shared_preferences/shared_preferences.dart';"],
+      libs: [
+        "import 'package:shared_preferences/shared_preferences.dart';\n",
+      ],
     ));
 
     classBuffer.writeln("import '$fileName.mocks.dart';");

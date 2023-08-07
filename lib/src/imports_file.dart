@@ -20,7 +20,6 @@ class Imports {
   }
 
   static String create({
-    required String filePath,
     List<String> imports = const [],
     List<String> libs = const [],
     bool hasCache = false,
@@ -32,13 +31,7 @@ class Imports {
     bool isUseCase = false,
   }) {
     final names = Names();
-    final files = file(filePath);
     String data = "import 'package:eitherx/eitherx.dart';\n";
-    for (var file in files.split('import')) {
-      final fileName = file.split('/').last.split('.dart').first;
-      final import = importName('$fileName.dart');
-      if (import != null) data += import;
-    }
     final baseResponse = importName('base_response.dart');
     if (baseResponse != null) data += baseResponse;
     final failure = importName('failure.dart');

@@ -27,6 +27,13 @@ class CacheUseCaseGenerator
 
     final repositoryName = '${names.firstUpper(visitor.className)}Repository';
 
+    List<String> imports = [];
+    for (var method in visitor.useCases) {
+      final returnType = methodFormat.returnType(method.type);
+      final type = methodFormat.responseType(returnType);
+      imports.add(type);
+    }
+
     ///[UseCase]
     final classBuffer = StringBuffer();
     for (var method in visitor.useCases) {
@@ -48,8 +55,7 @@ class CacheUseCaseGenerator
 
         ///[Imports]
         cacheUseCase.writeln(Imports.create(
-          imports: [repositoryName],
-          filePath: buildStep.inputId.path,
+          imports: [repositoryName, ...imports],
           isUseCase: noParams,
           hasCache: true,
         ));
@@ -83,8 +89,8 @@ class CacheUseCaseGenerator
           imports: [
             repositoryName,
             getCacheUseCaseType,
+            ...imports,
           ],
-          filePath: buildStep.inputId.path,
           isUseCase: true,
         ));
         getCacheUseCase.writeln('///[$getCacheUseCaseType]');

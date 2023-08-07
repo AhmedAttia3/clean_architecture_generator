@@ -8,6 +8,7 @@ import 'src/generators/cache_usecase_generator.dart';
 import 'src/generators/cubit_generator.dart';
 import 'src/generators/local_data_source_generator.dart';
 import 'src/generators/optimize/optimize_generator.dart';
+import 'src/generators/remote_data_source_generator.dart';
 import 'src/generators/repository_generator.dart';
 import 'src/generators/requests_generator.dart';
 import 'src/generators/test/cache_cubit_test_generator.dart';
@@ -19,32 +20,40 @@ import 'src/generators/test/repository_test_generator.dart';
 import 'src/generators/test/usecase_test_generator.dart';
 import 'src/generators/usecase_generator.dart';
 
-export 'models/clean_method.dart';
 export 'src/annotations.dart';
-export 'src/generators/main/clean_architecture_set_up.dart';
+export 'src/clean_architecture_set_up.dart';
+export 'src/models/clean_method.dart';
 
 Builder generateCleanArchitecture(BuilderOptions options) => SharedPartBuilder(
       [
         OptimizeGenerator(),
         RequestsGenerator(),
-        LocalDataSourceGenerator(),
-        RepositoryGenerator(),
-        UseCaseGenerator(),
-        CubitGenerator(),
-        CacheUseCaseGenerator(),
-        CacheCubitGenerator(),
+        RemoteDataSourceGenerator(),
 
-        ///[Test]
-        RepositoryTestGenerator(),
+        ///[LocalDataSource]
+        LocalDataSourceGenerator(),
         LocalDataSourceTestGenerator(),
+
+        ///[Repository]
+        RepositoryGenerator(),
+        RepositoryTestGenerator(),
+
+        ///[UseCase]
+        UseCaseGenerator(),
         UseCaseTestGenerator(),
+
+        ///[Cubit]
+        CubitGenerator(),
         CubitTestGenerator(),
+
+        ///[CacheUseCase]
+        CacheUseCaseGenerator(),
         CacheUseCaseTestGenerator(),
-        CacheCubitTestGenerator(),
         GetCacheUseCaseTestGenerator(),
 
-        // ///[Move Remote data source]
-        // MoveRemoteDataSourceGenerator()
+        ///[CacheCubit]
+        CacheCubitGenerator(),
+        CacheCubitTestGenerator(),
       ],
       'clean_architecture',
       formatOutput: (code) {

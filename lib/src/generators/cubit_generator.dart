@@ -25,6 +25,13 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);
 
+    List<String> imports = [];
+    for (var method in visitor.useCases) {
+      final returnType = methodFormat.returnType(method.type);
+      final type = methodFormat.responseType(returnType);
+      imports.add(type);
+    }
+
     final cubits = StringBuffer();
 
     for (var method in visitor.useCases) {
@@ -44,11 +51,11 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
 
       ///[Imports]
       cubit.writeln(Imports.create(
-        imports: [useCaseType, hasParams ? requestType : ""],
-        filePath: buildStep.inputId.path,
+        imports: [useCaseType, hasParams ? requestType : "", ...imports],
         isCubit: true,
         isPaging: method.isPaging,
       ));
+
       cubit.writeln('///[$cubitType]');
       cubit.writeln('///[Implementation]');
       cubit.writeln('@injectable');

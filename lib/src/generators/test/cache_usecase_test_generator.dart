@@ -28,6 +28,13 @@ class CacheUseCaseTestGenerator
 
     final classBuffer = StringBuffer();
 
+    List<String> imports = [];
+    for (var method in visitor.useCases) {
+      final returnType = methodFormat.returnType(method.type);
+      final type = methodFormat.responseType(returnType);
+      imports.add(type);
+    }
+
     for (var method in visitor.useCases) {
       final type = methodFormat.returnType(method.type);
       final modelType = names.ModelType(type);
@@ -46,8 +53,9 @@ class CacheUseCaseTestGenerator
           imports: [
             useCaseType,
             repositoryType,
+            ...imports,
+            'base_response',
           ],
-          filePath: buildStep.inputId.path,
           isTest: true,
         ));
         usecase.writeln("import '$fileName.mocks.dart';");

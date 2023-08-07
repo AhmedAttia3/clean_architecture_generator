@@ -35,7 +35,6 @@ class RequestsGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
       ///[Imports]
       request.writeln(
         Imports.create(
-          filePath: buildStep.inputId.path,
           libs: [
             "import 'package:json_annotation/json_annotation.dart';\n",
             "import 'package:injectable/injectable.dart';\n",

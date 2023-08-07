@@ -21,7 +21,6 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     ///[kPrint]
     final kPrint = StringBuffer();
     kPrint.writeln(Imports.create(
-      filePath: buildStep.inputId.path,
       libs: [
         "import 'dart:convert';",
         "import 'dart:developer';",
@@ -53,7 +52,6 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     ///[Network]
     final network = StringBuffer();
     network.writeln(Imports.create(
-      filePath: buildStep.inputId.path,
       libs: [
         "import 'package:injectable/injectable.dart';",
         "import 'package:internet_connection_checker/internet_connection_checker.dart';",
@@ -101,7 +99,6 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     ///[SafeApi]
     final safeApi = StringBuffer();
     safeApi.writeln(Imports.create(
-      filePath: buildStep.inputId.path,
       imports: ['Failure', 'print', 'network'],
       libs: [
         "import 'dart:developer';",
@@ -154,7 +151,6 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     ///[States]
     final states = StringBuffer();
     states.writeln(Imports.create(
-      filePath: buildStep.inputId.path,
       imports: ["StateRenderer"],
       libs: ["import 'package:equatable/equatable.dart';"],
     ));
@@ -232,7 +228,6 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     ///[BaseResponse]
     final baseResponse = StringBuffer();
     baseResponse.writeln(Imports.create(
-      filePath: buildStep.inputId.path,
       libs: ["import 'package:json_annotation/json_annotation.dart';"],
     ));
     baseResponse.writeln("part 'base_response.g.dart';");
@@ -257,7 +252,6 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     ///[Fold]
     final fold = StringBuffer();
     fold.writeln(Imports.create(
-      filePath: buildStep.inputId.path,
       imports: ["Failure", "print"],
       libs: [
         "import 'dart:developer';",

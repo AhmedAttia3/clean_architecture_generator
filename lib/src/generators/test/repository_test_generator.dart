@@ -28,10 +28,14 @@ class RepositoryTestGenerator
     element.visitChildren(visitor);
     final classBuffer = StringBuffer();
 
+    List<String> imports = [];
     bool hasCache = false;
 
     ///[HasCache]
     for (var method in visitor.useCases) {
+      final returnType = methodFormat.returnType(method.type);
+      final type = methodFormat.responseType(returnType);
+      imports.add(type);
       if (method.isCache) {
         hasCache = true;
         break;
@@ -53,10 +57,11 @@ class RepositoryTestGenerator
         remoteDataSourceType,
         '${repositoryType}Impl',
         repositoryType,
-        "Network",
-        "Failure",
+        'base_response',
+        'Network',
+        'Failure',
+        ...imports,
       ],
-      filePath: buildStep.inputId.path,
       isTest: true,
     ));
     classBuffer.writeln("import '$fileName.mocks.dart';");

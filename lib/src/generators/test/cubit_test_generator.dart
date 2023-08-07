@@ -4,9 +4,9 @@ import 'package:clean_architecture_generator/formatter/method_format.dart';
 import 'package:clean_architecture_generator/formatter/names.dart';
 import 'package:clean_architecture_generator/src/annotations.dart';
 import 'package:clean_architecture_generator/src/imports_file.dart';
+import 'package:clean_architecture_generator/src/models/usecase_model.dart';
 import 'package:source_gen/source_gen.dart';
 
-import '../../../models/usecase_model.dart';
 import '../../add_file_to_project.dart';
 import '../../model_visitor.dart';
 
@@ -25,6 +25,8 @@ class CubitTestGenerator
     element.visitChildren(visitor);
     final methodFormat = MethodFormat();
     final names = Names();
+
+    List<String> imports = [];
     for (var method in visitor.useCases) {
       final methodName = method.name;
       final hasRequest = method.parameters.isNotEmpty;
@@ -38,7 +40,8 @@ class CubitTestGenerator
       final modelRuntimeType = names.modelRuntimeType(modelType);
       List<CommendType> parameters = method.parameters;
       String request = "";
-
+      final type = methodFormat.responseType(returnType);
+      imports.add(type);
       if (hasTextControllers) {
         parameters.removeWhere((item) {
           final index = method.emitSets
@@ -65,7 +68,6 @@ class CubitTestGenerator
 
       cubit.writeln(
         Imports.create(
-          filePath: buildStep.inputId.path,
           imports: [
             cubitType,
             useCaseType,
@@ -74,6 +76,7 @@ class CubitTestGenerator
             "state_renderer",
             "states",
             "failure",
+            ...imports,
           ],
           libs: [
             "import 'dart:io';",

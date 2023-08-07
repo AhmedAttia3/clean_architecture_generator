@@ -26,6 +26,13 @@ class UseCaseGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
 
     final repositoryType = names.repositoryType(visitor.className);
 
+    List<String> imports = [];
+    for (var method in visitor.useCases) {
+      final returnType = methodFormat.returnType(method.type);
+      final type = methodFormat.responseType(returnType);
+      imports.add(type);
+    }
+
     ///[UseCase]
     final classBuffer = StringBuffer();
     for (var method in visitor.useCases) {
@@ -39,8 +46,11 @@ class UseCaseGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
 
       ///[Imports]
       useCase.writeln(Imports.create(
-        imports: [repositoryType, noParams ? "" : requestName],
-        filePath: buildStep.inputId.path,
+        imports: [
+          repositoryType,
+          noParams ? "" : requestName,
+          ...imports,
+        ],
         isUseCase: noParams,
       ));
       useCase.writeln('///[$useCaseType]');
