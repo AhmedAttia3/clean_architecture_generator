@@ -9,11 +9,11 @@ import 'package:source_gen/source_gen.dart';
 class MoveModelsGenerator
     extends GeneratorForAnnotation<ArchitectureAnnotation> {
   @override
-  Future<String> generateForAnnotatedElement(
+  String generateForAnnotatedElement(
     Element element,
     ConstantReader annotation,
     BuildStep buildStep,
-  ) async {
+  ) {
     final currentPath = AddFile.getDirectories(buildStep.inputId.path);
     final path = "$currentPath/data/models";
     final visitor = ModelVisitor();
@@ -21,7 +21,7 @@ class MoveModelsGenerator
     final models = Imports.filesInDir("$currentPath/models");
     for (var model in models) {
       final filename = model.split('\\').last;
-      await AddFile.move(filename, path, "$currentPath/models");
+      AddFile.move(filename, path, "$currentPath/models");
     }
     return "";
   }

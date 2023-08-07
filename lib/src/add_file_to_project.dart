@@ -20,16 +20,15 @@ class AddFile {
     );
   }
 
-  static Future<void> move(String fileName, String path, String oldPath) async {
-    await createDir(path);
+  static void move(String fileName, String path, String oldPath) {
     //  try {
     final dataSource_old = File('$oldPath/$fileName');
 
-    final content = await dataSource_old.readAsString();
+    final content = dataSource_old.readAsStringSync();
 
     save('$path/$fileName'.replaceFirst(".dart", ""), content);
 
-    await dataSource_old.delete();
+    dataSource_old.deleteSync();
 
     // } catch (e) {
     //   log(e.toString());
