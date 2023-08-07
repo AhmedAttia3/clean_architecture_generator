@@ -31,6 +31,7 @@ class AddFile {
       );
 
       await dataSource_old.delete();
+      await Directory(oldPath).delete();
     } catch (e) {
       log(e.toString());
     }
