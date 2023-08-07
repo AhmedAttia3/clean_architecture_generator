@@ -1,9 +1,9 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
+import 'package:clean_architecture_generator/clean_architecture_generator.dart';
 import 'package:clean_architecture_generator/formatter/method_format.dart';
 import 'package:clean_architecture_generator/formatter/names.dart';
 import 'package:clean_architecture_generator/src/add_file_to_project.dart';
-import 'package:clean_architecture_generator/src/annotations.dart';
 import 'package:clean_architecture_generator/src/imports_file.dart';
 import 'package:source_gen/source_gen.dart';
 
@@ -31,6 +31,10 @@ class UseCaseTestGenerator
     for (var method in visitor.useCases) {
       final returnType = methodFormat.returnType(method.type);
       final type = methodFormat.responseType(returnType);
+      if (method.requestType == RequestType.Body) {
+        final request = names.requestType(method.name);
+        imports.add(request);
+      }
       imports.add(type);
     }
 
@@ -68,6 +72,12 @@ class UseCaseTestGenerator
       usecase.writeln('late $repositoryType repository;');
       usecase.writeln('late $type success;');
       usecase.writeln('late Failure failure;');
+      if (method.requestType == RequestType.Body &&
+          method.parameters.isNotEmpty) {
+        final requestName = names.requestName(method.name);
+        final requestType = names.requestType(method.name);
+        classBuffer.writeln('late $requestType $requestName;');
+      }
       usecase.writeln('setUp(() {');
       usecase.writeln('repository = Mock$repositoryType();');
       usecase.writeln('$useCaseName = $useCaseType(repository);');
@@ -105,17 +115,27 @@ class UseCaseTestGenerator
       }
       usecase.writeln("});\n");
 
-      final request =
-          "$requestType(${methodFormat.parametersWithValues(method.parameters)})";
-      usecase.writeln(
-          "webService() => repository.$methodName(${methodFormat.parametersWithValues(method.parameters)});\n");
+      final requestName = names.requestName(method.name);
+
+      if (method.requestType == RequestType.Fields) {
+        if (method.parameters.isNotEmpty) {
+          usecase.writeln(
+              "$requestName = $requestType(${methodFormat.parametersWithValues(method.parameters)});\n");
+        }
+        usecase.writeln(
+            "webService() => repository.$methodName(${methodFormat.parametersWithValues(method.parameters)});\n");
+      } else {
+        usecase.writeln(
+            "webService() => repository.$methodName(request : $requestName);\n");
+      }
+
       usecase.writeln("group('$useCaseType ', () {");
       usecase.writeln("test('$methodName FAILURE', () async {");
       usecase.writeln(
           "when(webService()).thenAnswer((realInvocation) async => Left(failure));");
       usecase.writeln("final res = await $useCaseName.execute(");
       if (method.parameters.isNotEmpty) {
-        usecase.writeln("request: $request);");
+        usecase.writeln("request: $requestName);");
       } else {
         usecase.writeln(");");
       }
@@ -128,7 +148,7 @@ class UseCaseTestGenerator
           "when(webService()).thenAnswer((realInvocation) async => Right(success));");
       usecase.writeln("final res = await $useCaseName.execute(");
       if (method.parameters.isNotEmpty) {
-        usecase.writeln("request: $request);");
+        usecase.writeln("request: $requestName);");
       } else {
         usecase.writeln(");");
       }

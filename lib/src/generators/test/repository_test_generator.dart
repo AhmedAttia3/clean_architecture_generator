@@ -32,6 +32,10 @@ class RepositoryTestGenerator
     for (var method in visitor.useCases) {
       final returnType = methodFormat.returnType(method.type);
       final type = methodFormat.responseType(returnType);
+      if (method.requestType == RequestType.Body) {
+        final request = names.requestType(method.name);
+        imports.add(request);
+      }
       imports.add(type);
     }
 
