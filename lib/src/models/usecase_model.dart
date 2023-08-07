@@ -13,7 +13,7 @@ class UseCaseModel {
   List<CommendType> emitSets = [];
   List<CommendType> textControllers = [];
 
-  bool get hasRequest => parameters.length > 1;
+  bool get hasRequest => requestParameters.length > 1;
 
   bool get hasTextControllers => textControllers.isNotEmpty;
 

@@ -169,8 +169,6 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
           for (var controller in method.textControllers) {
             if (method.hasRequest) {
               cubit.writeln('request.${controller.name} =');
-            } else {
-              cubit.writeln('final _${controller.name} =');
             }
             if (controller.type == 'int') {
               cubit.writeln('int.parse(${controller.name}.text);');
@@ -202,8 +200,6 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         for (var parma in method.parameters) {
           if (method.hasRequest) {
             cubit.writeln('request.${parma.name} = ${parma.name};');
-          } else {
-            cubit.writeln('final _${parma.name} = ${parma.name};');
           }
         }
 
@@ -219,7 +215,7 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
           }
         } else {
           for (var controller in method.textControllers) {
-            cubit.writeln('${controller.name} : _${controller.name},');
+            cubit.writeln('${controller.name} : ${controller.name}.text,');
           }
 
           ///[add variables to request]
