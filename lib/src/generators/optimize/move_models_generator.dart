@@ -23,6 +23,8 @@ class MoveModelsGenerator
       final filename = model.split('\\').last.replaceFirst(".dart", "");
       await AddFile.move(filename, path, "$currentPath/models");
     }
+
+    await AddFile.deleteDir("$currentPath/models");
     return "";
   }
 }

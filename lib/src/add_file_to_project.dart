@@ -30,10 +30,13 @@ class AddFile {
     );
 
     await dataSource_old.delete();
-    await Directory(oldPath).delete();
     // } catch (e) {
     //   log(e.toString());
     // }
+  }
+
+  static Future<void> deleteDir(String path) async {
+    await Directory(path).delete();
   }
 
   static String createPath(
