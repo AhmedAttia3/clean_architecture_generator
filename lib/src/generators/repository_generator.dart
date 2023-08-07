@@ -3,6 +3,7 @@ import 'package:build/build.dart';
 import 'package:clean_architecture_generator/formatter/method_format.dart';
 import 'package:clean_architecture_generator/formatter/names.dart';
 import 'package:clean_architecture_generator/src/annotations.dart';
+import 'package:clean_architecture_generator/src/models/clean_method.dart';
 import 'package:source_gen/source_gen.dart';
 
 import '../add_file_to_project.dart';
@@ -40,6 +41,10 @@ class RepositoryGenerator
     for (var method in visitor.useCases) {
       final returnType = methodFormat.returnType(method.type);
       final type = methodFormat.responseType(returnType);
+      if (method.requestType == RequestType.Body) {
+        final request = names.requestType(method.name);
+        imports.add(request);
+      }
       imports.add(type);
     }
 
