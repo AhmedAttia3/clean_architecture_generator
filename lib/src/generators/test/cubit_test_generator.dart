@@ -272,8 +272,7 @@ class CubitTestGenerator
         }
         if (hasRequest) {
           cubit.writeln("         when($useCaseName.execute($request))");
-        } else if (method.requestType == RequestType.Fields &&
-            method.parameters.length == 1) {
+        } else if (method.parameters.length == 1) {
           final item = method.parameters.first;
           cubit.writeln(
               "         when($useCaseName.execute(request : ${methodFormat.initData(item.type, item.name)}))");
@@ -320,8 +319,7 @@ class CubitTestGenerator
         }
         if (hasRequest) {
           cubit.writeln("         when($useCaseName.execute($request))");
-        } else if (method.requestType == RequestType.Fields &&
-            method.parameters.length == 1) {
+        } else if (method.parameters.length == 1) {
           final item = method.parameters.first;
           cubit.writeln(
               "         when($useCaseName.execute(request : ${methodFormat.initData(item.type, item.name)}))");
@@ -368,8 +366,7 @@ class CubitTestGenerator
         }
         if (hasRequest) {
           cubit.writeln("         when($useCaseName.execute($request))");
-        } else if (method.requestType == RequestType.Fields &&
-            method.parameters.length == 1) {
+        } else if (method.parameters.length == 1) {
           final item = method.parameters.first;
           cubit.writeln(
               "         when($useCaseName.execute(request : ${methodFormat.initData(item.type, item.name)}))");

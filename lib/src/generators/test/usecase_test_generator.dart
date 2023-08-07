@@ -114,7 +114,8 @@ class UseCaseTestGenerator
         }
       }
       usecase.writeln("});\n");
-      if (method.requestType == RequestType.Body || method.hasRequest) {
+      if ((method.requestType == RequestType.Body && method.hasRequest) ||
+          method.hasRequest) {
         usecase.writeln(
             "$requestName = $requestType(${methodFormat.parametersWithValues(method.parameters)});\n");
       }
