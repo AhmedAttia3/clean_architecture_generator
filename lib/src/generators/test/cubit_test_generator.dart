@@ -42,23 +42,21 @@ class CubitTestGenerator
       String request = "";
       final type = methodFormat.responseType(returnType);
       imports.add(type);
-      if (hasTextControllers) {
-        parameters.removeWhere((item) {
-          final index = method.emitSets
-              .indexWhere((element) => element.name == item.name);
-          return index != -1;
-        });
-        parameters.removeWhere((item) {
-          final index = method.textControllers
-              .indexWhere((element) => element.name == item.name);
-          return index != -1;
-        });
-        parameters.removeWhere((item) {
-          final index = method.functionSets
-              .indexWhere((element) => element.name == item.name);
-          return index != -1;
-        });
-      }
+      parameters.removeWhere((item) {
+        final index =
+            method.emitSets.indexWhere((element) => element.name == item.name);
+        return index != -1;
+      });
+      parameters.removeWhere((item) {
+        final index = method.textControllers
+            .indexWhere((element) => element.name == item.name);
+        return index != -1;
+      });
+      parameters.removeWhere((item) {
+        final index = method.functionSets
+            .indexWhere((element) => element.name == item.name);
+        return index != -1;
+      });
 
       String requestType = '';
       if (hasRequest) {

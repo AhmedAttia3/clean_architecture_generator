@@ -191,11 +191,10 @@ class RepositoryTestGenerator
         classBuffer.writeln("$methodName() => dataSource.$methodName(");
         for (var param in method.requestParameters) {
           if (param.type != ParamType.Body) {
-            classBuffer.writeln('${param.name}:request.${param.name},');
+            classBuffer.writeln('${param.name} : request.${param.name},');
           }
         }
-        classBuffer.writeln('request : $requestName,),);');
-        classBuffer.writeln(");");
+        classBuffer.writeln('request : $requestName,);');
       }
 
       if (method.isCache) {

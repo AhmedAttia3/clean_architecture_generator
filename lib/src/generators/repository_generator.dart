@@ -144,7 +144,7 @@ class RepositoryGenerator
       } else {
         final request = names.requestType(method.name);
         repositoryImpl.writeln(
-            'Future<Either<Failure, $type>> $methodName({required $request request})async {');
+            'Future<Either<Failure, $type>> $methodName({required $request request,})async {');
         repositoryImpl.writeln('return await api<$type>(');
 
         repositoryImpl.writeln('apiCall: $clientService.${method.name}(');
