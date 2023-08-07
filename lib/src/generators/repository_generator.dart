@@ -62,8 +62,14 @@ class RepositoryGenerator
       final methodName = names.firstLower(method.name);
       final type = methodFormat.returnType(method.type);
       final responseType = methodFormat.responseType(type);
-      repository.writeln(
-          'Future<Either<Failure, $type>> $methodName(${methodFormat.parameters(method.parameters)});');
+      if (method.requestType == RequestType.Fields) {
+        repository.writeln(
+            'Future<Either<Failure, $type>> $methodName(${methodFormat.parameters(method.parameters)});');
+      } else {
+        final request = names.requestType(method.name);
+        repository.writeln(
+            'Future<Either<Failure, $type>> $methodName($request request);');
+      }
 
       ///[cache save or get]
       if (method.isCache) {
@@ -127,13 +133,24 @@ class RepositoryGenerator
       final type = methodFormat.returnType(method.type);
       final responseType = methodFormat.responseType(type);
       repositoryImpl.writeln('@override');
-      repositoryImpl.writeln(
-          'Future<Either<Failure, $type>> $methodName(${methodFormat.parameters(method.parameters)})async {');
-      repositoryImpl.writeln('return await api<$type>(');
+      if (method.requestType == RequestType.Fields) {
+        repositoryImpl.writeln(
+            'Future<Either<Failure, $type>> $methodName(${methodFormat.parameters(method.parameters)})async {');
+        repositoryImpl.writeln('return await api<$type>(');
 
-      repositoryImpl.writeln(
-          'apiCall: $clientService.${method.name}(${methodFormat.passingParameters(method.parameters)}),);');
-      repositoryImpl.writeln('}\n');
+        repositoryImpl.writeln(
+            'apiCall: $clientService.${method.name}(${methodFormat.passingParameters(method.parameters)}),);');
+        repositoryImpl.writeln('}\n');
+      } else {
+        final request = names.requestType(method.name);
+        repositoryImpl.writeln(
+            'Future<Either<Failure, $type>> $methodName($request request)async {');
+        repositoryImpl.writeln('return await api<$type>(');
+
+        repositoryImpl.writeln(
+            'apiCall: $clientService.${method.name}(request: request),);');
+        repositoryImpl.writeln('}\n');
+      }
 
       ///[cache save or get implement]
       if (method.isCache) {
