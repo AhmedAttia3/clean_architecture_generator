@@ -20,11 +20,11 @@ class MoveModelsGenerator
     element.visitChildren(visitor);
     final models = Imports.filesInDir("$currentPath/models");
     String content = models.map((e) => e).toList().join("\n");
-    content += currentPath;
-    content += path;
+    content += "$currentPath\n";
+    content += "$path\n";
     for (var model in models) {
       final filename = model.split('\\').last;
-      content += filename;
+      content += "$filename\n";
       await AddFile.move(filename, path, currentPath);
     }
     AddFile.save(
