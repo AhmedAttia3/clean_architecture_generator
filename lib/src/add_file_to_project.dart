@@ -26,7 +26,8 @@ class AddFile {
     final dataSource_old = File('$oldPath/$fileName');
 
     final content = await dataSource_old.readAsString();
-    final file = await File('$path/$fileName').writeAsString(content);
+
+    await File('$path/$fileName').writeAsString(content);
 
     await dataSource_old.delete();
 
@@ -37,7 +38,7 @@ class AddFile {
 
   static Future<void> createDir(String path) async {
     final dir = Directory(getDirectories(path));
-    if (!await dir.exists()) {
+    if (!(await dir.exists())) {
       try {
         await dir.create();
       } catch (e) {

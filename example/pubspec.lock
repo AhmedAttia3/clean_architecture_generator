@@ -142,7 +142,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "64a8dfa0a57c4132c4f99178dff32ed413f76a7b"
+      resolved-ref: "56dcec43021a4d2c5e9c6289d35e4d242ba52299"
       url: "https://github.com/ibrahimnashat/clean_architecture_generator.git"
     source: git
     version: "0.1.5"
