@@ -57,7 +57,7 @@ class UseCaseTestGenerator
       usecase.writeln(Imports.create(
         imports: [
           useCaseType,
-          method.parameters.isEmpty ? "" : requestType,
+          method.hasRequest ? "" : requestType,
           repositoryType,
           ...imports,
           'base_response',
@@ -73,8 +73,7 @@ class UseCaseTestGenerator
       usecase.writeln('late $repositoryType repository;');
       usecase.writeln('late $type success;');
       usecase.writeln('late Failure failure;');
-      if (method.requestType == RequestType.Body ||
-          method.parameters.isNotEmpty) {
+      if (method.requestType == RequestType.Body || method.hasRequest) {
         usecase.writeln('late $requestType $requestName;');
       }
       usecase.writeln('setUp(() {');
@@ -113,12 +112,11 @@ class UseCaseTestGenerator
         }
       }
       usecase.writeln("});\n");
-      if (method.requestType == RequestType.Body ||
-          method.parameters.isNotEmpty) {
+      if (method.requestType == RequestType.Body || method.hasRequest) {
         usecase.writeln(
             "$requestName = $requestType(${methodFormat.parametersWithValues(method.parameters)});\n");
       }
-      if (method.requestType == RequestType.Fields) {
+      if (method.requestType == RequestType.Fields || !method.hasRequest) {
         usecase.writeln(
             "webService() => repository.$methodName(${methodFormat.parametersWithValues(method.parameters)});\n");
       } else {
@@ -131,10 +129,11 @@ class UseCaseTestGenerator
       usecase.writeln(
           "when(webService()).thenAnswer((realInvocation) async => Left(failure));");
       usecase.writeln("final res = await $useCaseName.execute(");
-      if (method.parameters.isNotEmpty) {
+      if (method.hasRequest) {
         usecase.writeln("request: $requestName);");
       } else {
-        usecase.writeln(");");
+        final request = methodFormat.parametersWithValues(method.parameters);
+        usecase.writeln("$request);");
       }
       usecase.writeln("expect(res.left((data) {}), failure);");
       usecase.writeln("verify(webService());");
@@ -144,10 +143,11 @@ class UseCaseTestGenerator
       usecase.writeln(
           "when(webService()).thenAnswer((realInvocation) async => Right(success));");
       usecase.writeln("final res = await $useCaseName.execute(");
-      if (method.parameters.isNotEmpty) {
+      if (method.hasRequest) {
         usecase.writeln("request: $requestName);");
       } else {
-        usecase.writeln(");");
+        final request = methodFormat.parametersWithValues(method.parameters);
+        usecase.writeln("$request);");
       }
       usecase.writeln("expect(res.right((data) {}), success);");
       usecase.writeln("verify(webService());");

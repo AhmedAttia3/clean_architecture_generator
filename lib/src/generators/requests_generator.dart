@@ -26,7 +26,7 @@ class RequestsGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     final requests = StringBuffer();
 
     for (var method in visitor.useCases) {
-      if (method.parameters.isEmpty) {
+      if (method.hasRequest) {
         continue;
       }
       final request = StringBuffer();
@@ -50,15 +50,13 @@ class RequestsGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
       for (var pram in method.parameters) {
         request.writeln('${pram.type} ${pram.name};');
       }
-      if (method.parameters.isNotEmpty) {
+      if (method.hasRequest) {
         request.writeln('$requestType({');
         for (var pram in method.parameters) {
           request.writeln(
               'this.${pram.name}=${methodFormat.initData(pram.type.toString(), pram.name)},');
         }
         request.writeln('});\n');
-      } else {
-        request.writeln('const $requestType();\n');
       }
       request.writeln(
           'factory $requestType.fromJson(Map<String, dynamic> json) => _\$${requestType}FromJson(json);');

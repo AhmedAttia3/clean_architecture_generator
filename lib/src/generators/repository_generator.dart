@@ -62,7 +62,7 @@ class RepositoryGenerator
       final methodName = names.firstLower(method.name);
       final type = methodFormat.returnType(method.type);
       final responseType = methodFormat.responseType(type);
-      if (method.requestType == RequestType.Fields) {
+      if (method.requestType == RequestType.Fields || !method.hasRequest) {
         repository.writeln(
             'Future<Either<Failure, $type>> $methodName(${methodFormat.parameters(method.parameters)});');
       } else {
@@ -133,7 +133,7 @@ class RepositoryGenerator
       final type = methodFormat.returnType(method.type);
       final responseType = methodFormat.responseType(type);
       repositoryImpl.writeln('@override');
-      if (method.requestType == RequestType.Fields) {
+      if (method.requestType == RequestType.Fields || !method.hasRequest) {
         repositoryImpl.writeln(
             'Future<Either<Failure, $type>> $methodName(${methodFormat.parameters(method.parameters)})async {');
         repositoryImpl.writeln('return await api<$type>(');

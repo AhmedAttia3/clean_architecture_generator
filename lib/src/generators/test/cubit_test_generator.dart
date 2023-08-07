@@ -29,8 +29,8 @@ class CubitTestGenerator
     List<String> imports = [];
     for (var method in visitor.useCases) {
       final methodName = method.name;
-      final hasRequest = method.parameters.isNotEmpty;
-      final hasTextControllers = method.textControllers.isNotEmpty;
+      final hasRequest = method.hasRequest;
+      final hasTextControllers = method.hasTextControllers;
       final useCaseName = names.useCaseName(methodName);
       final useCaseType = names.useCaseType(methodName);
       final cubitType = names.cubitType(methodName);
@@ -180,7 +180,12 @@ class CubitTestGenerator
         cubit.writeln("       '$methodName failure METHOD',");
         cubit.writeln("       build: () => cubit,");
         cubit.writeln("       act: (cubit) {");
-        cubit.writeln("         when($useCaseName.execute($request))");
+        if (hasRequest) {
+          cubit.writeln("         when($useCaseName.execute($request))");
+        } else {
+          cubit.writeln(
+              "         when($useCaseName.execute(${methodFormat.parametersWithValues(method.parameters)}))");
+        }
         cubit.writeln(
             "             .thenAnswer((realInvocation) async => Left(failure));");
         cubit.writeln(
@@ -197,7 +202,12 @@ class CubitTestGenerator
         cubit.writeln("       '$methodName success METHOD',");
         cubit.writeln("       build: () => cubit,");
         cubit.writeln("       act: (cubit) {");
-        cubit.writeln("         when($useCaseName.execute($request))");
+        if (hasRequest) {
+          cubit.writeln("         when($useCaseName.execute($request))");
+        } else {
+          cubit.writeln(
+              "         when($useCaseName.execute(${methodFormat.parametersWithValues(method.parameters)}))");
+        }
         cubit.writeln(
             "             .thenAnswer((realInvocation) async => Right(response));");
         cubit.writeln("         cubit.init();");
@@ -250,7 +260,12 @@ class CubitTestGenerator
           cubit.writeln(
               "         when(${con.name}.text).thenAnswer((realInvocation) => ${methodFormat.initData(con.type, con.name)});");
         }
-        cubit.writeln("         when($useCaseName.execute($request))");
+        if (hasRequest) {
+          cubit.writeln("         when($useCaseName.execute($request))");
+        } else {
+          cubit.writeln(
+              "         when($useCaseName.execute(${methodFormat.parametersWithValues(method.parameters)}))");
+        }
         cubit.writeln(
             "             .thenAnswer((realInvocation) async => Right(response));");
         for (var fun in method.emitSets) {
@@ -288,10 +303,14 @@ class CubitTestGenerator
           cubit.writeln(
               "         when(${con.name}.text).thenAnswer((realInvocation) => ${methodFormat.initData(con.type, con.name)});");
         }
+        if (hasRequest) {
+          cubit.writeln("         when($useCaseName.execute($request))");
+        } else {
+          cubit.writeln(
+              "         when($useCaseName.execute(${methodFormat.parametersWithValues(method.parameters)}))");
+        }
         cubit.writeln(
-            "         when($useCaseName.execute($request)).thenAnswer(");
-        cubit.writeln(
-            "                 (realInvocation) async => Right(response..success = false));");
+            "                 .thenAnswer((realInvocation) async => Right(response..success = false));");
         for (var fun in method.emitSets) {
           cubit.writeln(
               "         cubit.set${names.firstUpper(fun.name)}(${methodFormat.initData(fun.type, fun.name)});");
@@ -327,8 +346,12 @@ class CubitTestGenerator
           cubit.writeln(
               "         when(${con.name}.text).thenAnswer((realInvocation) => ${methodFormat.initData(con.type, con.name)});");
         }
-
-        cubit.writeln("       when($useCaseName.execute($request))");
+        if (hasRequest) {
+          cubit.writeln("         when($useCaseName.execute($request))");
+        } else {
+          cubit.writeln(
+              "         when($useCaseName.execute(${methodFormat.parametersWithValues(method.parameters)}))");
+        }
         cubit.writeln(
             "           .thenAnswer((realInvocation) async => Left(failure));");
         for (var fun in method.emitSets) {

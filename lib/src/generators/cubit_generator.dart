@@ -37,7 +37,7 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     for (var method in visitor.useCases) {
       final cubit = StringBuffer();
       final varName = names.subName(method.name);
-      final hasParams = method.parameters.isNotEmpty;
+      final hasParams = method.hasRequest;
       final cubitType = names.cubitType(method.name);
       final useCaseType = names.useCaseType(method.name);
       final requestType = names.requestType(method.name);
@@ -45,9 +45,9 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
       final responseType = methodFormat.responseType(type);
       final baseModelType = names.ModelType(type);
       final hasData = !type.contains('BaseResponse<dynamic>');
-      final hasTextController = method.textControllers.isNotEmpty;
-      final hasFunctionSet = method.functionSets.isNotEmpty;
-      final hasEmitSet = method.emitSets.isNotEmpty;
+      final hasTextController = method.hasTextControllers;
+      final hasFunctionSet = method.hasSets;
+      final hasEmitSet = method.hasEmitSets;
 
       ///[Imports]
       cubit.writeln(Imports.create(
@@ -81,13 +81,17 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         cubit.writeln(
             'Future<$responseType> execute(${methodFormat.parameters(method.parameters)}) async {');
         cubit.writeln('$responseType $varName = [];');
-        for (var parma in method.parameters) {
-          cubit.writeln('request.${parma.name} = ${parma.name};');
+        if (hasParams) {
+          for (var parma in method.parameters) {
+            cubit.writeln('request.${parma.name} = ${parma.name};');
+          }
         }
         cubit.writeln(
             'final res = await _${names.firstLower(useCaseType)}.execute(');
         if (hasParams) {
           cubit.writeln("request : request");
+        } else {
+          cubit.writeln('${methodFormat.passingParameters(method.parameters)}');
         }
         cubit.writeln(');');
         cubit.writeln('res.left((failure) {');
@@ -163,7 +167,11 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         ///[add textEditController to request]
         if (hasTextController) {
           for (var controller in method.textControllers) {
-            cubit.writeln('request.${controller.name} =');
+            if (method.hasRequest) {
+              cubit.writeln('request.${controller.name} =');
+            } else {
+              cubit.writeln('final ${controller.type}  ${controller.name} =');
+            }
             if (controller.type == 'int') {
               cubit.writeln('int.parse(${controller.name}.text);');
             } else if (controller.type == 'double') {
@@ -178,17 +186,29 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
 
         ///[add variables to request]
         for (var function in method.emitSets) {
-          cubit.writeln('request.${function.name} = ${function.name};');
+          if (method.hasRequest) {
+            cubit.writeln('request.${function.name} =');
+          } else {
+            cubit.writeln('final ${function.type}  ${function.name} =');
+          }
         }
 
         ///[add variables to request]
         for (var function in method.functionSets) {
-          cubit.writeln('request.${function.name} = ${function.name};');
+          if (method.hasRequest) {
+            cubit.writeln('request.${function.name} =');
+          } else {
+            cubit.writeln('final ${function.type}  ${function.name} =');
+          }
         }
 
         ///[add params to request]
         for (var parma in method.parameters) {
-          cubit.writeln('request.${parma.name} = ${parma.name};');
+          if (method.hasRequest) {
+            cubit.writeln('request.${parma.name} =');
+          } else {
+            cubit.writeln('final ${parma.type}  ${parma.name} =');
+          }
         }
 
         cubit.writeln(
@@ -197,8 +217,14 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
             'final res = await _${names.firstLower(useCaseType)}.execute(');
 
         ///[add request]
-        if (hasParams || hasTextController || hasFunctionSet || hasEmitSet) {
-          cubit.writeln("request : request");
+        if (method.hasRequest) {
+          if (hasTextController || hasFunctionSet || hasEmitSet) {
+            cubit.writeln("request : request");
+          }
+        } else {
+          for (var parma in method.parameters) {
+            cubit.writeln('${parma.name} : ${parma.name}');
+          }
         }
 
         cubit.writeln(');');

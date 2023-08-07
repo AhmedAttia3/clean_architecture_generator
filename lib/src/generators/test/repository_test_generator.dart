@@ -180,7 +180,7 @@ class RepositoryTestGenerator
 
     for (var method in visitor.useCases) {
       final methodName = method.name;
-      if (method.requestType == RequestType.Fields) {
+      if (method.requestType == RequestType.Fields || !method.hasRequest) {
         classBuffer.writeln(
             "$methodName() => dataSource.$methodName(${methodFormat.parametersWithValues(method.parameters)});");
       } else {
@@ -191,7 +191,7 @@ class RepositoryTestGenerator
         classBuffer.writeln("$methodName() => dataSource.$methodName(");
         for (var param in method.requestParameters) {
           if (param.type != ParamType.Body) {
-            classBuffer.writeln('${param.name} : request.${param.name},');
+            classBuffer.writeln('${param.name} : $requestName.${param.name},');
           }
         }
         classBuffer.writeln('request : $requestName,);');
@@ -218,13 +218,9 @@ class RepositoryTestGenerator
       classBuffer.writeln(
           "when(networkInfo.isConnected).thenAnswer((realInvocation) async => false);");
       final method = visitor.useCases.first;
-      if (method.parameters.isNotEmpty) {
-        final request = methodFormat.parametersWithValues(method.parameters);
-        classBuffer
-            .writeln("final res = await repository.${method.name}($request);");
-      } else {
-        classBuffer.writeln("final res = await repository.${method.name}();");
-      }
+      final request = methodFormat.parametersWithValues(method.parameters);
+      classBuffer
+          .writeln("final res = await repository.${method.name}($request);");
       classBuffer.writeln("expect(res.leftOrNull(), isA<Failure>());");
       classBuffer.writeln("verify(networkInfo.isConnected);");
       classBuffer.writeln("verifyNoMoreInteractions(networkInfo);");
@@ -241,20 +237,17 @@ class RepositoryTestGenerator
         classBuffer.writeln("when($methodName())");
         classBuffer.writeln(
             ".thenAnswer((realInvocation) async => ${methodName}Response);");
-        if (method.parameters.isNotEmpty) {
-          if (method.requestType == RequestType.Fields) {
-            final request =
-                methodFormat.parametersWithValues(method.parameters);
-            classBuffer
-                .writeln("final res = await repository.$methodName($request);");
-          } else {
-            final requestName = names.requestName(method.name);
-            classBuffer.writeln(
-                "final res = await repository.$methodName(request: $requestName);");
-          }
+
+        if (method.requestType == RequestType.Fields || !method.hasRequest) {
+          final request = methodFormat.parametersWithValues(method.parameters);
+          classBuffer
+              .writeln("final res = await repository.$methodName($request);");
         } else {
-          classBuffer.writeln("final res = await repository.$methodName();");
+          final requestName = names.requestName(method.name);
+          classBuffer.writeln(
+              "final res = await repository.$methodName(request: $requestName);");
         }
+
         classBuffer
             .writeln("expect(res.rightOrNull(), ${methodName}Response);");
         classBuffer.writeln("verify(networkInfo.isConnected);");
@@ -271,20 +264,17 @@ class RepositoryTestGenerator
         classBuffer.writeln("when($methodName())");
         classBuffer.writeln(
             ".thenAnswer((realInvocation) async => ${methodName}Response);");
-        if (method.parameters.isNotEmpty) {
-          if (method.requestType == RequestType.Fields) {
-            final request =
-                methodFormat.parametersWithValues(method.parameters);
-            classBuffer
-                .writeln("final res = await repository.$methodName($request);");
-          } else {
-            final requestName = names.requestName(method.name);
-            classBuffer.writeln(
-                "final res = await repository.$methodName(request: $requestName);");
-          }
+
+        if (method.requestType == RequestType.Fields || !method.hasRequest) {
+          final request = methodFormat.parametersWithValues(method.parameters);
+          classBuffer
+              .writeln("final res = await repository.$methodName($request);");
         } else {
-          classBuffer.writeln("final res = await repository.$methodName();");
+          final requestName = names.requestName(method.name);
+          classBuffer.writeln(
+              "final res = await repository.$methodName(request: $requestName);");
         }
+
         classBuffer.writeln("expect(res.leftOrNull(), isA<Failure>());");
         classBuffer.writeln("verify(networkInfo.isConnected);");
         classBuffer.writeln("verify($methodName());");
