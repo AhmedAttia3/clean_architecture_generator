@@ -14,8 +14,7 @@ class MoveModelsGenerator
     ConstantReader annotation,
     BuildStep buildStep,
   ) async {
-    final currentPath =
-        "${AddFile.getDirectories(buildStep.inputId.path)}/models";
+    final currentPath = AddFile.getDirectories(buildStep.inputId.path);
     final path = "$currentPath/data/models";
     final visitor = ModelVisitor();
     element.visitChildren(visitor);
@@ -26,7 +25,7 @@ class MoveModelsGenerator
     for (var model in models) {
       final filename = model.split('\\').last;
       content += "$filename\n";
-      await AddFile.move(filename, path, currentPath);
+      await AddFile.move(filename, path, "$currentPath/models");
     }
     AddFile.save(
       "$currentPath/files",
