@@ -72,8 +72,13 @@ class RemoteDataSourceGenerator
           }
         } else {
           for (var param in method.requestParameters) {
-            remoteDataSource.writeln(
-                "         @${param.type.name}('${param.key}') ${param.isRequired ? "required ${param.dataType.name}" : "${param.dataType.name}?"}  ${param.name},");
+            if (param.type != ParamType.Body) {
+              remoteDataSource.writeln(
+                  "         @${param.type.name}('${param.key}') ${param.isRequired ? "required ${param.dataType.name}" : "${param.dataType.name}?"}  ${param.name},");
+            } else {
+              remoteDataSource.writeln(
+                  "        @Body() ${param.isRequired ? "required ${param.dataType.name}" : "${param.dataType.name}?"}  ${param.name},");
+            }
           }
         }
       } else {
