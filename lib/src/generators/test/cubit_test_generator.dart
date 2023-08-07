@@ -7,7 +7,7 @@ import 'package:clean_architecture_generator/src/imports_file.dart';
 import 'package:clean_architecture_generator/src/models/usecase_model.dart';
 import 'package:source_gen/source_gen.dart';
 
-import '../../add_file_to_project.dart';
+import '../../file_manager.dart';
 import '../../model_visitor.dart';
 
 class CubitTestGenerator
@@ -18,7 +18,7 @@ class CubitTestGenerator
     ConstantReader annotation,
     BuildStep buildStep,
   ) {
-    final basePath = AddFile.getDirectories(buildStep.inputId.path)
+    final basePath = FileManager.getDirectories(buildStep.inputId.path)
         .replaceFirst('lib', 'test');
     final path = "$basePath/presentation/logic";
     final visitor = ModelVisitor();
@@ -142,7 +142,7 @@ class CubitTestGenerator
         cubit.writeln("data: null,);");
       } else {
         final model = names.camelCaseToUnderscore(names.ModelType(returnType));
-        AddFile.save(
+        FileManager.save(
           "test/expected/expected_$model",
           '{}',
           extension: 'json',
@@ -409,7 +409,7 @@ class CubitTestGenerator
           " return jsonDecode(File('test/expected/\$path.json').readAsStringSync());");
       cubit.writeln("}");
 
-      AddFile.save('$path/$fileName', cubit.toString());
+      FileManager.save('$path/$fileName', cubit.toString());
     }
 
     return '';

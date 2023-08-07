@@ -2,8 +2,8 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:clean_architecture_generator/formatter/method_format.dart';
 import 'package:clean_architecture_generator/formatter/names.dart';
-import 'package:clean_architecture_generator/src/add_file_to_project.dart';
 import 'package:clean_architecture_generator/src/annotations.dart';
+import 'package:clean_architecture_generator/src/file_manager.dart';
 import 'package:clean_architecture_generator/src/imports_file.dart';
 import 'package:source_gen/source_gen.dart';
 
@@ -19,7 +19,7 @@ class LocalDataSourceTestGenerator
     ConstantReader annotation,
     BuildStep buildStep,
   ) {
-    final basePath = AddFile.getDirectories(buildStep.inputId.path)
+    final basePath = FileManager.getDirectories(buildStep.inputId.path)
         .replaceFirst('lib', 'test');
     final path = "$basePath/data/data-sources";
     final visitor = ModelVisitor();
@@ -188,7 +188,7 @@ class LocalDataSourceTestGenerator
     classBuffer.writeln(
         " return jsonDecode(File('test/expected/\$path.json').readAsStringSync());");
     classBuffer.writeln("}");
-    AddFile.save(
+    FileManager.save(
       '$path/${localDataSourceType}Test',
       classBuffer.toString(),
       allowUpdates: true,

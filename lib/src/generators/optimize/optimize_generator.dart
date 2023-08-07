@@ -1,7 +1,7 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:clean_architecture_generator/clean_architecture_generator.dart';
-import 'package:clean_architecture_generator/src/add_file_to_project.dart';
+import 'package:clean_architecture_generator/src/file_manager.dart';
 import 'package:clean_architecture_generator/src/imports_file.dart';
 // import 'package:clean_architecture_generator/src/imports_file.dart';
 import 'package:clean_architecture_generator/src/model_visitor.dart';
@@ -47,7 +47,7 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     kPrint.writeln("log(StackTrace.current.toString().split('\\n')[2]);");
     kPrint.writeln("}");
 
-    AddFile.searchAndAddFile('$path/print', kPrint.toString());
+    FileManager.searchAndAddFile('$path/print', kPrint.toString());
 
     ///[Network]
     final network = StringBuffer();
@@ -71,7 +71,7 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         "Future<bool> get isConnected => internetConnectionChecker.hasConnection;");
     network.writeln("}");
 
-    AddFile.searchAndAddFile('$path/network', network.toString());
+    FileManager.searchAndAddFile('$path/network', network.toString());
 
     ///[BaseUseCase]
     final baseUseCase = StringBuffer();
@@ -82,7 +82,7 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     baseUseCase.writeln("RES execute({POS? request});");
     baseUseCase.writeln("}");
 
-    AddFile.searchAndAddFile('$path/base_use_case', baseUseCase.toString());
+    FileManager.searchAndAddFile('$path/base_use_case', baseUseCase.toString());
 
     ///[Failure]
     final failure = StringBuffer();
@@ -94,7 +94,7 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     failure.writeln("Failure(this.code, this.message);");
     failure.writeln("}");
 
-    AddFile.searchAndAddFile('$path/failure', failure.toString());
+    FileManager.searchAndAddFile('$path/failure', failure.toString());
 
     ///[SafeApi]
     final safeApi = StringBuffer();
@@ -130,7 +130,8 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     safeApi.writeln('}');
     safeApi.writeln('}');
 
-    AddFile.searchAndAddFile('$path/safe_request_handler', safeApi.toString());
+    FileManager.searchAndAddFile(
+        '$path/safe_request_handler', safeApi.toString());
 
     ///[StateRendererType]
     final stateRenderer = StringBuffer();
@@ -146,7 +147,8 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     stateRenderer.writeln("contentState");
     stateRenderer.writeln("}");
 
-    AddFile.searchAndAddFile('$path/stateRenderer', stateRenderer.toString());
+    FileManager.searchAndAddFile(
+        '$path/stateRenderer', stateRenderer.toString());
 
     ///[States]
     final states = StringBuffer();
@@ -223,7 +225,7 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     states.writeln("List<Object?> get props => [data];");
     states.writeln("}\n\n");
 
-    AddFile.searchAndAddFile('$path/states', states.toString());
+    FileManager.searchAndAddFile('$path/states', states.toString());
 
     ///[BaseResponse]
     final baseResponse = StringBuffer();
@@ -247,7 +249,7 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     baseResponse.writeln("_\$BaseResponseFromJson(json, fromJsonT);");
     baseResponse.writeln("}\n\n");
 
-    AddFile.searchAndAddFile('$path/BaseResponse', baseResponse.toString());
+    FileManager.searchAndAddFile('$path/BaseResponse', baseResponse.toString());
 
     ///[Fold]
     final fold = StringBuffer();
@@ -284,7 +286,7 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     fold.writeln("}");
     fold.writeln("}");
 
-    AddFile.searchAndAddFile('$path/fold', fold.toString());
+    FileManager.searchAndAddFile('$path/fold', fold.toString());
     return '';
   }
 }

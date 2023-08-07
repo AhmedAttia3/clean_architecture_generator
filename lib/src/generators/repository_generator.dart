@@ -6,7 +6,7 @@ import 'package:clean_architecture_generator/src/annotations.dart';
 import 'package:clean_architecture_generator/src/models/clean_method.dart';
 import 'package:source_gen/source_gen.dart';
 
-import '../add_file_to_project.dart';
+import '../file_manager.dart';
 import '../imports_file.dart';
 import '../model_visitor.dart';
 
@@ -23,7 +23,7 @@ class RepositoryGenerator
     final visitor = ModelVisitor();
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);
-    final path = AddFile.getDirectories(buildStep.inputId.path);
+    final path = FileManager.getDirectories(buildStep.inputId.path);
     final abstractRepoPath = "$path/domain/repository";
     final implRepoPath = "$path/data/repository";
 
@@ -84,7 +84,7 @@ class RepositoryGenerator
     }
     repository.writeln('}\n');
 
-    AddFile.save(
+    FileManager.save(
       '$abstractRepoPath/$repositoryType',
       repository.toString(),
       allowUpdates: true,
@@ -180,7 +180,7 @@ class RepositoryGenerator
       }
     }
     repositoryImpl.writeln('}\n');
-    AddFile.save(
+    FileManager.save(
       '$implRepoPath/${repositoryType}Impl',
       repositoryImpl.toString(),
       allowUpdates: true,

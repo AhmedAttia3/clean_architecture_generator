@@ -6,7 +6,7 @@ import 'package:clean_architecture_generator/formatter/names.dart';
 import 'package:clean_architecture_generator/src/imports_file.dart';
 import 'package:source_gen/source_gen.dart';
 
-import '../add_file_to_project.dart';
+import '../file_manager.dart';
 import '../model_visitor.dart';
 
 class RequestsGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
@@ -17,7 +17,7 @@ class RequestsGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     BuildStep buildStep,
   ) {
     final path =
-        "${AddFile.getDirectories(buildStep.inputId.path)}/data/requests";
+        "${FileManager.getDirectories(buildStep.inputId.path)}/data/requests";
     final visitor = ModelVisitor();
     final names = Names();
     final methodFormat = MethodFormat();
@@ -63,7 +63,7 @@ class RequestsGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
           'Map<String, dynamic> toJson() => _\$${requestType}ToJson(this);');
       request.writeln('}\n');
 
-      AddFile.save('$path/$requestType', request.toString());
+      FileManager.save('$path/$requestType', request.toString());
       requests.write(request);
     }
     return requests.toString();

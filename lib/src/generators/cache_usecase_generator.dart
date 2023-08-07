@@ -3,7 +3,7 @@ import 'package:build/build.dart';
 import 'package:clean_architecture_generator/clean_architecture_generator.dart';
 import 'package:clean_architecture_generator/formatter/method_format.dart';
 import 'package:clean_architecture_generator/formatter/names.dart';
-import 'package:clean_architecture_generator/src/add_file_to_project.dart';
+import 'package:clean_architecture_generator/src/file_manager.dart';
 import 'package:clean_architecture_generator/src/model_visitor.dart';
 import 'package:source_gen/source_gen.dart';
 
@@ -19,7 +19,7 @@ class CacheUseCaseGenerator
     ConstantReader annotation,
     BuildStep buildStep,
   ) {
-    final basePath = AddFile.getDirectories(buildStep.inputId.path);
+    final basePath = FileManager.getDirectories(buildStep.inputId.path);
     final path = "$basePath/domain/use-cases";
     final visitor = ModelVisitor();
     final methodFormat = MethodFormat();
@@ -79,7 +79,7 @@ class CacheUseCaseGenerator
         cacheUseCase.writeln('}\n');
         cacheUseCase.writeln('}\n');
         useCase.writeln(cacheUseCase);
-        AddFile.save('$path/$cacheUseCaseType', cacheUseCase.toString());
+        FileManager.save('$path/$cacheUseCaseType', cacheUseCase.toString());
 
         ///[get]
         final getCacheUseCase = StringBuffer();
@@ -109,7 +109,8 @@ class CacheUseCaseGenerator
         getCacheUseCase.writeln('}\n');
         getCacheUseCase.writeln('}\n');
         useCase.writeln(getCacheUseCase);
-        AddFile.save('$path/$getCacheUseCaseType', getCacheUseCase.toString());
+        FileManager.save(
+            '$path/$getCacheUseCaseType', getCacheUseCase.toString());
         classBuffer.write(useCase);
       }
     }

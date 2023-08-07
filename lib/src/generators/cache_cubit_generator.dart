@@ -2,8 +2,8 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:clean_architecture_generator/formatter/method_format.dart';
 import 'package:clean_architecture_generator/formatter/names.dart';
-import 'package:clean_architecture_generator/src/add_file_to_project.dart';
 import 'package:clean_architecture_generator/src/annotations.dart';
+import 'package:clean_architecture_generator/src/file_manager.dart';
 import 'package:clean_architecture_generator/src/imports_file.dart';
 import 'package:source_gen/source_gen.dart';
 
@@ -20,7 +20,7 @@ class CacheCubitGenerator
     BuildStep buildStep,
   ) {
     final path =
-        "${AddFile.getDirectories(buildStep.inputId.path)}/presentation/logic";
+        "${FileManager.getDirectories(buildStep.inputId.path)}/presentation/logic";
     final visitor = ModelVisitor();
 
     final methodFormat = MethodFormat();
@@ -83,7 +83,7 @@ class CacheCubitGenerator
         getCacheCubit.writeln('}');
         getCacheCubit.writeln('}');
 
-        AddFile.save('$path/$cacheCubitType', getCacheCubit.toString());
+        FileManager.save('$path/$cacheCubitType', getCacheCubit.toString());
         cubits.writeln(getCacheCubit);
       }
     }

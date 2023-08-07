@@ -3,7 +3,7 @@ import 'package:build/build.dart';
 import 'package:clean_architecture_generator/clean_architecture_generator.dart';
 import 'package:clean_architecture_generator/formatter/method_format.dart';
 import 'package:clean_architecture_generator/formatter/names.dart';
-import 'package:clean_architecture_generator/src/add_file_to_project.dart';
+import 'package:clean_architecture_generator/src/file_manager.dart';
 import 'package:clean_architecture_generator/src/imports_file.dart';
 import 'package:source_gen/source_gen.dart';
 
@@ -20,7 +20,7 @@ class RepositoryTestGenerator
     BuildStep buildStep,
   ) {
     const expectedPath = "test";
-    final basePath = AddFile.getDirectories(buildStep.inputId.path)
+    final basePath = FileManager.getDirectories(buildStep.inputId.path)
         .replaceFirst('lib', 'test');
     final path = "$basePath/data/repository";
     final visitor = ModelVisitor();
@@ -139,7 +139,7 @@ class RepositoryTestGenerator
         classBuffer.writeln("data: null,);");
       } else {
         final model = names.camelCaseToUnderscore(names.ModelType(type));
-        AddFile.save(
+        FileManager.save(
           "$expectedPath/expected/expected_$model",
           '{}',
           extension: 'json',
@@ -357,7 +357,7 @@ class RepositoryTestGenerator
     classBuffer.writeln(
         " return jsonDecode(File('test/expected/\$path.json').readAsStringSync());");
     classBuffer.writeln("}");
-    AddFile.save(
+    FileManager.save(
       '$path/${repositoryType}Test',
       classBuffer.toString(),
       allowUpdates: true,

@@ -2,8 +2,8 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:clean_architecture_generator/formatter/method_format.dart';
 import 'package:clean_architecture_generator/formatter/names.dart';
-import 'package:clean_architecture_generator/src/add_file_to_project.dart';
 import 'package:clean_architecture_generator/src/annotations.dart';
+import 'package:clean_architecture_generator/src/file_manager.dart';
 import 'package:clean_architecture_generator/src/imports_file.dart';
 import 'package:source_gen/source_gen.dart';
 
@@ -22,7 +22,7 @@ class CacheUseCaseTestGenerator
     final methodFormat = MethodFormat();
     final visitor = ModelVisitor();
     element.visitChildren(visitor);
-    final basePath = AddFile.getDirectories(buildStep.inputId.path)
+    final basePath = FileManager.getDirectories(buildStep.inputId.path)
         .replaceFirst('lib', 'test');
     final path = "$basePath/domain/use-cases";
 
@@ -118,7 +118,7 @@ class CacheUseCaseTestGenerator
         usecase.writeln("});");
         usecase.writeln("}");
 
-        AddFile.save(
+        FileManager.save(
           "$path/$fileName",
           usecase.toString(),
           allowUpdates: true,

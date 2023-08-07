@@ -1,9 +1,10 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:clean_architecture_generator/formatter/names.dart';
 import 'package:clean_architecture_generator/src/imports_file.dart';
 
-class AddFile {
+class FileManager {
   static Names names = Names();
 
   static void save(
@@ -20,25 +21,24 @@ class AddFile {
     );
   }
 
-  static void copy(String fileName, String path, String oldPath) {
-    //  try {
-    oldPath = '$oldPath/$fileName';
-    path = '$path/$fileName'.replaceFirst(".dart", "");
+  static void move(String fileName, String path, String oldPath) {
+    try {
+      oldPath = '$oldPath/$fileName';
+      path = '$path/$fileName';
 
-    final dataSource_old = File(oldPath);
+      final dataSource_old = File(oldPath);
 
-    final content = dataSource_old.readAsStringSync();
+      final content = dataSource_old.readAsStringSync();
 
-    createDirAndFile(
-      path,
-      content,
-    );
+      createDirAndFile(
+        path.replaceFirst(".dart", ""),
+        content,
+      );
 
-    dataSource_old.deleteSync();
-
-    // } catch (e) {
-    //   log(e.toString());
-    // }
+      dataSource_old.deleteSync();
+    } catch (e) {
+      log(e.toString());
+    }
   }
 
   static void createDirAndFile(

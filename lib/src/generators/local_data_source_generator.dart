@@ -5,7 +5,7 @@ import 'package:clean_architecture_generator/formatter/names.dart';
 import 'package:clean_architecture_generator/src/annotations.dart';
 import 'package:source_gen/source_gen.dart';
 
-import '../add_file_to_project.dart';
+import '../file_manager.dart';
 import '../imports_file.dart';
 import '../model_visitor.dart';
 
@@ -20,7 +20,7 @@ class LocalDataSourceGenerator
     BuildStep buildStep,
   ) {
     final path =
-        "${AddFile.getDirectories(buildStep.inputId.path)}/data/data-sources";
+        "${FileManager.getDirectories(buildStep.inputId.path)}/data/data-sources";
     final visitor = ModelVisitor();
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);
@@ -64,7 +64,7 @@ class LocalDataSourceGenerator
 
     dataSource.writeln('}\n');
 
-    AddFile.save(
+    FileManager.save(
       '$path/$localDataSourceType',
       dataSource.toString(),
       allowUpdates: true,
@@ -158,7 +158,7 @@ class LocalDataSourceGenerator
 
     dataSourceImpl.writeln('}\n');
 
-    AddFile.save(
+    FileManager.save(
       '$path/$localDataSourceImplName',
       dataSourceImpl.toString(),
       allowUpdates: true,
