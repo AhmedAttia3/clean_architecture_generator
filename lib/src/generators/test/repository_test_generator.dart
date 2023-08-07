@@ -182,7 +182,7 @@ class RepositoryTestGenerator
 
     for (var method in visitor.useCases) {
       final methodName = method.name;
-      if (method.requestType == RequestType.Fields || !method.hasRequest) {
+      if (method.requestType == RequestType.Fields) {
         classBuffer.writeln(
             "$methodName() => dataSource.$methodName(${methodFormat.parametersWithValues(method.parameters)});");
       } else {
@@ -191,12 +191,19 @@ class RepositoryTestGenerator
         classBuffer.writeln(
             '$requestName = $requestType(${methodFormat.parametersWithValues(method.parameters)});');
         classBuffer.writeln("$methodName() => dataSource.$methodName(");
+        bool hasRequest = false;
         for (var param in method.requestParameters) {
-          if (method.type != RequestType.Body) {
+          if (param.type == ParamType.Query || param.type == ParamType.Path) {
             classBuffer.writeln('${param.name} : $requestName.${param.name},');
+          } else {
+            hasRequest = true;
           }
         }
-        classBuffer.writeln('request : $requestName,);');
+        if (hasRequest) {
+          classBuffer.writeln('request : $requestName,);');
+        } else {
+          classBuffer.writeln(');');
+        }
       }
 
       if (method.isCache) {
