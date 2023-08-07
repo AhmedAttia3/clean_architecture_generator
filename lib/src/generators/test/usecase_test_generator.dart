@@ -31,7 +31,8 @@ class UseCaseTestGenerator
     for (var method in visitor.useCases) {
       final returnType = methodFormat.returnType(method.type);
       final type = methodFormat.responseType(returnType);
-      if (method.requestType == RequestType.Body) {
+      if ((method.requestType == RequestType.Body && method.hasRequest) ||
+          method.hasRequest) {
         final request = names.requestType(method.name);
         imports.add(request);
       }
@@ -73,7 +74,8 @@ class UseCaseTestGenerator
       usecase.writeln('late $repositoryType repository;');
       usecase.writeln('late $type success;');
       usecase.writeln('late Failure failure;');
-      if (method.requestType == RequestType.Body || method.hasRequest) {
+      if ((method.requestType == RequestType.Body && method.hasRequest) ||
+          method.hasRequest) {
         usecase.writeln('late $requestType $requestName;');
       }
       usecase.writeln('setUp(() {');
@@ -131,8 +133,7 @@ class UseCaseTestGenerator
       usecase.writeln("final res = await $useCaseName.execute(");
       if (method.hasRequest) {
         usecase.writeln("request: $requestName);");
-      } else if (method.parameters.length == 1 &&
-          method.requestType == RequestType.Fields) {
+      } else if (method.parameters.length == 1) {
         final item = method.parameters.first;
         usecase.writeln(
             "request: ${methodFormat.initData(item.type, item.name)});");
@@ -150,8 +151,7 @@ class UseCaseTestGenerator
       usecase.writeln("final res = await $useCaseName.execute(");
       if (method.hasRequest) {
         usecase.writeln("request: $requestName);");
-      } else if (method.parameters.length == 1 &&
-          method.requestType == RequestType.Fields) {
+      } else if (method.parameters.length == 1) {
         final item = method.parameters.first;
         usecase.writeln(
             "request: ${methodFormat.initData(item.type, item.name)});");

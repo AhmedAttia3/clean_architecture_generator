@@ -89,7 +89,8 @@ class RepositoryTestGenerator
       final methodName = method.name;
       final type = methodFormat.returnType(method.type);
       classBuffer.writeln('late $type ${methodName}Response;');
-      if (method.requestType == RequestType.Body) {
+      if ((method.requestType == RequestType.Body && method.hasRequest) ||
+          method.hasRequest) {
         final requestName = names.requestName(method.name);
         final requestType = names.requestType(method.name);
         classBuffer.writeln('late $requestType $requestName;');
