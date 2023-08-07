@@ -69,12 +69,6 @@ class AddFile {
     String? import = search(path);
     if (import == null) {
       path = createPath(path, extension: extension);
-
-      ///[To handle files when move remote to data-source folder]
-      if (!path.contains('local_data_source') &&
-          path.contains('data/data-sources/')) {
-        path = path.replaceAll("data/data-sources/", "");
-      }
       final dir = Directory(getDirectories(path));
       if (!dir.existsSync()) {
         try {
