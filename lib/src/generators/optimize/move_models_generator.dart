@@ -20,7 +20,7 @@ class MoveModelsGenerator
     element.visitChildren(visitor);
     final models = Imports.filesInDir("$currentPath/models");
     for (var model in models) {
-      final filename = model.split('\\').last.replaceFirst(".dart", "");
+      final filename = model.split('\\').last;
       await AddFile.move(filename, path, "$currentPath/models");
     }
     return "";
