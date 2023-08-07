@@ -113,11 +113,12 @@ class UseCaseTestGenerator
         }
       }
       usecase.writeln("});\n");
+      if (method.requestType == RequestType.Body ||
+          method.parameters.isNotEmpty) {
+        usecase.writeln(
+            "$requestName = $requestType(${methodFormat.parametersWithValues(method.parameters)});\n");
+      }
       if (method.requestType == RequestType.Fields) {
-        if (method.parameters.isNotEmpty) {
-          usecase.writeln(
-              "$requestName = $requestType(${methodFormat.parametersWithValues(method.parameters)});\n");
-        }
         usecase.writeln(
             "webService() => repository.$methodName(${methodFormat.parametersWithValues(method.parameters)});\n");
       } else {
