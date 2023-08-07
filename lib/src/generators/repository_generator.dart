@@ -149,7 +149,7 @@ class RepositoryGenerator
 
         repositoryImpl.writeln('apiCall: $clientService.${method.name}(');
         for (var param in method.requestParameters) {
-          if (param.type != ParamType.Body) {
+          if (method.type != RequestType.Body) {
             repositoryImpl.writeln('${param.name}:request.${param.name},');
           }
         }

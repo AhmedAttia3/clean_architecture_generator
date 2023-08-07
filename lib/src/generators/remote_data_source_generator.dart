@@ -72,7 +72,7 @@ class RemoteDataSourceGenerator
           }
         } else {
           for (var param in method.requestParameters) {
-            if (param.type != ParamType.Body) {
+            if (method.type != RequestType.Body) {
               remoteDataSource.writeln(
                   "         @${param.type.name}('${param.key}') ${param.isRequired ? "required ${param.dataType.name}" : "${param.dataType.name}?"}  ${param.name},");
             } else {
@@ -85,7 +85,7 @@ class RemoteDataSourceGenerator
         final request = names.requestType(method.name);
         if (method.requestParameters.length > 1) {
           for (var param in method.requestParameters) {
-            if (param.type != ParamType.Body) {
+            if (method.type != RequestType.Body) {
               remoteDataSource.writeln(
                   "         @${param.type.name}('${param.key}') ${param.isRequired ? "required ${param.dataType.name}" : "${param.dataType.name}?"}  ${param.name},");
             }

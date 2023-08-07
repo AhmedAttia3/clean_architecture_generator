@@ -192,7 +192,7 @@ class RepositoryTestGenerator
             '$requestName = $requestType(${methodFormat.parametersWithValues(method.parameters)});');
         classBuffer.writeln("$methodName() => dataSource.$methodName(");
         for (var param in method.requestParameters) {
-          if (param.type != ParamType.Body) {
+          if (method.type != RequestType.Body) {
             classBuffer.writeln('${param.name} : $requestName.${param.name},');
           }
         }

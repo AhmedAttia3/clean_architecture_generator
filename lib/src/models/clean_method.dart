@@ -2,7 +2,7 @@ enum MethodType { POST, GET, DELETE, PATCH, POST_MULTI_PART }
 
 enum RequestType { Fields, Body }
 
-enum ParamType { Field, Query, Path, Part, Body }
+enum ParamType { Field, Query, Path, Part }
 
 enum ParamProp { none, Set, EmitSet, TextController }
 
