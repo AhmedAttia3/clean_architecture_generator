@@ -88,7 +88,7 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
               'Future<$responseType> execute(${methodFormat.parameters(method.parameters)}) async {');
         } else if (method.parameters.isNotEmpty) {
           cubit.writeln(
-              'Future<$responseType> execute({required ${method.parameters.first.type} request}) async {');
+              'Future<$responseType> execute({required ${method.parameters.first.type} ${method.parameters.first.name}}) async {');
         }
         cubit.writeln('$responseType $varName = [];');
         if (hasParams) {

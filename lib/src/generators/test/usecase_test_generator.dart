@@ -145,6 +145,8 @@ class UseCaseTestGenerator
       usecase.writeln("final res = await $useCaseName.execute(");
       if (method.hasRequest) {
         usecase.writeln("request: $requestName);");
+      } else if (method.parameters.isNotEmpty) {
+        usecase.writeln("request: request!);");
       } else {
         final request = methodFormat.parametersWithValues(method.parameters);
         usecase.writeln("$request);");
