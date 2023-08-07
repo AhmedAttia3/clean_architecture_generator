@@ -75,7 +75,7 @@ class UseCaseTestGenerator
       usecase.writeln('late Failure failure;');
       if (method.requestType == RequestType.Body ||
           method.parameters.isNotEmpty) {
-        classBuffer.writeln('late $requestType $requestName;');
+        usecase.writeln('late $requestType $requestName;');
       }
       usecase.writeln('setUp(() {');
       usecase.writeln('repository = Mock$repositoryType();');
