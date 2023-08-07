@@ -133,7 +133,9 @@ class UseCaseTestGenerator
         usecase.writeln("request: $requestName);");
       } else if (method.parameters.length == 1 &&
           method.requestType == RequestType.Fields) {
-        usecase.writeln("request: $requestName);");
+        final item = method.parameters.first;
+        usecase.writeln(
+            "request: ${methodFormat.initData(item.type, item.name)});");
       } else {
         final request = methodFormat.parametersWithValues(method.parameters);
         usecase.writeln("$request);");
@@ -150,8 +152,9 @@ class UseCaseTestGenerator
         usecase.writeln("request: $requestName);");
       } else if (method.parameters.length == 1 &&
           method.requestType == RequestType.Fields) {
+        final item = method.parameters.first;
         usecase.writeln(
-            "request: ${methodFormat.parametersWithValues(method.parameters)});");
+            "request: ${methodFormat.initData(item.type, item.name)});");
       } else {
         final request = methodFormat.parametersWithValues(method.parameters);
         usecase.writeln("$request);");
