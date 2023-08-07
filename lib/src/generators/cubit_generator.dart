@@ -74,12 +74,11 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         cubit.writeln('pageSize: 10,');
         cubit.writeln('pageFuture: (page) {');
         if (method.hasRequest) {
-          cubit.writeln(
-              'return execute(${methodFormat.passingParameters(method.parameters)});');
-        } else if (method.parameters.isEmpty) {
-          cubit.writeln('return execute(request : page);');
-        } else {
-          cubit.writeln('return execute();');
+          final page = "${method.parameters[0].name} : page!";
+          final second = "${method.parameters[1].name} : page * 10,";
+          cubit.writeln('return execute($page,$second);');
+        } else if (method.parameters.isNotEmpty) {
+          cubit.writeln('return execute(request : page!);');
         }
         cubit.writeln('},');
         cubit.writeln(');');
@@ -87,11 +86,9 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         if (method.hasRequest) {
           cubit.writeln(
               'Future<$responseType> execute(${methodFormat.parameters(method.parameters)}) async {');
-        } else if (method.parameters.isEmpty) {
+        } else if (method.parameters.isNotEmpty) {
           cubit.writeln(
-              'Future<$responseType> execute({required request}) async {');
-        } else {
-          cubit.writeln('Future<$responseType> execute() async {');
+              'Future<$responseType> execute({required ${method.parameters.first.type} request}) async {');
         }
         cubit.writeln('$responseType $varName = [];');
         if (hasParams) {
