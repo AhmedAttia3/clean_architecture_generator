@@ -71,7 +71,10 @@ class FileManager {
   }
 
   static Future<void> deleteDir(String path) async {
-    await Directory(path).delete();
+    final dir = await Directory(path);
+    if (dir.existsSync()) {
+      dir.delete();
+    }
   }
 
   static String createPath(
