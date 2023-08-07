@@ -21,7 +21,7 @@ class MoveModelsGenerator
     final models = Imports.filesInDir("$currentPath/models");
     for (var model in models) {
       final filename = model.split('\\').last;
-      AddFile.move(filename, path, "$currentPath/models");
+      AddFile.copy(filename, path, "$currentPath/models");
     }
     return "";
   }

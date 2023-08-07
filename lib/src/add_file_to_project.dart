@@ -20,36 +20,53 @@ class AddFile {
     );
   }
 
-  static void move(String fileName, String path, String oldPath) {
+  static void copy(String fileName, String path, String oldPath) {
     //  try {
-    final dataSource_old = File('$oldPath/$fileName');
+    oldPath = '$oldPath/$fileName';
+    path = '$path/$fileName'.replaceFirst(".dart", "");
+
+    final dataSource_old = File(oldPath);
 
     final content = dataSource_old.readAsStringSync();
 
-    save('$path/$fileName'.replaceFirst(".dart", ""), content);
+    createDirAndFile(
+      path,
+      content,
+    );
 
-    // dataSource_old.deleteSync();
+    dataSource_old.deleteSync();
 
     // } catch (e) {
     //   log(e.toString());
     // }
   }
 
-  static Future<void> createDir(String path) async {
+  static void createDirAndFile(
+    String path,
+    String content, {
+    bool allowUpdates = false,
+    String extension = 'dart',
+  }) {
+    path = createPath(path, extension: extension);
     final dir = Directory(getDirectories(path));
-    if (!(await dir.exists())) {
+    if (!dir.existsSync()) {
       try {
-        await dir.create();
+        dir.createSync();
       } catch (e) {
         final paths = getDirectories(path).split('/');
         String exist = '';
         for (var path in paths) {
           exist += '$path/';
           final dir = Directory(exist);
-          if (await dir.exists()) continue;
-          await dir.create();
+          if (dir.existsSync()) continue;
+          dir.createSync();
         }
       }
+    }
+
+    final file = File(path);
+    if (!file.existsSync() || allowUpdates) {
+      file.writeAsStringSync(content);
     }
   }
 
@@ -90,27 +107,12 @@ class AddFile {
   }) {
     String? import = search(path);
     if (import == null) {
-      path = createPath(path, extension: extension);
-      final dir = Directory(getDirectories(path));
-      if (!dir.existsSync()) {
-        try {
-          dir.createSync();
-        } catch (e) {
-          final paths = getDirectories(path).split('/');
-          String exist = '';
-          for (var path in paths) {
-            exist += '$path/';
-            final dir = Directory(exist);
-            if (dir.existsSync()) continue;
-            dir.createSync();
-          }
-        }
-      }
-
-      final file = File(path);
-      if (!file.existsSync() || allowUpdates) {
-        file.writeAsStringSync(content);
-      }
+      createDirAndFile(
+        path,
+        content,
+        allowUpdates: allowUpdates,
+        extension: extension,
+      );
     } else {
       final file = File(import);
       if (allowUpdates) file.writeAsStringSync(content);
