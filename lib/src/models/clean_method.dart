@@ -80,8 +80,8 @@ class Param {
 
   const Param({
     required this.name,
+    required this.type,
     this.key,
-    this.type = ParamType.Field,
     this.prop = ParamProp.none,
     this.dataType = ParamDataType.String,
     this.isRequired = true,
