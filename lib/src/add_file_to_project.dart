@@ -24,10 +24,11 @@ class AddFile {
   static Future<void> move(String fileName, String path, String oldPath) async {
     try {
       final dataSource_old = File('$oldPath/$fileName');
-      final dataSource = File('$path/$fileName');
 
-      final content = await dataSource_old.readAsString();
-      await dataSource.writeAsString(content);
+      await _saveOrUpdate(
+        '$path/$fileName',
+        await dataSource_old.readAsString(),
+      );
 
       await dataSource_old.delete();
     } catch (e) {
