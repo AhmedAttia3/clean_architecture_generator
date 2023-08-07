@@ -1,9 +1,9 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
+import 'package:clean_architecture_generator/clean_architecture_generator.dart';
 import 'package:clean_architecture_generator/formatter/method_format.dart';
 import 'package:clean_architecture_generator/formatter/names.dart';
 import 'package:clean_architecture_generator/src/add_file_to_project.dart';
-import 'package:clean_architecture_generator/src/annotations.dart';
 import 'package:clean_architecture_generator/src/imports_file.dart';
 import 'package:source_gen/source_gen.dart';
 
@@ -29,13 +29,16 @@ class RepositoryTestGenerator
     final classBuffer = StringBuffer();
 
     List<String> imports = [];
-    bool hasCache = false;
-
-    ///[HasCache]
     for (var method in visitor.useCases) {
       final returnType = methodFormat.returnType(method.type);
       final type = methodFormat.responseType(returnType);
       imports.add(type);
+    }
+
+    bool hasCache = false;
+
+    ///[HasCache]
+    for (var method in visitor.useCases) {
       if (method.isCache) {
         hasCache = true;
         break;
@@ -82,6 +85,11 @@ class RepositoryTestGenerator
       final methodName = method.name;
       final type = methodFormat.returnType(method.type);
       classBuffer.writeln('late $type ${methodName}Response;');
+      if (method.requestType == RequestType.Body) {
+        final requestName = names.requestName(method.name);
+        final requestType = names.requestType(method.name);
+        classBuffer.writeln('late $requestType $requestName;');
+      }
       if (method.isCache) {
         final modelType = names.ModelType(type);
         final dataType = methodFormat.responseType(type);
@@ -168,8 +176,17 @@ class RepositoryTestGenerator
 
     for (var method in visitor.useCases) {
       final methodName = method.name;
-      classBuffer.writeln(
-          "$methodName() => dataSource.$methodName(${methodFormat.parametersWithValues(method.parameters)});");
+      if (method.requestType == RequestType.Fields) {
+        classBuffer.writeln(
+            "$methodName() => dataSource.$methodName(${methodFormat.parametersWithValues(method.parameters)});");
+      } else {
+        final requestName = names.requestName(method.name);
+        final requestType = names.requestType(method.name);
+        classBuffer.writeln(
+            '$requestName = $requestType(${methodFormat.parametersWithValues(method.parameters)});');
+        classBuffer.writeln(
+            "$methodName() => dataSource.$methodName(request : $requestName);");
+      }
 
       if (method.isCache) {
         final getCacheMethodName = names.getCacheName(methodName);
@@ -216,9 +233,16 @@ class RepositoryTestGenerator
         classBuffer.writeln(
             ".thenAnswer((realInvocation) async => ${methodName}Response);");
         if (method.parameters.isNotEmpty) {
-          final request = methodFormat.parametersWithValues(method.parameters);
-          classBuffer
-              .writeln("final res = await repository.$methodName($request);");
+          if (method.requestType == RequestType.Fields) {
+            final request =
+                methodFormat.parametersWithValues(method.parameters);
+            classBuffer
+                .writeln("final res = await repository.$methodName($request);");
+          } else {
+            final requestName = names.requestName(method.name);
+            classBuffer.writeln(
+                "final res = await repository.$methodName(request: $requestName);");
+          }
         } else {
           classBuffer.writeln("final res = await repository.$methodName();");
         }
@@ -239,9 +263,16 @@ class RepositoryTestGenerator
         classBuffer.writeln(
             ".thenAnswer((realInvocation) async => ${methodName}Response);");
         if (method.parameters.isNotEmpty) {
-          final request = methodFormat.parametersWithValues(method.parameters);
-          classBuffer
-              .writeln("final res = await repository.$methodName($request);");
+          if (method.requestType == RequestType.Fields) {
+            final request =
+                methodFormat.parametersWithValues(method.parameters);
+            classBuffer
+                .writeln("final res = await repository.$methodName($request);");
+          } else {
+            final requestName = names.requestName(method.name);
+            classBuffer.writeln(
+                "final res = await repository.$methodName(request: $requestName);");
+          }
         } else {
           classBuffer.writeln("final res = await repository.$methodName();");
         }
