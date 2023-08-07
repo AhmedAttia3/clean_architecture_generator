@@ -27,7 +27,7 @@ class AddFile {
 
     final content = await dataSource_old.readAsString();
 
-    await File('$path/$fileName').writeAsString(content);
+    save('$path/$fileName'.replaceFirst(".dart", ""), content);
 
     await dataSource_old.delete();
 
