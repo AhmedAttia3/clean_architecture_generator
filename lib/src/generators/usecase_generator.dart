@@ -39,7 +39,7 @@ class UseCaseGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
       final useCase = StringBuffer();
       final noParams = !method.hasRequest;
       final useCaseType = names.useCaseType(method.name);
-      final requestName = noParams
+      final requestType = noParams
           ? method.parameters.isNotEmpty
               ? "${method.parameters.first.type}"
               : 'Void'
@@ -52,7 +52,7 @@ class UseCaseGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
       useCase.writeln(Imports.create(
         imports: [
           repositoryType,
-          noParams ? "" : requestName,
+          noParams ? "" : requestType,
           ...imports,
         ],
         isUseCase: noParams,
@@ -61,29 +61,20 @@ class UseCaseGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
       useCase.writeln('///[Implementation]');
       useCase.writeln('@injectable');
       useCase.writeln(
-          'class $useCaseType implements BaseUseCase<Future<Either<Failure, $type>>,$requestName>{');
+          'class $useCaseType implements BaseUseCase<Future<Either<Failure, $type>>,$requestType>{');
       useCase.writeln('final $repositoryType repository;');
       useCase.writeln('const $useCaseType(');
       useCase.writeln('this.repository,');
       useCase.writeln(');\n');
       useCase.writeln('@override');
-      if (noParams) {
-        useCase.writeln(
-            'Future<Either<Failure, $type>> execute({Void? request,}) async {');
-      } else {
-        useCase.writeln(
-            'Future<Either<Failure, $type>> execute({$requestName? request,}) async {');
-      }
+      useCase.writeln(
+          'Future<Either<Failure, $type>> execute({$requestType? request,}) async {');
       useCase.writeln('return await repository.$methodName');
       if (method.requestType == RequestType.Fields) {
         useCase
             .writeln('(${methodFormat.requestParameters(method.parameters)});');
       } else {
-        if (method.hasRequest) {
-          useCase.writeln('(request : request!);');
-        } else {
-          useCase.writeln('();');
-        }
+        useCase.writeln('(request : request!);');
       }
       useCase.writeln('}\n');
       useCase.writeln('}\n');

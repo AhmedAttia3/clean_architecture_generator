@@ -73,13 +73,26 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
             'pagewiseController = PagewiseLoadController<$baseModelType>(');
         cubit.writeln('pageSize: 10,');
         cubit.writeln('pageFuture: (page) {');
-        cubit.writeln('final offset = page ?? 0;');
-        cubit.writeln('return execute(page: offset, limit: offset * 10);');
+        if (method.hasRequest) {
+          cubit.writeln(
+              'return execute(${methodFormat.passingParameters(method.parameters)});');
+        } else if (method.parameters.isEmpty) {
+          cubit.writeln('return execute(request : page);');
+        } else {
+          cubit.writeln('return execute();');
+        }
         cubit.writeln('},');
         cubit.writeln(');');
         cubit.writeln('}');
-        cubit.writeln(
-            'Future<$responseType> execute(${methodFormat.parameters(method.parameters)}) async {');
+        if (method.hasRequest) {
+          cubit.writeln(
+              'Future<$responseType> execute(${methodFormat.parameters(method.parameters)}) async {');
+        } else if (method.parameters.isEmpty) {
+          cubit.writeln(
+              'Future<$responseType> execute({required request}) async {');
+        } else {
+          cubit.writeln('Future<$responseType> execute() async {');
+        }
         cubit.writeln('$responseType $varName = [];');
         if (hasParams) {
           for (var parma in method.parameters) {
@@ -91,7 +104,7 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         if (hasParams) {
           cubit.writeln("request : request");
         } else {
-          cubit.writeln('${methodFormat.passingParameters(method.parameters)}');
+          cubit.writeln('request : ${method.parameters.first.name}');
         }
         cubit.writeln(');');
         cubit.writeln('res.left((failure) {');
@@ -215,20 +228,20 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
           }
         } else {
           for (var controller in method.textControllers) {
-            cubit.writeln('${controller.name} : ${controller.name}.text,');
+            cubit.writeln('request : ${controller.name}.text,');
           }
 
           ///[add variables to request]
           for (var function in method.emitSets) {
-            cubit.writeln('${function.name} : ${function.name},');
+            cubit.writeln('request : ${function.name},');
           }
 
           ///[add variables to request]
           for (var function in method.functionSets) {
-            cubit.writeln('${function.name} : ${function.name},');
+            cubit.writeln('request : ${function.name},');
           }
           for (var parma in method.parameters) {
-            cubit.writeln('${parma.name} : ${parma.name},');
+            cubit.writeln('request : ${parma.name},');
           }
         }
 
