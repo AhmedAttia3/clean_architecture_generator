@@ -94,8 +94,10 @@ class Imports {
 
   static String? importName(String subName) {
     final files = libFiles;
-    final index = files.indexWhere(
-        (item) => item.split('/').last.replaceFirst(";", "") == subName);
+    final index = files.indexWhere((item) {
+      final path = item.split('/').last;
+      return path.contains(subName) && path.length <= subName.length + 2;
+    });
     if (index != -1) {
       return "import 'package:${files[index].replaceAll('\\', '/').replaceFirst('lib', parent)}';\n";
     }
