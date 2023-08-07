@@ -221,7 +221,10 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
 
         ///[add request]
         if (method.hasRequest) {
-          if (hasTextController || hasFunctionSet || hasEmitSet) {
+          if (method.hasRequest ||
+              hasTextController ||
+              hasFunctionSet ||
+              hasEmitSet) {
             cubit.writeln("request : request");
           }
         } else {
