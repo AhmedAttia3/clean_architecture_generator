@@ -22,7 +22,7 @@ class AddFile {
 
   static Future<void> move(String fileName, String path, String oldPath) async {
     //  try {
-    final dataSource_old = File('$oldPath/$fileName');
+    final dataSource_old = File('$oldPath/$fileName.dart');
 
     await _saveOrUpdate(
       '$path/$fileName',
