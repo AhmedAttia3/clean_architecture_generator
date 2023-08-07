@@ -26,7 +26,7 @@ class RequestsGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     final requests = StringBuffer();
 
     for (var method in visitor.useCases) {
-      if (method.hasRequest) {
+      if (!method.hasRequest) {
         continue;
       }
       final request = StringBuffer();
