@@ -49,6 +49,7 @@ class UseCaseTestGenerator
       final type = methodFormat.returnType(method.type);
       final modelType = names.ModelType(type);
       final varType = names.modelRuntimeType(modelType);
+      final requestName = names.requestName(method.name);
       final fileName = "${names.camelCaseToUnderscore(useCaseType)}_test";
       final usecase = StringBuffer();
 
@@ -72,10 +73,8 @@ class UseCaseTestGenerator
       usecase.writeln('late $repositoryType repository;');
       usecase.writeln('late $type success;');
       usecase.writeln('late Failure failure;');
-      if (method.requestType == RequestType.Body &&
+      if (method.requestType == RequestType.Body ||
           method.parameters.isNotEmpty) {
-        final requestName = names.requestName(method.name);
-        final requestType = names.requestType(method.name);
         classBuffer.writeln('late $requestType $requestName;');
       }
       usecase.writeln('setUp(() {');
@@ -114,9 +113,6 @@ class UseCaseTestGenerator
         }
       }
       usecase.writeln("});\n");
-
-      final requestName = names.requestName(method.name);
-
       if (method.requestType == RequestType.Fields) {
         if (method.parameters.isNotEmpty) {
           usecase.writeln(
