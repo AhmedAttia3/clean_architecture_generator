@@ -19,12 +19,12 @@ class RemoteDataSourceGenerator
   ) {
     final basePath = AddFile.getDirectories(buildStep.inputId.path);
     final path = "$basePath/data/data-sources";
-    final fileName = buildStep.inputId.path.split('/').last;
     final visitor = ModelVisitor();
     final names = Names();
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);
 
+    final fileName = visitor.className;
     final remoteDataSource = StringBuffer();
 
     List<String> imports = [];
