@@ -7,6 +7,7 @@ import 'src/generators/cache_cubit_generator.dart';
 import 'src/generators/cache_usecase_generator.dart';
 import 'src/generators/cubit_generator.dart';
 import 'src/generators/local_data_source_generator.dart';
+import 'src/generators/optimize/move_models_generator.dart';
 import 'src/generators/optimize/optimize_generator.dart';
 import 'src/generators/remote_data_source_generator.dart';
 import 'src/generators/repository_generator.dart';
@@ -26,6 +27,7 @@ export 'src/models/clean_method.dart';
 
 Builder generateCleanArchitecture(BuilderOptions options) => SharedPartBuilder(
       [
+        MoveModelsGenerator(),
         OptimizeGenerator(),
         RequestsGenerator(),
         RemoteDataSourceGenerator(),
