@@ -72,6 +72,7 @@ class CleanMethodModel extends CleanMethod {
 
 class Param {
   final String name;
+  final String? key;
   final ParamType type;
   final ParamProp prop;
   final ParamDataType dataType;
@@ -79,6 +80,7 @@ class Param {
 
   const Param({
     required this.name,
+    this.key,
     this.type = ParamType.Field,
     this.prop = ParamProp.none,
     this.dataType = ParamDataType.String,
@@ -100,6 +102,7 @@ class Param {
 
     return Param(
       name: json['name'],
+      key: json['key'] ?? json['name'],
       isRequired: json['isRequired'] ?? true,
       type: paramType,
       prop: paramProp,

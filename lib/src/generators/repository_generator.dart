@@ -68,7 +68,7 @@ class RepositoryGenerator
       } else {
         final request = names.requestType(method.name);
         repository.writeln(
-            'Future<Either<Failure, $type>> $methodName($request request);');
+            'Future<Either<Failure, $type>> $methodName({required $request request});');
       }
 
       ///[cache save or get]
@@ -144,7 +144,7 @@ class RepositoryGenerator
       } else {
         final request = names.requestType(method.name);
         repositoryImpl.writeln(
-            'Future<Either<Failure, $type>> $methodName($request request)async {');
+            'Future<Either<Failure, $type>> $methodName({required $request request})async {');
         repositoryImpl.writeln('return await api<$type>(');
 
         repositoryImpl.writeln(
