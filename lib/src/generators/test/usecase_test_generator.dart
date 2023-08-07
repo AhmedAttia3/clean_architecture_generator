@@ -131,6 +131,9 @@ class UseCaseTestGenerator
       usecase.writeln("final res = await $useCaseName.execute(");
       if (method.hasRequest) {
         usecase.writeln("request: $requestName);");
+      } else if (method.parameters.length == 1 &&
+          method.requestType == RequestType.Fields) {
+        usecase.writeln("request: $requestName);");
       } else {
         final request = methodFormat.parametersWithValues(method.parameters);
         usecase.writeln("$request);");
@@ -145,8 +148,10 @@ class UseCaseTestGenerator
       usecase.writeln("final res = await $useCaseName.execute(");
       if (method.hasRequest) {
         usecase.writeln("request: $requestName);");
-      } else if (method.parameters.isNotEmpty) {
-        usecase.writeln("request: request!);");
+      } else if (method.parameters.length == 1 &&
+          method.requestType == RequestType.Fields) {
+        usecase.writeln(
+            "request: ${methodFormat.parametersWithValues(method.parameters)});");
       } else {
         final request = methodFormat.parametersWithValues(method.parameters);
         usecase.writeln("$request);");

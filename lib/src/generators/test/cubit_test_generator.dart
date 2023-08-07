@@ -1,8 +1,8 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
+import 'package:clean_architecture_generator/clean_architecture_generator.dart';
 import 'package:clean_architecture_generator/formatter/method_format.dart';
 import 'package:clean_architecture_generator/formatter/names.dart';
-import 'package:clean_architecture_generator/src/annotations.dart';
 import 'package:clean_architecture_generator/src/imports_file.dart';
 import 'package:clean_architecture_generator/src/models/usecase_model.dart';
 import 'package:source_gen/source_gen.dart';
@@ -182,6 +182,11 @@ class CubitTestGenerator
         cubit.writeln("       act: (cubit) {");
         if (hasRequest) {
           cubit.writeln("         when($useCaseName.execute($request))");
+        } else if (method.requestType == RequestType.Fields &&
+            method.parameters.length == 1) {
+          final item = method.parameters.first;
+          cubit.writeln(
+              "         when($useCaseName.execute(request : ${methodFormat.initData(item.type, item.name)}))");
         } else {
           cubit.writeln(
               "         when($useCaseName.execute(${methodFormat.parametersWithValues(method.parameters)}))");
@@ -204,6 +209,11 @@ class CubitTestGenerator
         cubit.writeln("       act: (cubit) {");
         if (hasRequest) {
           cubit.writeln("         when($useCaseName.execute($request))");
+        } else if (method.requestType == RequestType.Fields &&
+            method.parameters.length == 1) {
+          final item = method.parameters.first;
+          cubit.writeln(
+              "         when($useCaseName.execute(request : ${methodFormat.initData(item.type, item.name)}))");
         } else {
           cubit.writeln(
               "         when($useCaseName.execute(${methodFormat.parametersWithValues(method.parameters)}))");
@@ -262,6 +272,11 @@ class CubitTestGenerator
         }
         if (hasRequest) {
           cubit.writeln("         when($useCaseName.execute($request))");
+        } else if (method.requestType == RequestType.Fields &&
+            method.parameters.length == 1) {
+          final item = method.parameters.first;
+          cubit.writeln(
+              "         when($useCaseName.execute(request : ${methodFormat.initData(item.type, item.name)}))");
         } else {
           cubit.writeln(
               "         when($useCaseName.execute(${methodFormat.parametersWithValues(method.parameters)}))");
@@ -305,6 +320,11 @@ class CubitTestGenerator
         }
         if (hasRequest) {
           cubit.writeln("         when($useCaseName.execute($request))");
+        } else if (method.requestType == RequestType.Fields &&
+            method.parameters.length == 1) {
+          final item = method.parameters.first;
+          cubit.writeln(
+              "         when($useCaseName.execute(request : ${methodFormat.initData(item.type, item.name)}))");
         } else {
           cubit.writeln(
               "         when($useCaseName.execute(${methodFormat.parametersWithValues(method.parameters)}))");
@@ -348,6 +368,11 @@ class CubitTestGenerator
         }
         if (hasRequest) {
           cubit.writeln("         when($useCaseName.execute($request))");
+        } else if (method.requestType == RequestType.Fields &&
+            method.parameters.length == 1) {
+          final item = method.parameters.first;
+          cubit.writeln(
+              "         when($useCaseName.execute(request : ${methodFormat.initData(item.type, item.name)}))");
         } else {
           cubit.writeln(
               "         when($useCaseName.execute(${methodFormat.parametersWithValues(method.parameters)}))");
