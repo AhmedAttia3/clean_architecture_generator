@@ -78,7 +78,8 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
           final second = "${method.parameters[1].name} : page * 10,";
           cubit.writeln('return execute($page,$second);');
         } else if (method.parameters.isNotEmpty) {
-          cubit.writeln('return execute(request : page!);');
+          final page = "${method.parameters[0].name} : page!,";
+          cubit.writeln('return execute($page);');
         }
         cubit.writeln('},');
         cubit.writeln(');');
