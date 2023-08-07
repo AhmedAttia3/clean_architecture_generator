@@ -56,8 +56,8 @@ dev_dependencies:
   json_serializable: ^6.7.1
   injectable_generator: ^2.1.6
   retrofit_generator: ^7.0.8
-#  clean_architecture_generator:
-#    git: https://github.com/ibrahimnashat/clean_architecture_generator.git
+  clean_architecture_generator:
+    git: https://github.com/ibrahimnashat/clean_architecture_generator.git
 
 dependency_overrides:
   analyzer:

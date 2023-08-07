@@ -18,11 +18,16 @@ class MoveModelsGenerator
     final path = "$currentPath/data/models";
     final visitor = ModelVisitor();
     element.visitChildren(visitor);
-    final models = Imports.filesInDir(currentPath);
+    final models = Imports.filesInDir("$currentPath/models");
     for (var model in models) {
       final filename = model.split('/').last;
       await AddFile.move(filename, path, currentPath);
     }
-    return '';
+    AddFile.save(
+      "$currentPath/files",
+      models.map((e) => e).toList().join("\n"),
+      allowUpdates: true,
+    );
+    return "";
   }
 }
