@@ -14,7 +14,8 @@ class UseCaseModel {
   List<CommendType> textControllers = [];
 
   bool get hasRequest =>
-      requestParameters.length > 1 || requestType == RequestType.Body;
+      (requestParameters.length > 1 && requestType == RequestType.Fields) ||
+      requestType == RequestType.Body;
 
   bool get hasTextControllers => textControllers.isNotEmpty;
 
