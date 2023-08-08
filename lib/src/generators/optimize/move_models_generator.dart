@@ -17,7 +17,7 @@ class MoveModelsGenerator
     BuildStep buildStep,
   ) {
     final currentPath = FileManager.getDirectories(buildStep.inputId.path);
-    final path = "$currentPath/data/models";
+    final path = "$currentPath/domain/models";
     final visitor = ModelVisitor();
     element.visitChildren(visitor);
     final dir = Directory("$currentPath/models");
