@@ -18,6 +18,7 @@ import 'src/generators/test/cache_usecase_test_generator.dart';
 import 'src/generators/test/cubit_test_generator.dart';
 import 'src/generators/test/get_cache_usecase_test_generator.dart';
 import 'src/generators/test/local_data_source_test_generator.dart';
+import 'src/generators/test/remote_data_source_test_generator.dart';
 import 'src/generators/test/repository_test_generator.dart';
 import 'src/generators/test/usecase_test_generator.dart';
 import 'src/generators/usecase_generator.dart';
@@ -32,7 +33,10 @@ Builder generateCleanArchitecture(BuilderOptions options) => SharedPartBuilder(
         OptimizeGenerator(),
         RequestsGenerator(),
         RetrofitGenerator(),
+
+        ///[RemoteDataSource]
         RemoteDataSourceGenerator(),
+        RemoteDataSourceTestGenerator(),
 
         ///[LocalDataSource]
         LocalDataSourceGenerator(),

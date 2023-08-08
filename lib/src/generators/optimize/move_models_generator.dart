@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:clean_architecture_generator/src/annotations.dart';
@@ -18,14 +20,16 @@ class MoveModelsGenerator
     final path = "$currentPath/data/models";
     final visitor = ModelVisitor();
     element.visitChildren(visitor);
-    final models = Imports.filesInDir("$currentPath/models");
-    for (var model in models) {
-      final filename = model.split('\\').last;
-      FileManager.move(filename, path, "$currentPath/models");
+    final dir = Directory("$currentPath/models");
+    if (dir.existsSync()) {
+      final models = Imports.filesInDir("$currentPath/models");
+      for (var model in models) {
+        final filename = model.split('\\').last;
+        FileManager.move(filename, path, "$currentPath/models");
+      }
+
+      FileManager.deleteDir("$currentPath/models");
     }
-
-    FileManager.deleteDir("$currentPath/models");
-
     return "";
   }
 }
