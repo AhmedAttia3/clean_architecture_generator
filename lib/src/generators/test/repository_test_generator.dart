@@ -54,7 +54,7 @@ class RepositoryTestGenerator
     final localDataSourceName = names.localDataSourceName(localDataSourceType);
     final remoteDataSourceType = visitor.remoteDataSource;
     final repositoryType = visitor.repository;
-    final repositoryImplementType = names.ImplType(remoteDataSourceType);
+    final repositoryImplementType = names.ImplType(repositoryType);
     final fileName = "${names.camelCaseToUnderscore(repositoryType)}_test";
 
     ///[Imports]
@@ -230,8 +230,8 @@ class RepositoryTestGenerator
         repository.writeln("///[$methodName Failure Test]");
         repository.writeln("test('$methodName Failure', () async {");
         repository.writeln("when($methodName())");
-        repository.writeln(
-            ".thenAnswer((realInvocation) async => Left(${methodName}Response));");
+        repository
+            .writeln(".thenAnswer((realInvocation) async => Left(failure));");
 
         if (method.requestType == RequestType.Fields || !method.hasRequest) {
           final request = methodFormat.parametersWithValues(method.parameters);
