@@ -63,12 +63,12 @@ class ModelVisitor extends GeneralizingElementVisitor<void> {
   }
 
   List<CleanMethodModel> getCleanMethods(String path) {
-    final file = File(path).readAsStringSync();
-    final pattern = RegExp('\\s+');
-    String items = file
+    final file = File(path).readAsLinesSync();
+
+    String items = removeComments(file)
         .replaceAll(";", "#")
         .replaceAll("\n", "")
-        .replaceAll(pattern, "")
+        .replaceAll(RegExp('\\s+'), "")
         .trim()
         .replaceAll("methods(){return", "!");
     items = items
@@ -102,5 +102,18 @@ class ModelVisitor extends GeneralizingElementVisitor<void> {
     }
 
     return methods;
+  }
+
+  String removeComments(List<String> lines) {
+    final outputLines = <String>[];
+
+    final commentPattern = RegExp(r'\/\/.*|\/\*[\s\S]*?\*\/');
+
+    for (var line in lines) {
+      final lineWithoutComments = line.replaceAll(commentPattern, '');
+      outputLines.add(lineWithoutComments.trim());
+    }
+
+    return outputLines.join("");
   }
 }
