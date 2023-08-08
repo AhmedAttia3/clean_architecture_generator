@@ -143,14 +143,8 @@ class RepositoryGenerator
         final request = names.requestType(method.name);
         repositoryImpl.writeln(
             'Future<Either<Failure, $type>> $methodName({required $request request,})async {');
-        repositoryImpl
-            .writeln('return await $remoteDataSourceName.${method.name}(');
-        for (var param in method.requestParameters) {
-          if (param.type == ParamType.Path || param.type == ParamType.Path) {
-            repositoryImpl.writeln('${param.name}:request.${param.name},');
-          }
-        }
-        repositoryImpl.writeln('request: request,);');
+        repositoryImpl.writeln(
+            'return await $remoteDataSourceName.${method.name}(request: request,);');
         repositoryImpl.writeln('}\n');
       }
 
