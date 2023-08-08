@@ -175,11 +175,11 @@ class RepositoryTestGenerator
       final methodName = method.name;
       if (method.requestType == RequestType.Fields || !method.hasRequest) {
         repository.writeln(
-            '$methodName() => dataSource.$methodName(${methodFormat.parameters(method.parameters)});');
+            '$methodName() => dataSource.$methodName(${methodFormat.parametersWithValues(method.parameters)});');
       } else {
-        final request = names.requestType(method.name);
+        final request = names.requestName(method.name);
         repository.writeln(
-            '$methodName() => dataSource.$methodName({required $request request});');
+            '$methodName() => dataSource.$methodName(request: $request);');
       }
 
       if (method.isCache) {
