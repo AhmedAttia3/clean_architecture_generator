@@ -77,6 +77,7 @@ class RemoteDataSourceGenerator
     remoteDataSourceImpl.writeln(Imports.create(
       imports: [
         clientServiceType,
+        remoteDataSourceType,
         ...imports,
         'base_response',
       ],

@@ -26,7 +26,7 @@ class RepositoryTestGenerator
     final visitor = ModelVisitor();
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);
-    final classBuffer = StringBuffer();
+    final repository = StringBuffer();
 
     List<String> imports = [];
     for (var method in visitor.useCases) {
@@ -58,7 +58,7 @@ class RepositoryTestGenerator
     final fileName = "${names.camelCaseToUnderscore(repositoryType)}_test";
 
     ///[Imports]
-    classBuffer.writeln(Imports.create(
+    repository.writeln(Imports.create(
       imports: [
         localDataSourceType,
         remoteDataSourceType,
@@ -70,64 +70,64 @@ class RepositoryTestGenerator
       ],
       isTest: true,
     ));
-    classBuffer.writeln("import '$fileName.mocks.dart';");
-    classBuffer.writeln('@GenerateNiceMocks([');
-    classBuffer.writeln('MockSpec<$remoteDataSourceType>(),');
-    if (hasCache) classBuffer.writeln('MockSpec<$localDataSourceType>(),');
-    classBuffer.writeln('])');
-    classBuffer.writeln('void main() {');
-    classBuffer.writeln('late $remoteDataSourceType dataSource;');
-    classBuffer.writeln('late $repositoryType repository;');
-    classBuffer.writeln('late Failure failure;');
-    classBuffer.writeln('late $localDataSourceType $localDataSourceName;');
+    repository.writeln("import '$fileName.mocks.dart';");
+    repository.writeln('@GenerateNiceMocks([');
+    repository.writeln('MockSpec<$remoteDataSourceType>(),');
+    if (hasCache) repository.writeln('MockSpec<$localDataSourceType>(),');
+    repository.writeln('])');
+    repository.writeln('void main() {');
+    repository.writeln('late $remoteDataSourceType dataSource;');
+    repository.writeln('late $repositoryType repository;');
+    repository.writeln('late Failure failure;');
+    repository.writeln('late $localDataSourceType $localDataSourceName;');
 
     for (var method in visitor.useCases) {
       final methodName = method.name;
       final type = methodFormat.returnType(method.type);
-      classBuffer.writeln('late $type ${methodName}Response;');
+      repository.writeln('late $type ${methodName}Response;');
       if ((method.requestType == RequestType.Body && method.hasRequest) ||
           method.hasRequest) {
         final requestName = names.requestName(method.name);
         final requestType = names.requestType(method.name);
-        classBuffer.writeln('late $requestType $requestName;');
+        repository.writeln('late $requestType $requestName;');
       }
       if (method.isCache) {
         final modelType = names.ModelType(type);
         final dataType = methodFormat.responseType(type);
         final dataName = "${names.firstLower(modelType)}s";
-        classBuffer.writeln('late $dataType $dataName;');
+        repository.writeln('late $dataType $dataName;');
       }
     }
 
-    classBuffer.writeln('setUp(() {');
+    repository.writeln('setUp(() {');
     if (hasCache) {
-      classBuffer.writeln('$localDataSourceName = Mock$localDataSourceType();');
+      repository.writeln('$localDataSourceName = Mock$localDataSourceType();');
     }
-    classBuffer.writeln('dataSource = Mock$remoteDataSourceType();');
-    classBuffer.writeln('repository = $repositoryImplementType(');
-    classBuffer.writeln('dataSource,');
-    if (hasCache) classBuffer.writeln('$localDataSourceName,');
-    classBuffer.writeln(');');
+    repository.writeln('dataSource = Mock$remoteDataSourceType();');
+    repository.writeln('repository = $repositoryImplementType(');
+    repository.writeln('dataSource,');
+    if (hasCache) repository.writeln('$localDataSourceName,');
+    repository.writeln(');');
 
     for (var method in visitor.useCases) {
       final methodName = method.name;
       final type = methodFormat.returnType(method.type);
       final modelType = names.ModelType(type);
       final varType = names.modelRuntimeType(modelType);
-      classBuffer.writeln("///[${names.firstUpper(methodName)}]");
-      classBuffer.writeln('${methodName}Response = $type(');
-      classBuffer.writeln("message: 'message',");
-      classBuffer.writeln("success: true,");
+      repository.writeln("///[${names.firstUpper(methodName)}]");
+      repository.writeln('${methodName}Response = $type(');
+      repository.writeln("message: 'message',");
+      repository.writeln("success: true,");
       if (varType == 'int' ||
           varType == 'double' ||
           varType == 'num' ||
           varType == 'String' ||
           varType == 'Map' ||
           varType == 'bool') {
-        classBuffer
+        repository
             .writeln("data: ${methodFormat.initData(varType, 'name')},);");
       } else if (type.contains('BaseResponse<dynamic>')) {
-        classBuffer.writeln("data: null,);");
+        repository.writeln("data: null,);");
       } else {
         final model = names.camelCaseToUnderscore(names.ModelType(type));
         FileManager.save(
@@ -137,13 +137,13 @@ class RepositoryTestGenerator
         );
         final decode = "fromJson('expected_$model')";
         if (type.contains('List')) {
-          classBuffer.writeln("data: List.generate(");
-          classBuffer.writeln("2,");
-          classBuffer.writeln("(index) =>");
-          classBuffer.writeln("$modelType.fromJson($decode),");
-          classBuffer.writeln("));");
+          repository.writeln("data: List.generate(");
+          repository.writeln("2,");
+          repository.writeln("(index) =>");
+          repository.writeln("$modelType.fromJson($decode),");
+          repository.writeln("));");
         } else {
-          classBuffer.writeln("data: $modelType.fromJson($decode),);");
+          repository.writeln("data: $modelType.fromJson($decode),);");
         }
       }
       if (method.isCache) {
@@ -156,45 +156,30 @@ class RepositoryTestGenerator
             varType == 'String' ||
             varType == 'Map' ||
             varType == 'bool') {
-          classBuffer.writeln(
+          repository.writeln(
               "$dataName = ${methodFormat.initData(varType, 'name')};");
         } else if (type.contains('List')) {
-          classBuffer.writeln("$dataName = List.generate(");
-          classBuffer.writeln("2,");
-          classBuffer.writeln("(index) =>");
-          classBuffer.writeln("$modelType.fromJson($decode),");
-          classBuffer.writeln(");");
+          repository.writeln("$dataName = List.generate(");
+          repository.writeln("2,");
+          repository.writeln("(index) =>");
+          repository.writeln("$modelType.fromJson($decode),");
+          repository.writeln(");");
         } else {
-          classBuffer.writeln("$dataName = $modelType.fromJson($decode);");
+          repository.writeln("$dataName = $modelType.fromJson($decode);");
         }
       }
     }
-    classBuffer.writeln('});');
+    repository.writeln('});');
 
     for (var method in visitor.useCases) {
       final methodName = method.name;
-      if (method.requestType == RequestType.Fields) {
-        classBuffer.writeln(
-            "$methodName() => dataSource.$methodName(${methodFormat.parametersWithValues(method.parameters)});");
+      if (method.requestType == RequestType.Fields || !method.hasRequest) {
+        repository.writeln(
+            '$methodName() => dataSource.$methodName(${methodFormat.parameters(method.parameters)});');
       } else {
-        final requestName = names.requestName(method.name);
-        final requestType = names.requestType(method.name);
-        classBuffer.writeln(
-            '$requestName = $requestType(${methodFormat.parametersWithValues(method.parameters)});');
-        classBuffer.writeln("$methodName() => dataSource.$methodName(");
-        bool hasRequest = false;
-        for (var param in method.requestParameters) {
-          if (param.type == ParamType.Query || param.type == ParamType.Path) {
-            classBuffer.writeln('${param.name} : $requestName.${param.name},');
-          } else {
-            hasRequest = true;
-          }
-        }
-        if (hasRequest) {
-          classBuffer.writeln('request : $requestName,);');
-        } else {
-          classBuffer.writeln(');');
-        }
+        final request = names.requestType(method.name);
+        repository.writeln(
+            '$methodName() => dataSource.$methodName({required $request request});');
       }
 
       if (method.isCache) {
@@ -203,63 +188,62 @@ class RepositoryTestGenerator
         final type = methodFormat.returnType(method.type);
         final modelType = names.ModelType(type);
         final dataName = "${names.firstLower(modelType)}s";
-        classBuffer.writeln(
+        repository.writeln(
             "$cacheMethodName() => $localDataSourceName.$cacheMethodName(data : $dataName);\n");
 
-        classBuffer.writeln(
+        repository.writeln(
             "$getCacheMethodName() => $localDataSourceName.$getCacheMethodName();\n");
       }
     }
 
-    classBuffer.writeln("group('$repositoryType Repository', () {");
+    repository.writeln("group('$repositoryType Repository', () {");
     if (visitor.useCases.isNotEmpty) {
       for (var method in visitor.useCases) {
         final methodName = method.name;
 
         ///[Function Success Test]
-        classBuffer.writeln("///[$methodName Success Test]");
-        classBuffer.writeln("test('$methodName Success', () async {");
-        classBuffer.writeln("when($methodName())");
-        classBuffer.writeln(
-            ".thenAnswer((realInvocation) async => ${methodName}Response);");
+        repository.writeln("///[$methodName Success Test]");
+        repository.writeln("test('$methodName Success', () async {");
+        repository.writeln("when($methodName())");
+        repository.writeln(
+            ".thenAnswer((realInvocation) async => Right(${methodName}Response));");
 
         if (method.requestType == RequestType.Fields || !method.hasRequest) {
           final request = methodFormat.parametersWithValues(method.parameters);
-          classBuffer
+          repository
               .writeln("final res = await repository.$methodName($request);");
         } else {
           final requestName = names.requestName(method.name);
-          classBuffer.writeln(
+          repository.writeln(
               "final res = await repository.$methodName(request: $requestName);");
         }
 
-        classBuffer
-            .writeln("expect(res.rightOrNull(), ${methodName}Response);");
-        classBuffer.writeln("verify($methodName());");
-        classBuffer.writeln("verifyNoMoreInteractions(dataSource);");
-        classBuffer.writeln("});\n");
+        repository.writeln("expect(res.rightOrNull(), ${methodName}Response);");
+        repository.writeln("verify($methodName());");
+        repository.writeln("verifyNoMoreInteractions(dataSource);");
+        repository.writeln("});\n");
 
         ///[Function Failure Test]
-        classBuffer.writeln("///[$methodName Failure Test]");
-        classBuffer.writeln("test('$methodName Failure', () async {");
-        classBuffer.writeln("when($methodName())");
-        classBuffer.writeln(
-            ".thenAnswer((realInvocation) async => ${methodName}Response);");
+        repository.writeln("///[$methodName Failure Test]");
+        repository.writeln("test('$methodName Failure', () async {");
+        repository.writeln("when($methodName())");
+        repository.writeln(
+            ".thenAnswer((realInvocation) async => Left(${methodName}Response));");
 
         if (method.requestType == RequestType.Fields || !method.hasRequest) {
           final request = methodFormat.parametersWithValues(method.parameters);
-          classBuffer
+          repository
               .writeln("final res = await repository.$methodName($request);");
         } else {
           final requestName = names.requestName(method.name);
-          classBuffer.writeln(
+          repository.writeln(
               "final res = await repository.$methodName(request: $requestName);");
         }
 
-        classBuffer.writeln("expect(res.leftOrNull(), isA<Failure>());");
-        classBuffer.writeln("verify($methodName());");
-        classBuffer.writeln("verifyNoMoreInteractions(dataSource);");
-        classBuffer.writeln("});\n");
+        repository.writeln("expect(res.leftOrNull(), isA<Failure>());");
+        repository.writeln("verify($methodName());");
+        repository.writeln("verifyNoMoreInteractions(dataSource);");
+        repository.writeln("});\n");
 
         ///[Cache Test]
         if (method.isCache) {
@@ -271,67 +255,63 @@ class RepositoryTestGenerator
           final dataType = methodFormat.responseType(type);
 
           ///[Cache]
-          classBuffer.writeln("///[$cacheMethodName Success]");
-          classBuffer.writeln("test('$cacheMethodName', () async {");
-          classBuffer.writeln(
+          repository.writeln("///[$cacheMethodName Success]");
+          repository.writeln("test('$cacheMethodName', () async {");
+          repository.writeln(
               "when($cacheMethodName()).thenAnswer((realInvocation) async => const Right(unit));");
-          classBuffer.writeln(
+          repository.writeln(
               "final res = await repository.$cacheMethodName(data:$dataName);");
-          classBuffer.writeln("expect(res.rightOrNull(), unit);");
-          classBuffer.writeln("verify($cacheMethodName());");
-          classBuffer
-              .writeln("verifyNoMoreInteractions($localDataSourceName);");
-          classBuffer.writeln("});\n");
+          repository.writeln("expect(res.rightOrNull(), unit);");
+          repository.writeln("verify($cacheMethodName());");
+          repository.writeln("verifyNoMoreInteractions($localDataSourceName);");
+          repository.writeln("});\n");
 
-          classBuffer.writeln("///[$cacheMethodName Failure]");
-          classBuffer.writeln("test('$cacheMethodName', () async {");
-          classBuffer.writeln(
+          repository.writeln("///[$cacheMethodName Failure]");
+          repository.writeln("test('$cacheMethodName', () async {");
+          repository.writeln(
               "when($cacheMethodName()).thenAnswer((realInvocation) async => Left(failure));");
-          classBuffer.writeln(
+          repository.writeln(
               "final res = await repository.$cacheMethodName(data:$dataName);");
-          classBuffer.writeln("expect(res.leftOrNull(), isA<Failure>());");
-          classBuffer.writeln("verify($cacheMethodName());");
-          classBuffer
-              .writeln("verifyNoMoreInteractions($localDataSourceName);");
-          classBuffer.writeln("});\n");
+          repository.writeln("expect(res.leftOrNull(), isA<Failure>());");
+          repository.writeln("verify($cacheMethodName());");
+          repository.writeln("verifyNoMoreInteractions($localDataSourceName);");
+          repository.writeln("});\n");
 
           ///[Get Cache]
-          classBuffer.writeln("///[$getCacheMethodName Success]");
-          classBuffer.writeln("test('$getCacheMethodName', () async {");
-          classBuffer.writeln(
+          repository.writeln("///[$getCacheMethodName Success]");
+          repository.writeln("test('$getCacheMethodName', () async {");
+          repository.writeln(
               "when($getCacheMethodName()).thenAnswer((realInvocation) => Right($dataName));\n");
-          classBuffer.writeln("final res = repository.$getCacheMethodName();");
-          classBuffer.writeln("expect(res.rightOrNull(),isA<$dataType>());");
-          classBuffer.writeln("verify($getCacheMethodName());");
-          classBuffer
-              .writeln("verifyNoMoreInteractions($localDataSourceName);");
-          classBuffer.writeln("});\n");
+          repository.writeln("final res = repository.$getCacheMethodName();");
+          repository.writeln("expect(res.rightOrNull(),isA<$dataType>());");
+          repository.writeln("verify($getCacheMethodName());");
+          repository.writeln("verifyNoMoreInteractions($localDataSourceName);");
+          repository.writeln("});\n");
 
-          classBuffer.writeln("///[$getCacheMethodName Failure]");
-          classBuffer.writeln("test('$getCacheMethodName', () async {");
-          classBuffer.writeln(
+          repository.writeln("///[$getCacheMethodName Failure]");
+          repository.writeln("test('$getCacheMethodName', () async {");
+          repository.writeln(
               "when($getCacheMethodName()).thenAnswer((realInvocation) => Left(failure));\n");
-          classBuffer.writeln("final res = repository.$getCacheMethodName();");
-          classBuffer.writeln("expect(res.leftOrNull(),isA<Failure>());");
-          classBuffer.writeln("verify($getCacheMethodName());");
-          classBuffer
-              .writeln("verifyNoMoreInteractions($localDataSourceName);");
-          classBuffer.writeln("});\n");
+          repository.writeln("final res = repository.$getCacheMethodName();");
+          repository.writeln("expect(res.leftOrNull(),isA<Failure>());");
+          repository.writeln("verify($getCacheMethodName());");
+          repository.writeln("verifyNoMoreInteractions($localDataSourceName);");
+          repository.writeln("});\n");
         }
       }
     }
-    classBuffer.writeln("});");
-    classBuffer.writeln("}\n");
-    classBuffer.writeln("///[FromJson]");
-    classBuffer.writeln("Map<String, dynamic> fromJson(String path) {");
-    classBuffer.writeln(
+    repository.writeln("});");
+    repository.writeln("}\n");
+    repository.writeln("///[FromJson]");
+    repository.writeln("Map<String, dynamic> fromJson(String path) {");
+    repository.writeln(
         " return jsonDecode(File('test/expected/\$path.json').readAsStringSync());");
-    classBuffer.writeln("}");
+    repository.writeln("}");
     FileManager.save(
       '$path/${repositoryType}Test',
-      classBuffer.toString(),
+      repository.toString(),
       allowUpdates: true,
     );
-    return classBuffer.toString();
+    return repository.toString();
   }
 }

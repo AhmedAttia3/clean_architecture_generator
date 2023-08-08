@@ -169,9 +169,15 @@ class RemoteDataSourceTestGenerator
       classBuffer.writeln(
           "when(networkInfo.isConnected).thenAnswer((realInvocation) async => false);");
       final method = visitor.useCases.first;
-      final request = methodFormat.parametersWithValues(method.parameters);
-      classBuffer.writeln(
-          "final res = await remoteDataSource.${method.name}($request);");
+      if (method.requestType == RequestType.Fields || !method.hasRequest) {
+        final request = methodFormat.parametersWithValues(method.parameters);
+        classBuffer.writeln(
+            "final res = await remoteDataSource.${method.name}($request);");
+      } else {
+        final requestName = names.requestName(method.name);
+        classBuffer.writeln(
+            "final res = await remoteDataSource.${method.name}(request: $requestName);");
+      }
       classBuffer.writeln("expect(res.leftOrNull(), isA<Failure>());");
       classBuffer.writeln("verify(networkInfo.isConnected);");
       classBuffer.writeln("verifyNoMoreInteractions(networkInfo);");

@@ -24,7 +24,7 @@ class UseCaseGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);
 
-    final repositoryType = visitor.remoteDataSource;
+    final repositoryType = visitor.repository;
 
     List<String> imports = [];
     for (var method in visitor.useCases) {
