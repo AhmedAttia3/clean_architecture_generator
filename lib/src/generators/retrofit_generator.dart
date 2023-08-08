@@ -17,7 +17,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     BuildStep buildStep,
   ) {
     final path =
-        "${FileManager.getDirectories(buildStep.inputId.path)}/data/data-sources";
+        "${FileManager.getDirectories(buildStep.inputId.path)}/data/client-services";
     final visitor = ModelVisitor();
     final names = Names();
     final methodFormat = MethodFormat();
