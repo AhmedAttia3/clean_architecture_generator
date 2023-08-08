@@ -43,7 +43,7 @@ class UseCaseTestGenerator
 
     for (var method in visitor.useCases) {
       final methodName = method.name;
-      final repositoryType = names.repositoryType(visitor.className);
+      final repositoryType = visitor.repository;
       final useCaseType = names.useCaseType(methodName);
       final useCaseName = names.useCaseName(methodName);
       final requestType = names.requestType(methodName);

@@ -50,10 +50,10 @@ class RepositoryTestGenerator
       }
     }
 
-    final localDataSourceType = names.localDataSourceType(visitor.className);
-    final localDataSourceName = names.localDataSourceName(visitor.className);
-    final remoteDataSourceType = names.firstUpper(visitor.className);
-    final repositoryType = names.repositoryType(remoteDataSourceType);
+    final localDataSourceType = visitor.localDataSource;
+    final localDataSourceName = names.localDataSourceName(localDataSourceType);
+    final remoteDataSourceType = visitor.remoteDataSource;
+    final repositoryType = visitor.repository;
     final repositoryImplementType =
         names.repositoryImplType(remoteDataSourceType);
     final fileName = "${names.camelCaseToUnderscore(repositoryType)}_test";

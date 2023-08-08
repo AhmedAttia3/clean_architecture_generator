@@ -41,8 +41,8 @@ class LocalDataSourceTestGenerator
       }
     }
 
-    final localDataSourceType = names.localDataSourceType(visitor.className);
-    final localDataSourceName = names.localDataSourceName(visitor.className);
+    final localDataSourceType = visitor.localDataSource;
+    final localDataSourceName = names.localDataSourceName(localDataSourceType);
     final fileName = "${names.camelCaseToUnderscore(localDataSourceType)}_test";
 
     ///[Imports]

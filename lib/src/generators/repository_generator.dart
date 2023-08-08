@@ -28,14 +28,14 @@ class RepositoryGenerator
     final implRepoPath = "$path/data/repository";
 
     final repository = StringBuffer();
-    final clientService = names.firstLower(visitor.className);
+    final remoteDataSourceName = names.firstLower(visitor.remoteDataSource);
 
-    final localDataSourceType = names.localDataSourceType(visitor.className);
-    final localDataSourceName = names.localDataSourceName(visitor.className);
-    final remoteDataSourceType = names.firstUpper(visitor.className);
-    final repositoryType = names.repositoryType(remoteDataSourceType);
-    final repositoryImplementType =
-        names.repositoryImplType(remoteDataSourceType);
+    final localDataSourceType = visitor.localDataSource;
+    final localDataSourceName =
+        names.localDataSourceName(visitor.localDataSource);
+    final remoteDataSourceType = visitor.remoteDataSource;
+    final repositoryType = visitor.repository;
+    final repositoryImplementType = names.repositoryImplType(repositoryType);
 
     List<String> imports = [];
     for (var method in visitor.useCases) {
@@ -96,7 +96,8 @@ class RepositoryGenerator
     repositoryImpl.writeln(Imports.create(
       imports: [
         repositoryType,
-        clientService,
+        repositoryType,
+        remoteDataSourceType,
         localDataSourceType,
         ...imports,
         'base_response'
@@ -109,23 +110,22 @@ class RepositoryGenerator
     repositoryImpl.writeln('@Injectable(as:$repositoryType)');
     repositoryImpl
         .writeln('class $repositoryImplementType implements $repositoryType {');
-    repositoryImpl.writeln('final ${visitor.className} $clientService;');
+    repositoryImpl
+        .writeln('final $remoteDataSourceType $remoteDataSourceName;');
 
     ///[add cache]
     if (hasCache) {
       repositoryImpl
           .writeln('final $localDataSourceType $localDataSourceName;');
     }
-
-    repositoryImpl.writeln('final SafeApi api;');
     repositoryImpl.writeln('const $repositoryImplementType(');
-    repositoryImpl.writeln('this.$clientService,');
+    repositoryImpl.writeln('this.$remoteDataSourceName,');
 
     ///[add cache]
     if (hasCache) {
       repositoryImpl.writeln('this.$localDataSourceName,');
     }
-    repositoryImpl.writeln('this.api,');
+
     repositoryImpl.writeln(');\n');
 
     for (var method in visitor.useCases) {
@@ -136,24 +136,21 @@ class RepositoryGenerator
       if (method.requestType == RequestType.Fields || !method.hasRequest) {
         repositoryImpl.writeln(
             'Future<Either<Failure, $type>> $methodName(${methodFormat.parameters(method.parameters)})async {');
-        repositoryImpl.writeln('return await api<$type>(');
-
         repositoryImpl.writeln(
-            'apiCall: $clientService.${method.name}(${methodFormat.passingParameters(method.parameters)}),);');
+            'return await $remoteDataSourceName.${method.name}(${methodFormat.passingParameters(method.parameters)});');
         repositoryImpl.writeln('}\n');
       } else {
         final request = names.requestType(method.name);
         repositoryImpl.writeln(
             'Future<Either<Failure, $type>> $methodName({required $request request,})async {');
-        repositoryImpl.writeln('return await api<$type>(');
-
-        repositoryImpl.writeln('apiCall: $clientService.${method.name}(');
+        repositoryImpl
+            .writeln('return await $remoteDataSourceName.${method.name}(');
         for (var param in method.requestParameters) {
           if (param.type == ParamType.Path || param.type == ParamType.Path) {
             repositoryImpl.writeln('${param.name}:request.${param.name},');
           }
         }
-        repositoryImpl.writeln('request: request,),);');
+        repositoryImpl.writeln('request: request,);');
         repositoryImpl.writeln('}\n');
       }
 

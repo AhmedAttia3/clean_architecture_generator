@@ -86,19 +86,15 @@ class Names {
   }
 
   String repositoryName(String value) {
-    return '${firstLower(value)}Repository';
-  }
-
-  String repositoryType(String value) {
-    return '${firstUpper(value)}Repository';
+    return firstLower(value);
   }
 
   String repositoryImplName(String value) {
-    return '${firstLower(value)}RepositoryImplement';
+    return '${firstLower(value)}Implement';
   }
 
   String repositoryImplType(String value) {
-    return '${firstUpper(value)}RepositoryImplement';
+    return '${firstUpper(value)}Implement';
   }
 
   String modelName(String value) {
@@ -130,23 +126,7 @@ class Names {
         .toLowerCase();
   }
 
-  String localDataSourceType(String value) {
-    String type = firstUpper(value);
-    if (type.contains('RemoteDataSource')) {
-      type = type.replaceFirst('RemoteDataSource', "LocalDataSource");
-    } else {
-      type = "${type}LocalDataSource";
-    }
-    return type;
-  }
-
   String localDataSourceName(String value) {
-    String type = firstLower(value);
-    if (type.contains('RemoteDataSource')) {
-      type = type.replaceFirst('RemoteDataSource', "LocalDataSource");
-    } else {
-      type = "${type}LocalDataSource";
-    }
-    return type;
+    return firstLower(value);
   }
 }

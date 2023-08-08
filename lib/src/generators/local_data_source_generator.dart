@@ -25,8 +25,9 @@ class LocalDataSourceGenerator
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);
 
-    final localDataSourceType = names.localDataSourceType(visitor.className);
-    final localDataSourceName = names.localDataSourceName(visitor.className);
+    final localDataSourceType = visitor.localDataSource;
+    final localDataSourceName =
+        names.localDataSourceName(visitor.localDataSource);
     final localDataSourceImplType = "${localDataSourceType}Impl";
     final localDataSourceImplName = "${localDataSourceName}Impl";
 

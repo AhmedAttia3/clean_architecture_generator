@@ -9,16 +9,20 @@ import 'package:clean_architecture_generator/clean_architecture_generator.dart';
 import 'package:clean_architecture_generator/src/models/usecase_model.dart';
 
 class ModelVisitor extends GeneralizingElementVisitor<void> {
-  String className = '';
+  String clientService = '';
+  String remoteDataSource = '';
+  String localDataSource = '';
+  String repository = '';
   List<UseCaseModel> useCases = [];
 
   @override
   visitConstructorElement(ConstructorElement element) {
     final returnType = element.returnType.toString();
-    className = returnType.replaceFirst('*', '');
-    if (!className.contains('RemoteDataSource')) {
-      className = "${className}RemoteDataSource";
-    }
+    final className = returnType.replaceFirst('*', '');
+    clientService = "${className}ClientServices";
+    remoteDataSource = "${className}RemoteDataSource";
+    localDataSource = "${className}LocalDataSource";
+    repository = "${className}Repository";
   }
 
   @override

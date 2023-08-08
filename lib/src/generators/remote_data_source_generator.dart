@@ -17,15 +17,19 @@ class RemoteDataSourceGenerator
     ConstantReader annotation,
     BuildStep buildStep,
   ) {
-    final path =
-        "${FileManager.getDirectories(buildStep.inputId.path)}/data/data-sources";
     final visitor = ModelVisitor();
-    final names = Names();
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);
+    final basePath = FileManager.getDirectories(buildStep.inputId.path);
+    final path = "$basePath/data/data-sources";
 
-    final fileName = visitor.className;
+    final names = Names();
     final remoteDataSource = StringBuffer();
+    final clientServiceType = visitor.clientService;
+    final clientServiceName = names.firstLower(clientServiceType);
+    final remoteDataSourceType = visitor.remoteDataSource;
+    final remoteDataSourceTypeImpl =
+        names.repositoryImplType(remoteDataSourceType);
 
     List<String> imports = [];
     for (var method in visitor.useCases) {
@@ -41,65 +45,94 @@ class RemoteDataSourceGenerator
     ///[Imports]
     remoteDataSource.writeln(
       Imports.create(
-        libs: [
-          "import 'package:dio/dio.dart';\n",
-          "import 'package:retrofit/retrofit.dart';\n",
-          "part '${names.camelCaseToUnderscore(fileName)}.g.dart';\n"
-        ],
-        imports: imports..add("base_response"),
+        imports: imports,
       ),
     );
 
-    remoteDataSource.writeln(" @RestApi()");
-    remoteDataSource.writeln(" abstract class $fileName {");
-    remoteDataSource.writeln(" factory $fileName(Dio dio, {String baseUrl}) =");
-    remoteDataSource.writeln(" _$fileName;");
-
+    remoteDataSource.writeln('///[Implementation]');
+    remoteDataSource.writeln('abstract class $remoteDataSourceType {');
+    bool hasCache = false;
     for (var method in visitor.useCases) {
-      if (method.methodType == MethodType.POST_MULTI_PART) {
-        remoteDataSource.writeln("     @MultiPart()')");
-        remoteDataSource.writeln("     @POST('${method.endPoint}')");
-      } else {
-        remoteDataSource
-            .writeln("     @${method.methodType.name}('${method.endPoint}')");
-      }
-      remoteDataSource.writeln("     ${method.type} ${method.name}({");
-      if (method.requestType == RequestType.Fields) {
-        if (method.methodType == MethodType.POST_MULTI_PART) {
-          for (var param in method.requestParameters) {
-            remoteDataSource.writeln(
-                "         @Part(name: ${param.dataType == ParamDataType.List ? "${param.key}[]" : "${param.key}"}) ${param.isRequired ? "required ${param.dataType.name}" : "${param.dataType.name}?"}  ${param.name},");
-          }
-        } else {
-          for (var param in method.requestParameters) {
-            remoteDataSource.writeln(
-                "         @${param.type.name}('${param.key}') ${param.isRequired ? "required ${param.dataType.name}" : "${param.dataType.name}?"}  ${param.name},");
-          }
-        }
+      final methodName = names.firstLower(method.name);
+      final type = methodFormat.returnType(method.type);
+      if (method.requestType == RequestType.Fields || !method.hasRequest) {
+        remoteDataSource.writeln(
+            'Future<Either<Failure, $type>> $methodName(${methodFormat.parameters(method.parameters)});');
       } else {
         final request = names.requestType(method.name);
-        bool hasRequest = false;
-        for (var param in method.requestParameters) {
-          if (param.type == ParamType.Query || param.type == ParamType.Path) {
-            remoteDataSource.writeln(
-                "         @${param.type.name}('${param.key}') ${param.isRequired ? "required ${param.dataType.name}" : "${param.dataType.name}?"}  ${param.name},");
-          } else {
-            hasRequest = true;
-          }
-        }
-        if (hasRequest) {
-          remoteDataSource
-              .writeln("         @Body() required $request request,");
-        }
+        remoteDataSource.writeln(
+            'Future<Either<Failure, $type>> $methodName({required $request request});');
       }
-      remoteDataSource.writeln("     });\n");
     }
-
-    remoteDataSource.writeln(" }");
+    remoteDataSource.writeln('}\n');
 
     FileManager.save(
-      '$path/$fileName',
+      '$path/$remoteDataSourceType',
       remoteDataSource.toString(),
+      allowUpdates: true,
+    );
+
+    final remoteDataSourceImpl = StringBuffer();
+
+    ///[Imports]
+    remoteDataSourceImpl.writeln(Imports.create(
+      imports: [
+        clientServiceType,
+        ...imports,
+        'base_response',
+      ],
+      hasCache: hasCache,
+      isRepo: true,
+    ));
+    remoteDataSourceImpl.writeln('///[$remoteDataSourceType]');
+    remoteDataSourceImpl.writeln('///[Implementation]');
+    remoteDataSourceImpl.writeln('@Injectable(as:$remoteDataSourceType)');
+    remoteDataSourceImpl.writeln(
+        'class $remoteDataSourceTypeImpl implements $remoteDataSourceType {');
+    remoteDataSourceImpl
+        .writeln('final $clientServiceType $clientServiceName;');
+
+    remoteDataSourceImpl.writeln('final SafeApi api;');
+    remoteDataSourceImpl.writeln('const $remoteDataSourceTypeImpl(');
+    remoteDataSourceImpl.writeln('this.$clientServiceName,');
+    remoteDataSourceImpl.writeln('this.api,');
+    remoteDataSourceImpl.writeln(');\n');
+
+    for (var method in visitor.useCases) {
+      final methodName = names.firstLower(method.name);
+      final type = methodFormat.returnType(method.type);
+      remoteDataSourceImpl.writeln('@override');
+      if (method.requestType == RequestType.Fields || !method.hasRequest) {
+        remoteDataSourceImpl.writeln(
+            'Future<Either<Failure, $type>> $methodName(${methodFormat.parameters(method.parameters)})async {');
+        remoteDataSourceImpl.writeln('return await api<$type>(');
+
+        remoteDataSourceImpl.writeln(
+            'apiCall: $clientServiceName.${method.name}(${methodFormat.passingParameters(method.parameters)}),);');
+        remoteDataSourceImpl.writeln('}\n');
+      } else {
+        final request = names.requestType(method.name);
+        remoteDataSourceImpl.writeln(
+            'Future<Either<Failure, $type>> $methodName({required $request request,})async {');
+        remoteDataSourceImpl.writeln('return await api<$type>(');
+
+        remoteDataSourceImpl
+            .writeln('apiCall: $clientServiceName.${method.name}(');
+        for (var param in method.requestParameters) {
+          if (param.type == ParamType.Path || param.type == ParamType.Path) {
+            remoteDataSourceImpl
+                .writeln('${param.name}:request.${param.name},');
+          }
+        }
+        remoteDataSourceImpl.writeln('request: request,),);');
+        remoteDataSourceImpl.writeln('}\n');
+      }
+    }
+    remoteDataSourceImpl.writeln('}\n');
+
+    FileManager.save(
+      '$path/${remoteDataSourceType}Impl',
+      remoteDataSourceImpl.toString(),
       allowUpdates: true,
     );
 

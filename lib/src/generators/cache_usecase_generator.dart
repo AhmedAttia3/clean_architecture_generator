@@ -25,7 +25,7 @@ class CacheUseCaseGenerator
     final methodFormat = MethodFormat();
     element.visitChildren(visitor);
 
-    final repositoryName = '${names.firstUpper(visitor.className)}Repository';
+    final repositoryType = visitor.repository;
 
     List<String> imports = [];
     for (var method in visitor.useCases) {
@@ -55,7 +55,7 @@ class CacheUseCaseGenerator
 
         ///[Imports]
         cacheUseCase.writeln(Imports.create(
-          imports: [repositoryName, ...imports],
+          imports: [repositoryType, ...imports],
           isUseCase: noParams,
           hasCache: true,
         ));
@@ -64,7 +64,7 @@ class CacheUseCaseGenerator
         cacheUseCase.writeln('@injectable');
         cacheUseCase.writeln(
             'class $cacheUseCaseType implements BaseUseCase<Future<Either<Failure, Unit>>,$responseType> {');
-        cacheUseCase.writeln('final $repositoryName repository;');
+        cacheUseCase.writeln('final $repositoryType repository;');
         cacheUseCase.writeln('const $cacheUseCaseType(');
         cacheUseCase.writeln('this.repository,');
         cacheUseCase.writeln(');\n');
@@ -87,7 +87,7 @@ class CacheUseCaseGenerator
         ///[Imports]
         getCacheUseCase.writeln(Imports.create(
           imports: [
-            repositoryName,
+            repositoryType,
             getCacheUseCaseType,
             ...imports,
           ],
@@ -98,7 +98,7 @@ class CacheUseCaseGenerator
         getCacheUseCase.writeln('@injectable');
         getCacheUseCase.writeln(
             'class $getCacheUseCaseType implements BaseUseCase<Either<Failure, $responseType>, Void?>{');
-        getCacheUseCase.writeln('final $repositoryName repository;');
+        getCacheUseCase.writeln('final $repositoryType repository;');
         getCacheUseCase.writeln('const $getCacheUseCaseType(');
         getCacheUseCase.writeln('this.repository,');
         getCacheUseCase.writeln(');\n');

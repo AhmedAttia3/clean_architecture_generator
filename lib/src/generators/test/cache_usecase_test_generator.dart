@@ -41,7 +41,7 @@ class CacheUseCaseTestGenerator
       final varType = names.modelRuntimeType(modelType);
       final responseType = methodFormat.responseType(type);
       final methodName = names.cacheName(method.name);
-      final repositoryType = names.repositoryType(visitor.className);
+      final repositoryType = visitor.repository;
       final useCaseType = names.useCaseType(methodName);
       final useCaseName = names.useCaseName(methodName);
       final fileName = "${names.camelCaseToUnderscore(useCaseType)}_test";
