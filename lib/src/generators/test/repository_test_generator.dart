@@ -85,8 +85,7 @@ class RepositoryTestGenerator
       final methodName = method.name;
       final type = methodFormat.returnType(method.type);
       repository.writeln('late $type ${methodName}Response;');
-      if ((method.requestType == RequestType.Body && method.hasRequest) ||
-          method.hasRequest) {
+      if (method.hasRequest) {
         final requestName = names.requestName(method.name);
         final requestType = names.requestType(method.name);
         repository.writeln('late $requestType $requestName;');
@@ -100,6 +99,7 @@ class RepositoryTestGenerator
     }
 
     repository.writeln('setUp(() {');
+    repository.writeln('failure = Failure(999,"Cache failure");');
     if (hasCache) {
       repository.writeln('$localDataSourceName = Mock$localDataSourceType();');
     }
@@ -177,9 +177,12 @@ class RepositoryTestGenerator
         repository.writeln(
             '$methodName() => dataSource.$methodName(${methodFormat.parametersWithValues(method.parameters)});');
       } else {
-        final request = names.requestName(method.name);
+        final requestName = names.requestName(method.name);
+        final requestType = names.requestType(method.name);
         repository.writeln(
-            '$methodName() => dataSource.$methodName(request: $request);');
+            '$requestName = $requestType(${methodFormat.parametersWithValues(method.parameters)});');
+        repository.writeln(
+            '$methodName() => dataSource.$methodName(request: $requestName);');
       }
 
       if (method.isCache) {
