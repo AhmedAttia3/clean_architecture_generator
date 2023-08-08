@@ -35,7 +35,7 @@ class RepositoryGenerator
         names.localDataSourceName(visitor.localDataSource);
     final remoteDataSourceType = visitor.remoteDataSource;
     final repositoryType = visitor.repository;
-    final repositoryImplementType = names.repositoryImplType(repositoryType);
+    final repositoryImplementType = names.ImplType(repositoryType);
 
     List<String> imports = [];
     for (var method in visitor.useCases) {

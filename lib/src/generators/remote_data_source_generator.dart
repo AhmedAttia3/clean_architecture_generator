@@ -28,8 +28,7 @@ class RemoteDataSourceGenerator
     final clientServiceType = visitor.clientService;
     final clientServiceName = names.firstLower(clientServiceType);
     final remoteDataSourceType = visitor.remoteDataSource;
-    final remoteDataSourceTypeImpl =
-        names.repositoryImplType(remoteDataSourceType);
+    final remoteDataSourceTypeImpl = names.ImplType(remoteDataSourceType);
 
     List<String> imports = [];
     for (var method in visitor.useCases) {

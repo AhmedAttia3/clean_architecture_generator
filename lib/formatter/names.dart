@@ -89,11 +89,11 @@ class Names {
     return firstLower(value);
   }
 
-  String repositoryImplName(String value) {
+  String ImplName(String value) {
     return '${firstLower(value)}Implement';
   }
 
-  String repositoryImplType(String value) {
+  String ImplType(String value) {
     return '${firstUpper(value)}Implement';
   }
 
