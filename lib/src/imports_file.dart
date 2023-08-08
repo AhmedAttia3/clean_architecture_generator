@@ -95,8 +95,10 @@ class Imports {
   static String? importName(String subName) {
     final files = libFiles;
     final index = files.indexWhere((item) {
-      final path = item.split('/').last;
-      return path.contains(subName);
+      final path = item.split('/').last.replaceAll("_", "");
+      return path
+          .toUpperCase()
+          .contains(subName.replaceAll("_", "").toUpperCase());
     });
     if (index != -1) {
       return "import 'package:${files[index].replaceAll('\\', '/').replaceFirst('lib', parent)}';\n";
@@ -106,7 +108,8 @@ class Imports {
 
   static String? importPath(String subName) {
     final files = libFiles;
-    final index = files.indexWhere((item) => item.contains(subName));
+    final index = files.indexWhere(
+        (item) => item.toUpperCase().contains(subName.toUpperCase()));
     if (index != -1) {
       return files[index];
     }
