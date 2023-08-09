@@ -112,8 +112,8 @@ class Settings implements CleanArchitectureSetUp {
         ],
       ),
       const CleanMethod(
-        name: "getOTP",
-        endPoint: "/getOTP",
+        name: "getOtp",
+        endPoint: "/getOtp",
         response: "BaseResponse<OtpModel?>",
         requestType: RequestType.Fields,
         isPaging: true,

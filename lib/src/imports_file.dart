@@ -123,15 +123,17 @@ class Imports {
   }
 
   static List<String> get libFiles {
-    return filesInDir('lib');
+    final res = filesInDir('lib')
+      ..removeWhere((item) => item.contains(".g.dart"));
+    return res;
   }
 
   static List<String> filesInDir(String path) {
     List<String> data = [];
-    if (path.contains('.dart') && !path.contains('.g.dart')) {
+    if (path.contains('.dart')) {
       return data..add(path);
     } else if (path.contains('.')) {
-      return data;
+      return [];
     } else {
       final files = Directory(path);
       if (files.listSync().isEmpty) {

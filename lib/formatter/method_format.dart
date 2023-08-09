@@ -41,33 +41,33 @@ class MethodFormat {
 
   String returnType(String type) {
     return type
-        .replaceFirst('Future<', '')
-        .replaceFirst('>', '')
-        .replaceFirst('?>>', '>?>');
+        .replaceAll('Future<', '')
+        .replaceAll('>', '')
+        .replaceAll('?>>', '>?>');
   }
 
   String returnTypeEntity(String type) {
     return type
-        .replaceFirst('Future<', '')
-        .replaceFirst('>', '')
-        .replaceFirst('?>>', '>?>')
-        .replaceFirst("Model", "Entity");
+        .replaceAll('Future<', '')
+        .replaceAll('>', '')
+        .replaceAll('?>>', '>?>')
+        .replaceAll("Model", "Entity");
   }
 
   String responseType(String value) {
     return value
-        .replaceFirst('BaseResponse<', "")
-        .replaceFirst('>', "")
-        .replaceFirst('?', '');
+        .replaceAll('BaseResponse<', "")
+        .replaceAll('>', "")
+        .replaceAll('?', '');
   }
 
   String baseModelType(String value) {
     return value
-        .replaceFirst('BaseResponse<', "")
-        .replaceFirst('List', "")
-        .replaceFirst('>', "")
-        .replaceFirst('<', "")
-        .replaceFirst('?', '');
+        .replaceAll('BaseResponse', "")
+        .replaceAll('List', "")
+        .replaceAll('>', "")
+        .replaceAll('<', "")
+        .replaceAll('?', '');
   }
 
   dynamic initData(String type, String name) {
