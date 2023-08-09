@@ -63,9 +63,25 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
       cubit.writeln('final $useCaseType _${names.firstLower(useCaseType)};');
       if (hasParams) cubit.writeln('final $requestType request;');
       if (method.isPaging) {
+        ///[initialize formKey for validation]
+        if (hasTextController) {
+          cubit.writeln('final GlobalKey<FormState> formKey;');
+        }
+
+        ///[initialize controller for TextEditingController]
+        for (var controller in method.textControllers) {
+          cubit.writeln('final TextEditingController ${controller.name};');
+          method.parameters
+              .removeWhere((element) => controller.name == element.name);
+        }
+
         cubit.writeln(
             'late final PagewiseLoadController<$baseModelType> pagewiseController;');
         cubit.writeln('$cubitType(this._${names.firstLower(useCaseType)},');
+        if (hasTextController) cubit.writeln('this.formKey,');
+        for (var controller in method.textControllers) {
+          cubit.writeln('this.${controller.name},');
+        }
         if (hasParams) cubit.writeln('this.request,');
         cubit.writeln(') : super(ContentState());');
         cubit.writeln('void init() {');
@@ -87,6 +103,23 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         cubit.writeln('},');
         cubit.writeln(');');
         cubit.writeln('}');
+
+        ///[initialize variable for set emit function]
+        for (var function in method.emitSets) {
+          cubit.write('${function.type} ${function.name}');
+          cubit.write(initVaType(function.type));
+          method.parameters
+              .removeWhere((element) => function.name == element.name);
+        }
+
+        ///[initialize variable for set function]
+        for (var function in method.functionSets) {
+          cubit.write('${function.type} ${function.name}');
+          cubit.write(initVaType(function.type));
+          method.parameters
+              .removeWhere((element) => function.name == element.name);
+        }
+
         if (method.hasRequest) {
           cubit.writeln(
               'Future<$responseType> execute(${methodFormat.parameters(method.parameters)}) async {');
