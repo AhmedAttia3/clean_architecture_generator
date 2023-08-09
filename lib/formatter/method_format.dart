@@ -41,24 +41,24 @@ class MethodFormat {
 
   String returnType(String type) {
     return type
-        .replaceAll('Future<', '')
-        .replaceAll('>', '')
-        .replaceAll('?>>', '>?>');
+        .replaceFirst('Future<', '')
+        .replaceFirst('>', '')
+        .replaceFirst('?>>', '>?>');
   }
 
   String returnTypeEntity(String type) {
     return type
-        .replaceAll('Future<', '')
-        .replaceAll('>', '')
-        .replaceAll('?>>', '>?>')
-        .replaceAll("Model", "Entity");
+        .replaceFirst('Future<', '')
+        .replaceFirst('>', '')
+        .replaceFirst('?>>', '>?>')
+        .replaceFirst("Model", "Entity");
   }
 
   String responseType(String value) {
     return value
-        .replaceAll('BaseResponse<', "")
-        .replaceAll('>', "")
-        .replaceAll('?', '');
+        .replaceFirst('BaseResponse<', "")
+        .replaceFirst('>', "")
+        .replaceFirst('?', '');
   }
 
   String baseModelType(String value) {
