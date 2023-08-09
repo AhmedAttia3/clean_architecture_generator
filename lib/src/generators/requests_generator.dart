@@ -63,7 +63,11 @@ class RequestsGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
           'Map<String, dynamic> toJson() => _\$${requestType}ToJson(this);');
       request.writeln('}\n');
 
-      FileManager.save('$path/$requestType', request.toString());
+      FileManager.save(
+        '$path/$requestType',
+        request.toString(),
+        allowUpdates: true,
+      );
       requests.write(request);
     }
     return requests.toString();

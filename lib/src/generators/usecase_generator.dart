@@ -84,7 +84,11 @@ class UseCaseGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
       useCase.writeln('}\n');
       useCase.writeln('}\n');
 
-      FileManager.save('$path/$useCaseType', useCase.toString());
+      FileManager.save(
+        '$path/$useCaseType',
+        useCase.toString(),
+        allowUpdates: true,
+      );
       classBuffer.write(useCase);
     }
     return classBuffer.toString();

@@ -115,7 +115,10 @@ class CacheUseCaseGenerator
         getCacheUseCase.writeln('}\n');
         useCase.writeln(getCacheUseCase);
         FileManager.save(
-            '$path/$getCacheUseCaseType', getCacheUseCase.toString());
+          '$path/$getCacheUseCaseType',
+          getCacheUseCase.toString(),
+          allowUpdates: true,
+        );
         classBuffer.write(useCase);
       }
     }
