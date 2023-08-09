@@ -46,6 +46,14 @@ class MethodFormat {
         .replaceFirst('?>>', '>?>');
   }
 
+  String returnTypeEntity(String type) {
+    return type
+        .replaceFirst('Future<', '')
+        .replaceFirst('>', '')
+        .replaceFirst('?>>', '>?>')
+        .replaceFirst("Model", "Entity");
+  }
+
   String responseType(String value) {
     return value
         .replaceFirst('BaseResponse<', "")
@@ -57,14 +65,14 @@ class MethodFormat {
     if (type == 'String') {
       return '"$name"';
     } else if (type == 'double') {
-      return 2.0;
+      return 0.0;
     } else if (type == 'int') {
-      return 2;
+      return 0;
     } else if (type == 'bool') {
-      return true;
+      return false;
     } else if (type == 'num') {
-      return 2.0;
-    } else if (type == 'List') {
+      return 0.0;
+    } else if (type.contains("List")) {
       return [];
     }
   }

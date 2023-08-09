@@ -30,7 +30,10 @@ class CacheUseCaseGenerator
     List<String> imports = [];
     for (var method in visitor.useCases) {
       final returnType = methodFormat.returnType(method.type);
+      final returnTypeEntity = methodFormat.returnTypeEntity(method.type);
       final type = methodFormat.responseType(returnType);
+      final typeEntity = methodFormat.responseType(returnTypeEntity);
+      imports.add(typeEntity);
       imports.add(type);
     }
 
@@ -48,7 +51,9 @@ class CacheUseCaseGenerator
         final getCacheUseCaseType =
             names.useCaseType(names.getCacheType(method.name));
         final type = methodFormat.returnType(method.type);
+        final typeEntity = methodFormat.returnTypeEntity(method.type);
         final responseType = methodFormat.responseType(type);
+        final responseTypeEntity = methodFormat.responseType(typeEntity);
 
         ///[cache]
         final cacheUseCase = StringBuffer();
@@ -97,14 +102,14 @@ class CacheUseCaseGenerator
         getCacheUseCase.writeln('///[Implementation]');
         getCacheUseCase.writeln('@injectable');
         getCacheUseCase.writeln(
-            'class $getCacheUseCaseType implements BaseUseCase<Either<Failure, $responseType>, Void?>{');
+            'class $getCacheUseCaseType implements BaseUseCase<Either<Failure, $responseTypeEntity>, Void?>{');
         getCacheUseCase.writeln('final $repositoryType repository;');
         getCacheUseCase.writeln('const $getCacheUseCaseType(');
         getCacheUseCase.writeln('this.repository,');
         getCacheUseCase.writeln(');\n');
         getCacheUseCase.writeln('@override');
         getCacheUseCase.writeln(
-            'Either<Failure, $responseType> execute({Void? request,}) {');
+            'Either<Failure, $responseTypeEntity> execute({Void? request,}) {');
         getCacheUseCase.writeln('return repository.$getCacheMethodName();');
         getCacheUseCase.writeln('}\n');
         getCacheUseCase.writeln('}\n');

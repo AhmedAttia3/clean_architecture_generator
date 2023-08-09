@@ -27,7 +27,7 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
 
     List<String> imports = [];
     for (var method in visitor.useCases) {
-      final returnType = methodFormat.returnType(method.type);
+      final returnType = methodFormat.returnTypeEntity(method.type);
       final type = methodFormat.responseType(returnType);
       imports.add(type);
     }
@@ -41,7 +41,7 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
       final cubitType = names.cubitType(method.name);
       final useCaseType = names.useCaseType(method.name);
       final requestType = names.requestType(method.name);
-      final type = methodFormat.returnType(method.type);
+      final type = methodFormat.returnTypeEntity(method.type);
       final responseType = methodFormat.responseType(type);
       final baseModelType = names.ModelType(type);
       final hasData = !type.contains('BaseResponse<dynamic>');
@@ -100,9 +100,9 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         cubit.writeln(
             'final res = await _${names.firstLower(useCaseType)}.execute(');
         if (hasParams) {
-          cubit.writeln("request : request");
+          cubit.writeln("request : request,");
         } else {
-          cubit.writeln('request : ${method.parameters.first.name}');
+          cubit.writeln('request : ${method.parameters.first.name},');
         }
         cubit.writeln(');');
         cubit.writeln('res.left((failure) {');
@@ -225,7 +225,7 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
               hasTextController ||
               hasFunctionSet ||
               hasEmitSet) {
-            cubit.writeln("request : request");
+            cubit.writeln("request : request,");
           }
         } else {
           for (var controller in method.textControllers) {

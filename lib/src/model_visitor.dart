@@ -87,18 +87,30 @@ class ModelVisitor extends GeneralizingElementVisitor<void> {
           .replaceAll('ParamProp.', '"')
           .replaceAll('ParamDataType.', '"')
           .replaceAll('(', '{"')
-          .replaceAll(')', '}')
+          .replaceAll(')', '"}')
           .replaceAll(':', '":')
           .replaceAll(',', ',"')
           .replaceAll("'", '"')
           .replaceAll(",", '",')
-          .replaceAll('""', '"')
           .replaceAll(',"}","', '},')
+          .replaceAll('""', '"')
           .replaceAll(',]"},', ']}')
+          .replaceAll('}]', '"}]')
+          .replaceAll(',"}', '}')
+          .replaceAll('"},', '}')
+          .replaceAll('"},', '}')
+          .replaceAll('"}","', '"},')
+          .replaceAll('}{', '"},{')
+          .replaceAll('},]', '}]')
+          .replaceAll(']"},', ']}')
+          .replaceAll(']"}', ']}')
+          .replaceAll(',""}', '}')
+          .replaceAll('""}', '"}')
           .replaceAll('true"', 'true')
           .replaceAll('false"', 'false');
 
-      methods.add(CleanMethodModel.fromJson(jsonDecode(method)));
+      final data = jsonDecode(method);
+      methods.add(CleanMethodModel.fromJson(data));
     }
 
     return methods;

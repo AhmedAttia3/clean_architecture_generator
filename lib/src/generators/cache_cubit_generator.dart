@@ -28,7 +28,7 @@ class CacheCubitGenerator
 
     List<String> imports = [];
     for (var method in visitor.useCases) {
-      final returnType = methodFormat.returnType(method.type);
+      final returnType = methodFormat.returnTypeEntity(method.type);
       final type = methodFormat.responseType(returnType);
       imports.add(type);
     }
@@ -38,7 +38,7 @@ class CacheCubitGenerator
     for (var method in visitor.useCases) {
       final varName = names.subName(method.name);
       final requestType = names.requestType(method.name);
-      final type = methodFormat.returnType(method.type);
+      final type = methodFormat.returnTypeEntity(method.type);
       final responseType = methodFormat.responseType(type);
 
       ///[get cache]

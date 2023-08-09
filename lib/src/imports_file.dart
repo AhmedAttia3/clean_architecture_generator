@@ -71,6 +71,8 @@ class Imports {
       data += "import 'dart:convert';";
       final safeRequest = importName('safe_request_handler.dart');
       if (safeRequest != null) data += safeRequest;
+      final fold = importName('fold.dart');
+      if (fold != null) data += fold;
     }
     if (isLocalDataSource) {
       data += "import 'dart:convert';";

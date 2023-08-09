@@ -17,7 +17,7 @@ class MoveModelsGenerator
     BuildStep buildStep,
   ) {
     final currentPath = FileManager.getDirectories(buildStep.inputId.path);
-    final path = "$currentPath/domain/models";
+    final path = "$currentPath/data/models";
     final visitor = ModelVisitor();
     element.visitChildren(visitor);
     final dir = Directory("$currentPath/models");
@@ -25,10 +25,14 @@ class MoveModelsGenerator
       final models = Imports.filesInDir("$currentPath/models");
       for (var model in models) {
         final filename = model.split('\\').last;
-        FileManager.move(filename, path, "$currentPath/models");
+        if (filename.contains(".dart")) {
+          FileManager.move(filename, path, "$currentPath/models");
+        }
       }
-
-      FileManager.deleteDir("$currentPath/models");
+      final files = dir.listSync();
+      if (files.isEmpty) {
+        FileManager.deleteDir("$currentPath/models");
+      }
     }
     return "";
   }

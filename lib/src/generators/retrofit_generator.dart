@@ -62,35 +62,40 @@ class RetrofitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         clientServices
             .writeln("     @${method.methodType.name}('${method.endPoint}')");
       }
-      clientServices.writeln("     ${method.type} ${method.name}({");
-      if (method.requestType == RequestType.Fields) {
-        if (method.methodType == MethodType.POST_MULTI_PART) {
-          for (var param in method.requestParameters) {
-            clientServices.writeln(
-                "         @Part(name: ${param.dataType == ParamDataType.List ? "${param.key}[]" : "${param.key}"}) ${param.isRequired ? "required ${param.dataType.name}" : "${param.dataType.name}?"}  ${param.name},");
+      if (method.requestParameters.isNotEmpty) {
+        clientServices.writeln("     ${method.type} ${method.name}({");
+        if (method.requestType == RequestType.Fields) {
+          if (method.methodType == MethodType.POST_MULTI_PART) {
+            for (var param in method.requestParameters) {
+              clientServices.writeln(
+                  "         @Part(name: ${param.dataType == ParamDataType.List ? "${param.key}[]" : "${param.key}"}) ${param.isRequired ? "required ${param.dataType.name}" : "${param.dataType.name}?"}  ${param.name},");
+            }
+          } else {
+            for (var param in method.requestParameters) {
+              clientServices.writeln(
+                  "         @${param.type.name}('${param.key}') ${param.isRequired ? "required ${param.dataType.name}" : "${param.dataType.name}?"}  ${param.name},");
+            }
           }
         } else {
+          final request = names.requestType(method.name);
+          bool hasRequest = false;
           for (var param in method.requestParameters) {
-            clientServices.writeln(
-                "         @${param.type.name}('${param.key}') ${param.isRequired ? "required ${param.dataType.name}" : "${param.dataType.name}?"}  ${param.name},");
+            if (param.type == ParamType.Query || param.type == ParamType.Path) {
+              clientServices.writeln(
+                  "         @${param.type.name}('${param.key}') ${param.isRequired ? "required ${param.dataType.name}" : "${param.dataType.name}?"}  ${param.name},");
+            } else {
+              hasRequest = true;
+            }
+          }
+          if (hasRequest) {
+            clientServices
+                .writeln("         @Body() required $request request,");
           }
         }
+        clientServices.writeln("     });\n");
       } else {
-        final request = names.requestType(method.name);
-        bool hasRequest = false;
-        for (var param in method.requestParameters) {
-          if (param.type == ParamType.Query || param.type == ParamType.Path) {
-            clientServices.writeln(
-                "         @${param.type.name}('${param.key}') ${param.isRequired ? "required ${param.dataType.name}" : "${param.dataType.name}?"}  ${param.name},");
-          } else {
-            hasRequest = true;
-          }
-        }
-        if (hasRequest) {
-          clientServices.writeln("         @Body() required $request request,");
-        }
+        clientServices.writeln("     ${method.type} ${method.name}();\n");
       }
-      clientServices.writeln("     });\n");
     }
 
     clientServices.writeln(" }");

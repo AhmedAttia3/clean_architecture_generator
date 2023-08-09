@@ -28,7 +28,7 @@ class UseCaseGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
 
     List<String> imports = [];
     for (var method in visitor.useCases) {
-      final returnType = methodFormat.returnType(method.type);
+      final returnType = methodFormat.returnTypeEntity(method.type);
       final type = methodFormat.responseType(returnType);
       imports.add(type);
     }
@@ -37,6 +37,8 @@ class UseCaseGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     final classBuffer = StringBuffer();
     for (var method in visitor.useCases) {
       final useCase = StringBuffer();
+      final returnType = methodFormat.returnTypeEntity(method.type);
+      final type = methodFormat.responseType(returnType);
       final noParams = !method.hasRequest;
       final useCaseType = names.useCaseType(method.name);
       final requestType = noParams
@@ -45,7 +47,6 @@ class UseCaseGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
               : 'Void'
           : names.requestType(method.name);
       final methodName = names.firstLower(method.name);
-      final type = methodFormat.returnType(method.type);
       useCase.writeln('///[Implementation]');
 
       ///[Imports]
@@ -61,14 +62,14 @@ class UseCaseGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
       useCase.writeln('///[Implementation]');
       useCase.writeln('@injectable');
       useCase.writeln(
-          'class $useCaseType implements BaseUseCase<Future<Either<Failure, $type>>,$requestType>{');
+          'class $useCaseType implements BaseUseCase<Future<Either<Failure, $returnType>>,$requestType>{');
       useCase.writeln('final $repositoryType repository;');
       useCase.writeln('const $useCaseType(');
       useCase.writeln('this.repository,');
       useCase.writeln(');\n');
       useCase.writeln('@override');
       useCase.writeln(
-          'Future<Either<Failure, $type>> execute({$requestType? request,}) async {');
+          'Future<Either<Failure, $returnType>> execute({$requestType? request,}) async {');
       useCase.writeln('return await repository.$methodName');
       if (method.requestType == RequestType.Fields && method.hasRequest) {
         useCase

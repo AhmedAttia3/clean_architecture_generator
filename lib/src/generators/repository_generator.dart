@@ -39,12 +39,15 @@ class RepositoryGenerator
 
     List<String> imports = [];
     for (var method in visitor.useCases) {
+      final returnTypeEntity = methodFormat.returnTypeEntity(method.type);
       final returnType = methodFormat.returnType(method.type);
       final type = methodFormat.responseType(returnType);
+      final typeEntity = methodFormat.responseType(returnTypeEntity);
       if (method.requestType == RequestType.Body) {
         final request = names.requestType(method.name);
         imports.add(request);
       }
+      imports.add(typeEntity);
       imports.add(type);
     }
 
@@ -60,15 +63,17 @@ class RepositoryGenerator
     bool hasCache = false;
     for (var method in visitor.useCases) {
       final methodName = names.firstLower(method.name);
+      final typeEntity = methodFormat.returnTypeEntity(method.type);
+      final responseTypeEntity = methodFormat.responseType(typeEntity);
       final type = methodFormat.returnType(method.type);
       final responseType = methodFormat.responseType(type);
       if (method.requestType == RequestType.Fields || !method.hasRequest) {
         repository.writeln(
-            'Future<Either<Failure, $type>> $methodName(${methodFormat.parameters(method.parameters)});');
+            'Future<Either<Failure, $typeEntity>> $methodName(${methodFormat.parameters(method.parameters)});');
       } else {
         final request = names.requestType(method.name);
         repository.writeln(
-            'Future<Either<Failure, $type>> $methodName({required $request request});');
+            'Future<Either<Failure, $typeEntity>> $methodName({required $request request,});');
       }
 
       ///[cache save or get]
@@ -78,8 +83,8 @@ class RepositoryGenerator
         final cacheMethodName = names.cacheName(methodName);
         repository.writeln(
             'Future<Either<Failure, Unit>> $cacheMethodName({required $responseType data,});');
-        repository
-            .writeln('Either<Failure, $responseType> $getCacheMethodName();');
+        repository.writeln(
+            'Either<Failure, $responseTypeEntity> $getCacheMethodName();');
       }
     }
     repository.writeln('}\n');
@@ -130,21 +135,49 @@ class RepositoryGenerator
 
     for (var method in visitor.useCases) {
       final methodName = names.firstLower(method.name);
+      final typeEntity = methodFormat.returnTypeEntity(method.type);
+      final responseTypeEntity = methodFormat.responseType(typeEntity);
+
       final type = methodFormat.returnType(method.type);
       final responseType = methodFormat.responseType(type);
+
       repositoryImpl.writeln('@override');
       if (method.requestType == RequestType.Fields || !method.hasRequest) {
         repositoryImpl.writeln(
-            'Future<Either<Failure, $type>> $methodName(${methodFormat.parameters(method.parameters)})async {');
-        repositoryImpl.writeln(
-            'return await $remoteDataSourceName.${method.name}(${methodFormat.passingParameters(method.parameters)});');
+            'Future<Either<Failure, $typeEntity>> $methodName(${methodFormat.parameters(method.parameters)})async {');
+        if (method.isCache) {
+          final cacheMethodName = names.cacheName(method.name);
+          repositoryImpl.writeln(
+              'final res = await $remoteDataSourceName.${method.name}(${methodFormat.passingParameters(method.parameters)});');
+          repositoryImpl.writeln('await res.right((data) async {');
+          repositoryImpl.writeln('if (data.success) {');
+          repositoryImpl.writeln(
+              '$localDataSourceName.$cacheMethodName(data: data.data!);');
+          repositoryImpl.writeln(' }});');
+          repositoryImpl.writeln('return res;');
+        } else {
+          repositoryImpl.writeln(
+              'return await $remoteDataSourceName.${method.name}(${methodFormat.passingParameters(method.parameters)});');
+        }
         repositoryImpl.writeln('}\n');
       } else {
         final request = names.requestType(method.name);
         repositoryImpl.writeln(
-            'Future<Either<Failure, $type>> $methodName({required $request request,})async {');
-        repositoryImpl.writeln(
-            'return await $remoteDataSourceName.${method.name}(request: request,);');
+            'Future<Either<Failure, $typeEntity>> $methodName({required $request request,})async {');
+        if (method.isCache) {
+          final cacheMethodName = names.cacheName(method.name);
+          repositoryImpl.writeln(
+              'final res =  await $remoteDataSourceName.${method.name}(request: request,);');
+          repositoryImpl.writeln('await res.right((data) async {');
+          repositoryImpl.writeln('if (data.success) {');
+          repositoryImpl.writeln(
+              '$localDataSourceName.$cacheMethodName(data: data.data!);');
+          repositoryImpl.writeln(' }});');
+          repositoryImpl.writeln('return res;');
+        } else {
+          repositoryImpl.writeln(
+              'return await $remoteDataSourceName.${method.name}(request: request,);');
+        }
         repositoryImpl.writeln('}\n');
       }
 
@@ -163,8 +196,8 @@ class RepositoryGenerator
 
         ///[get]
         repositoryImpl.writeln('@override');
-        repositoryImpl
-            .writeln('Either<Failure, $responseType> $getCacheMethodName(){');
+        repositoryImpl.writeln(
+            'Either<Failure, $responseTypeEntity> $getCacheMethodName(){');
         repositoryImpl
             .writeln('return $localDataSourceName.$getCacheMethodName();');
         repositoryImpl.writeln('}\n');

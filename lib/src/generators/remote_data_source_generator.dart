@@ -60,7 +60,7 @@ class RemoteDataSourceGenerator
       } else {
         final request = names.requestType(method.name);
         remoteDataSource.writeln(
-            'Future<Either<Failure, $type>> $methodName({required $request request});');
+            'Future<Either<Failure, $type>> $methodName({required $request request,});');
       }
     }
     remoteDataSource.writeln('}\n');

@@ -126,6 +126,19 @@ class Names {
         .toLowerCase();
   }
 
+  String underscoreToCamelCase(String input) {
+    List<String> parts = input.split('_');
+    String camelCase = parts[0];
+
+    for (int i = 1; i < parts.length; i++) {
+      String word = parts[i];
+      String capitalizedWord = word[0].toUpperCase() + word.substring(1);
+      camelCase += capitalizedWord;
+    }
+
+    return camelCase;
+  }
+
   String localDataSourceName(String value) {
     return firstLower(value);
   }
