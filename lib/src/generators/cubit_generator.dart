@@ -388,7 +388,11 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         cubit.writeln('}');
       }
 
-      FileManager.save('$path/$cubitType', cubit.toString());
+      FileManager.save(
+        '$path/$cubitType',
+        cubit.toString(),
+        allowUpdates: true,
+      );
       cubits.writeln(cubit);
     }
     return cubits.toString();
