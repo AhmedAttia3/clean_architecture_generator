@@ -72,13 +72,16 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         cubit.writeln(
             'pagewiseController = PagewiseLoadController<$baseModelType>(');
         cubit.writeln('pageSize: 10,');
-        cubit.writeln('pageFuture: (page) {');
+        cubit.writeln('pageFuture: (${method.parameters[0].name}) {');
         if (method.hasRequest) {
-          final page = "${method.parameters[0].name} : page!";
-          final second = "${method.parameters[1].name} : page * 10,";
+          final page =
+              "${method.parameters[0].name} : ${method.parameters[0].name}!";
+          final second =
+              "${method.parameters[1].name} : ${method.parameters[0].name} * 10,";
           cubit.writeln('return execute($page,$second);');
         } else if (method.parameters.isNotEmpty) {
-          final page = "${method.parameters[0].name} : page!,";
+          final page =
+              "${method.parameters[0].name} : ${method.parameters[0].name}!,";
           cubit.writeln('return execute($page);');
         }
         cubit.writeln('},');
@@ -92,8 +95,45 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
               'Future<$responseType> execute({required ${method.parameters.first.type} ${method.parameters.first.name}}) async {');
         }
         cubit.writeln('$responseType $varName = [];');
-        if (hasParams) {
-          for (var parma in method.parameters) {
+        if (hasTextController) {
+          cubit.writeln('if (formKey.currentState!.validate()) {');
+        }
+
+        ///[add textEditController to request]
+        if (hasTextController) {
+          for (var controller in method.textControllers) {
+            if (method.hasRequest) {
+              cubit.writeln('request.${controller.name} =');
+            }
+            if (controller.type == 'int') {
+              cubit.writeln('int.parse(${controller.name}.text);');
+            } else if (controller.type == 'double') {
+              cubit.writeln('double.parse(${controller.name}.text);');
+            } else if (controller.type == 'num') {
+              cubit.writeln('num.parse(${controller.name}.text);');
+            } else {
+              cubit.writeln('${controller.name}.text;');
+            }
+          }
+        }
+
+        ///[add variables to request]
+        for (var function in method.emitSets) {
+          if (method.hasRequest) {
+            cubit.writeln('request.${function.name} = ${function.name};');
+          }
+        }
+
+        ///[add variables to request]
+        for (var function in method.functionSets) {
+          if (method.hasRequest) {
+            cubit.writeln('request.${function.name} = ${function.name};');
+          }
+        }
+
+        ///[add params to request]
+        for (var parma in method.parameters) {
+          if (method.hasRequest) {
             cubit.writeln('request.${parma.name} = ${parma.name};');
           }
         }
@@ -119,7 +159,27 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         }
         cubit.writeln('});');
         cubit.writeln('return $varName;');
+        if (hasTextController) {
+          cubit.writeln('}');
+        }
         cubit.writeln('}');
+
+        ///[create emit set]
+        for (var function in method.emitSets) {
+          cubit.writeln(
+              'void set${names.firstUpper(function.name)}(${function.type} value){');
+          cubit.writeln('${function.name} = value;');
+          cubit.writeln('emit(ContentState());');
+          cubit.writeln('}');
+        }
+
+        ///[create set function]
+        for (var function in method.functionSets) {
+          cubit.writeln(
+              'void set${names.firstUpper(function.name)}(${function.type} value){');
+          cubit.writeln('${function.name} = value;');
+          cubit.writeln('}');
+        }
         cubit.writeln('}');
       } else {
         ///[initialize formKey for validation]
