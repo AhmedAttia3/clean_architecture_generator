@@ -31,7 +31,7 @@ class CacheUseCaseTestGenerator
     List<String> imports = [];
     for (var method in visitor.useCases) {
       final returnType = methodFormat.returnType(method.type);
-      final type = methodFormat.responseType(returnType);
+      final type = methodFormat.baseModelType(returnType);
       imports.add(type);
     }
 

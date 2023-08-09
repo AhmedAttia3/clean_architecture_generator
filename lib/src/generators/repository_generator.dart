@@ -41,8 +41,8 @@ class RepositoryGenerator
     for (var method in visitor.useCases) {
       final returnTypeEntity = methodFormat.returnTypeEntity(method.type);
       final returnType = methodFormat.returnType(method.type);
-      final type = methodFormat.responseType(returnType);
-      final typeEntity = methodFormat.responseType(returnTypeEntity);
+      final type = methodFormat.baseModelType(returnType);
+      final typeEntity = methodFormat.baseModelType(returnTypeEntity);
       if (method.requestType == RequestType.Body) {
         final request = names.requestType(method.name);
         imports.add(request);

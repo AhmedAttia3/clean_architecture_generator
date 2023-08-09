@@ -31,8 +31,8 @@ class CacheUseCaseGenerator
     for (var method in visitor.useCases) {
       final returnType = methodFormat.returnType(method.type);
       final returnTypeEntity = methodFormat.returnTypeEntity(method.type);
-      final type = methodFormat.responseType(returnType);
-      final typeEntity = methodFormat.responseType(returnTypeEntity);
+      final type = methodFormat.baseModelType(returnType);
+      final typeEntity = methodFormat.baseModelType(returnTypeEntity);
       imports.add(typeEntity);
       imports.add(type);
     }

@@ -61,6 +61,15 @@ class MethodFormat {
         .replaceFirst('?', '');
   }
 
+  String baseModelType(String value) {
+    return value
+        .replaceFirst('BaseResponse<', "")
+        .replaceFirst('List', "")
+        .replaceFirst('>', "")
+        .replaceFirst('<', "")
+        .replaceFirst('?', '');
+  }
+
   dynamic initData(String type, String name) {
     if (type == 'String') {
       return '"$name"';

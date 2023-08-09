@@ -28,7 +28,7 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     List<String> imports = [];
     for (var method in visitor.useCases) {
       final returnType = methodFormat.returnTypeEntity(method.type);
-      final type = methodFormat.responseType(returnType);
+      final type = methodFormat.baseModelType(returnType);
       imports.add(type);
     }
 
@@ -43,7 +43,7 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
       final requestType = names.requestType(method.name);
       final type = methodFormat.returnTypeEntity(method.type);
       final responseType = methodFormat.responseType(type);
-      final baseModelType = names.ModelType(type);
+      final baseModelType = methodFormat.baseModelType(type);
       final hasData = !type.contains('BaseResponse<dynamic>');
       final hasTextController = method.hasTextControllers;
       final hasFunctionSet = method.hasSets;

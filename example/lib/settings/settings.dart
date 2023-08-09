@@ -86,6 +86,56 @@ class Settings implements CleanArchitectureSetUp {
           ),
         ],
       ),
+      const CleanMethod(
+        name: "getOTPs",
+        endPoint: "/getOTPs",
+        response: "BaseResponse<List<OtpModel>?>",
+        requestType: RequestType.Fields,
+        isPaging: true,
+        methodType: MethodType.GET,
+        parameters: [
+          Param(
+            name: 'page',
+            type: ParamType.Field,
+            dataType: ParamDataType.int,
+          ),
+          Param(
+            name: 'limit',
+            type: ParamType.Field,
+            dataType: ParamDataType.int,
+          ),
+          Param(
+            name: 'userId',
+            type: ParamType.Query,
+            prop: ParamProp.Set,
+          ),
+        ],
+      ),
+      const CleanMethod(
+        name: "getOTP",
+        endPoint: "/getOTP",
+        response: "BaseResponse<OtpModel?>",
+        requestType: RequestType.Fields,
+        isPaging: true,
+        methodType: MethodType.GET,
+        parameters: [
+          Param(
+            name: 'page',
+            type: ParamType.Field,
+            dataType: ParamDataType.int,
+          ),
+          Param(
+            name: 'limit',
+            type: ParamType.Field,
+            dataType: ParamDataType.int,
+          ),
+          Param(
+            name: 'userId',
+            type: ParamType.Query,
+            prop: ParamProp.Set,
+          ),
+        ],
+      ),
     ];
   }
 }

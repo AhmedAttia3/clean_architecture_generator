@@ -40,7 +40,7 @@ class CubitTestGenerator
       final modelRuntimeType = names.modelRuntimeType(modelType);
       List<CommendType> parameters = method.parameters;
       String request = "";
-      final type = methodFormat.responseType(returnType);
+      final type = methodFormat.baseModelType(returnType);
       imports.add(type);
       parameters.removeWhere((item) {
         final index =
