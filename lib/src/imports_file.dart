@@ -110,8 +110,12 @@ class Imports {
 
   static String? importPath(String subName) {
     final files = libFiles;
-    final index = files.indexWhere(
-        (item) => item.toUpperCase().contains(subName.toUpperCase()));
+    final index = files.indexWhere((item) {
+      final path = item.split('/').last.replaceAll("_", "");
+      return path
+          .toUpperCase()
+          .contains(subName.replaceAll("_", "").toUpperCase());
+    });
     if (index != -1) {
       return files[index];
     }
@@ -124,7 +128,7 @@ class Imports {
 
   static List<String> filesInDir(String path) {
     List<String> data = [];
-    if (path.contains('.dart')) {
+    if (path.contains('.dart') && path.contains('.g.dart')) {
       return data..add(path);
     } else if (path.contains('.')) {
       return data;
