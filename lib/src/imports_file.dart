@@ -128,7 +128,7 @@ class Imports {
 
   static List<String> filesInDir(String path) {
     List<String> data = [];
-    if (path.contains('.dart') && path.contains('.g.dart')) {
+    if (path.contains('.dart') && !path.contains('.g.dart')) {
       return data..add(path);
     } else if (path.contains('.')) {
       return data;
