@@ -101,8 +101,7 @@ class UseCaseTestGenerator
           '{}',
           extension: 'json',
         );
-        final decode =
-            "jsonDecode(File('test/expected/expected_$model.json').readAsStringSync())";
+        final decode = "json('expected_$model')";
         if (type.contains('List')) {
           usecase.writeln("data: List.generate(");
           usecase.writeln("2,");
@@ -166,7 +165,11 @@ class UseCaseTestGenerator
       usecase.writeln("});");
       usecase.writeln("});");
       usecase.writeln("}");
-
+      usecase.writeln("///[FromJson]");
+      usecase.writeln("Map<String, dynamic> json(String path) {");
+      usecase.writeln(
+          " return jsonDecode(File('test/expected/\$path.json').readAsStringSync());");
+      usecase.writeln("}");
       FileManager.save(
         "$path/${useCaseType}Test",
         usecase.toString(),

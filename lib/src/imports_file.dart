@@ -37,8 +37,8 @@ class Imports {
     final failure = importName('failure.dart');
     if (failure != null) data += failure;
     if (isTest) {
-      data += "import 'dart:io';";
-      data += "import 'dart:convert';";
+      data += "import 'dart:io';\n";
+      data += "import 'dart:convert';\n";
       data += "import 'package:flutter_test/flutter_test.dart';\n";
       data += "import 'package:mockito/mockito.dart';\n";
       data += "import 'package:mockito/annotations.dart';\n";
@@ -62,7 +62,7 @@ class Imports {
       if (stateRenderer != null) data += stateRenderer;
     }
     if (isPaging) {
-      data += "import 'package:flutter_pagewise/flutter_pagewise.dart';";
+      data += "import 'package:flutter_pagewise/flutter_pagewise.dart';\n";
     }
     if (isUseCase) {
       data += "import 'dart:ffi';\n";
@@ -75,7 +75,7 @@ class Imports {
       if (fold != null) data += fold;
     }
     if (isLocalDataSource) {
-      data += "import 'dart:convert';";
+      data += "import 'dart:convert';\n";
       data += "import 'package:shared_preferences/shared_preferences.dart';\n";
     }
     if (hasCache) {
@@ -95,15 +95,9 @@ class Imports {
   }
 
   static String? importName(String subName) {
-    final files = libFiles;
-    final index = files.indexWhere((item) {
-      final path = item.split('/').last.replaceAll("_", "");
-      return path
-          .toUpperCase()
-          .contains(subName.replaceAll("_", "").toUpperCase());
-    });
-    if (index != -1) {
-      return "import 'package:${files[index].replaceAll('\\', '/').replaceFirst('lib', parent)}';\n";
+    final path = importPath(subName);
+    if (path != null) {
+      return "import 'package:${path.replaceAll('\\', '/').replaceFirst('lib', parent)}';\n";
     }
     return null;
   }
@@ -111,10 +105,13 @@ class Imports {
   static String? importPath(String subName) {
     final files = libFiles;
     final index = files.indexWhere((item) {
-      final path = item.split('/').last.replaceAll("_", "");
-      return path
-          .toUpperCase()
-          .contains(subName.replaceAll("_", "").toUpperCase());
+      final path = item
+          .split('\\')
+          .last
+          .replaceAll("_", "")
+          .replaceAll("\\n", "")
+          .replaceAll(";", "");
+      return path.toUpperCase() == subName.replaceAll("_", "").toUpperCase();
     });
     if (index != -1) {
       return files[index];

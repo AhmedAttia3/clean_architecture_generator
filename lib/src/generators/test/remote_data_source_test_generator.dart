@@ -77,7 +77,7 @@ class RemoteDataSourceTestGenerator
       final methodName = method.name;
       final type = methodFormat.returnType(method.type);
       classBuffer.writeln('late $type ${methodName}Response;');
-      if (method.hasRequest) {
+      if (method.requestType == RequestType.Body) {
         final requestName = names.requestName(method.name);
         final requestType = names.requestType(method.name);
         classBuffer.writeln('late $requestType $requestName;');
@@ -120,7 +120,7 @@ class RemoteDataSourceTestGenerator
           '{}',
           extension: 'json',
         );
-        final decode = "fromJson('expected_$model')";
+        final decode = "json('expected_$model')";
         if (type.contains('List')) {
           classBuffer.writeln("data: List.generate(");
           classBuffer.writeln("2,");
@@ -242,7 +242,7 @@ class RemoteDataSourceTestGenerator
     classBuffer.writeln("});");
     classBuffer.writeln("}\n");
     classBuffer.writeln("///[FromJson]");
-    classBuffer.writeln("Map<String, dynamic> fromJson(String path) {");
+    classBuffer.writeln("Map<String, dynamic> json(String path) {");
     classBuffer.writeln(
         " return jsonDecode(File('test/expected/\$path.json').readAsStringSync());");
     classBuffer.writeln("}");

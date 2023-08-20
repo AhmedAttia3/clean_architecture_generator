@@ -84,17 +84,28 @@ class RepositoryTestGenerator
     for (var method in visitor.useCases) {
       final methodName = method.name;
       final type = methodFormat.returnType(method.type);
-      repository.writeln('late $type ${methodName}Response;');
+      if (!repository
+          .toString()
+          .contains('late $type ${methodName}Response;')) {
+        repository.writeln('late $type ${methodName}Response;');
+      }
       if (method.hasRequest) {
         final requestName = names.requestName(method.name);
         final requestType = names.requestType(method.name);
         repository.writeln('late $requestType $requestName;');
+        if (!repository
+            .toString()
+            .contains('late $requestType $requestName;')) {
+          repository.writeln('late $requestType $requestName;');
+        }
       }
       if (method.isCache) {
         final modelType = names.ModelType(type);
         final dataType = methodFormat.responseType(type);
         final dataName = "${names.firstLower(modelType)}s";
-        repository.writeln('late $dataType $dataName;');
+        if (!repository.toString().contains('late $dataType $dataName;')) {
+          repository.writeln('late $dataType $dataName;');
+        }
       }
     }
 
@@ -135,7 +146,7 @@ class RepositoryTestGenerator
           '{}',
           extension: 'json',
         );
-        final decode = "fromJson('expected_$model')";
+        final decode = "json('expected_$model')";
         if (type.contains('List')) {
           repository.writeln("data: List.generate(");
           repository.writeln("2,");
@@ -148,7 +159,7 @@ class RepositoryTestGenerator
       }
       if (method.isCache) {
         final model = names.camelCaseToUnderscore(names.ModelType(type));
-        final decode = "fromJson('expected_$model')";
+        final decode = "json('expected_$model')";
         final dataName = "${names.firstLower(modelType)}s";
         if (varType == 'int' ||
             varType == 'double' ||
@@ -306,7 +317,7 @@ class RepositoryTestGenerator
     repository.writeln("});");
     repository.writeln("}\n");
     repository.writeln("///[FromJson]");
-    repository.writeln("Map<String, dynamic> fromJson(String path) {");
+    repository.writeln("Map<String, dynamic> json(String path) {");
     repository.writeln(
         " return jsonDecode(File('test/expected/\$path.json').readAsStringSync());");
     repository.writeln("}");

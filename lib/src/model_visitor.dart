@@ -28,7 +28,7 @@ class ModelVisitor extends GeneralizingElementVisitor<void> {
   @override
   visitMethodElement(MethodElement element) {
     final path =
-        element.declaration.source.toString().replaceFirst("/example/", "");
+        element.declaration.source.toString().replaceAll("/example/", "");
     final methods = getCleanMethods(path);
     for (var method in methods) {
       useCases.add(

@@ -72,7 +72,9 @@ class LocalDataSourceTestGenerator
         final modelType = names.ModelType(type);
         final dataType = methodFormat.responseType(type);
         final dataName = "${names.firstLower(modelType)}Cache";
-        classBuffer.writeln('late $dataType $dataName;');
+        if (!classBuffer.toString().contains("late $dataType $dataName;")) {
+          classBuffer.writeln('late $dataType $dataName;');
+        }
       }
     }
 
@@ -90,7 +92,7 @@ class LocalDataSourceTestGenerator
         final modelType = names.ModelType(type);
         final varType = names.modelRuntimeType(modelType);
         final model = names.camelCaseToUnderscore(names.ModelType(type));
-        final decode = "fromJson('expected_$model')";
+        final decode = "json('expected_$model')";
         final dataName = "${names.firstLower(modelType)}Cache";
         if (varType == 'int' ||
             varType == 'double' ||
@@ -184,7 +186,7 @@ class LocalDataSourceTestGenerator
     classBuffer.writeln("});");
     classBuffer.writeln("}\n");
     classBuffer.writeln("///[FromJson]");
-    classBuffer.writeln("Map<String, dynamic> fromJson(String path) {");
+    classBuffer.writeln("Map<String, dynamic> json(String path) {");
     classBuffer.writeln(
         " return jsonDecode(File('test/expected/\$path.json').readAsStringSync());");
     classBuffer.writeln("}");

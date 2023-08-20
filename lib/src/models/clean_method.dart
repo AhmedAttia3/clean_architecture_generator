@@ -1,8 +1,8 @@
-enum MethodType { POST, GET, DELETE, PATCH, POST_MULTI_PART }
+enum MethodType { POST, GET, DELETE, PATCH, HEADER, POST_MULTI_PART }
 
 enum RequestType { Fields, Body }
 
-enum ParamType { Field, Query, Path }
+enum ParamType { Field, Query, Path, Header }
 
 enum ParamProp { none, Set, EmitSet, TextController }
 
@@ -21,11 +21,11 @@ class CleanMethod {
     required this.name,
     required this.endPoint,
     required this.response,
+    required this.parameters,
     this.methodType = MethodType.POST,
     this.requestType = RequestType.Fields,
     this.isCache = false,
     this.isPaging = false,
-    this.parameters = const [],
   });
 }
 
@@ -34,10 +34,10 @@ class CleanMethodModel extends CleanMethod {
     required super.name,
     required super.endPoint,
     required super.response,
+    required super.parameters,
     super.isCache,
     super.isPaging,
     super.methodType,
-    super.parameters,
     super.requestType,
   });
 

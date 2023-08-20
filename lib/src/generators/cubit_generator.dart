@@ -88,21 +88,48 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         cubit.writeln(
             'pagewiseController = PagewiseLoadController<$baseModelType>(');
         cubit.writeln('pageSize: 10,');
-        cubit.writeln('pageFuture: (${method.parameters[0].name}) {');
-        if (method.hasRequest) {
-          final page =
-              "${method.parameters[0].name} : ${method.parameters[0].name}!";
-          final second =
-              "${method.parameters[1].name} : ${method.parameters[0].name} * 10,";
-          cubit.writeln('return execute($page,$second);');
-        } else if (method.parameters.isNotEmpty) {
-          final page =
-              "${method.parameters[0].name} : ${method.parameters[0].name}!,";
-          cubit.writeln('return execute($page);');
+        cubit.writeln('pageFuture: (page) {');
+        final items = method.parameters.where((item) {
+          return item.name.contains("limit") || item.name.contains("pag");
+        });
+        final index =
+            method.parameters.indexWhere((item) => item.name.contains("pag"));
+        String pageItemName = 'page';
+        if (index != -1) {
+          pageItemName = method.parameters[index].name;
+        }
+        if (items.length == 2) {
+          cubit.writeln(
+              'return execute($pageItemName : page!,limit : page * 10);');
+        } else if (index != -1) {
+          cubit.writeln('return execute($pageItemName : page!);');
+        } else {
+          try {
+            final index = method.parameters
+                .firstWhere((item) => item.type.contains("int"));
+            cubit.writeln('return execute(${index.name} : page!);');
+          } catch (e) {
+            cubit.writeln('return execute();');
+          }
         }
         cubit.writeln('},');
         cubit.writeln(');');
         cubit.writeln('}');
+
+        final params = method.parameters.where((item) {
+          return !item.name.contains("limit") && !item.name.contains("pag");
+        });
+
+        for (var param in params.toList()) {
+          final index0 =
+              method.functionSets.indexWhere((item) => item.name == param.name);
+          final index1 =
+              method.emitSets.indexWhere((item) => item.name == param.name);
+          if (index0 == -1 && index1 == -1) {
+            method.functionSets.add(param);
+          }
+          method.parameters.removeWhere((item) => item.name == param.name);
+        }
 
         ///[initialize variable for set emit function]
         for (var function in method.emitSets) {

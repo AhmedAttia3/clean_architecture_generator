@@ -25,7 +25,7 @@ class ModelsGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     final path = "$currentPath/data/models";
     final visitor = ModelVisitor();
     element.visitChildren(visitor);
-    final dir = Directory("$currentPath/models");
+    final dir = Directory("$currentPath/jsons");
     if (dir.existsSync()) {
       final files = dir.listSync();
       for (var file in files) {
@@ -42,9 +42,11 @@ class ModelsGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
   }
 
   String modelType(String filename) {
-    if (!filename.toLowerCase().contains("model")) {
-      filename = names.firstUpper("${filename.replaceFirst(".json", "")}Model");
-    }
+    filename = filename
+        .toLowerCase()
+        .replaceAll("model", "")
+        .replaceFirst(".json", "");
+    filename = names.firstUpper("${filename}Model");
 
     return filename;
   }
@@ -121,7 +123,11 @@ class ModelsGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
 
       _model = "$_model\n${model.toString()}";
 
-      FileManager.save('$path/$filename', _model);
+      FileManager.save(
+        '$path/$filename',
+        _model,
+        allowUpdates: true,
+      );
     }
   }
 }

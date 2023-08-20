@@ -72,8 +72,7 @@ class CacheUseCaseTestGenerator
         usecase.writeln('$useCaseName = $useCaseType(repository);');
         usecase.writeln("failure = Failure(1, 'message');");
         final model = names.camelCaseToUnderscore(names.ModelType(type));
-        final decode =
-            "jsonDecode(File('test/expected/expected_$model.json').readAsStringSync())";
+        final decode = "json('expected_$model')";
 
         if (varType == 'int' ||
             varType == 'double' ||
@@ -117,7 +116,11 @@ class CacheUseCaseTestGenerator
         usecase.writeln("});");
         usecase.writeln("});");
         usecase.writeln("}");
-
+        usecase.writeln("///[FromJson]");
+        usecase.writeln("Map<String, dynamic> json(String path) {");
+        usecase.writeln(
+            " return jsonDecode(File('test/expected/\$path.json').readAsStringSync());");
+        usecase.writeln("}");
         FileManager.save(
           "$path/$fileName",
           usecase.toString(),

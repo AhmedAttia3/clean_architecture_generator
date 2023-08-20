@@ -69,11 +69,6 @@ class CacheCubitTestGenerator
           ),
         );
         cubit.writeln(" @GenerateNiceMocks([");
-        if (method.textControllers.isNotEmpty) {
-          cubit.writeln("   MockSpec<TextEditingController>(),");
-          cubit.writeln("   MockSpec<GlobalKey<FormState>>(),");
-          cubit.writeln("   MockSpec<FormState>(),");
-        }
         cubit.writeln("   MockSpec<$useCaseType>(),");
         cubit.writeln(" ])");
         cubit.writeln(" void main() {");
@@ -100,7 +95,7 @@ class CacheCubitTestGenerator
             '{}',
             extension: 'json',
           );
-          final decode = "fromJson('expected_$model')";
+          final decode = "json('expected_$model')";
           if (returnType.contains('List')) {
             cubit.writeln(" List.generate(");
             cubit.writeln("2,");
@@ -152,11 +147,15 @@ class CacheCubitTestGenerator
         cubit.writeln("   });");
         cubit.writeln(" }");
         cubit.writeln("///[FromJson]");
-        cubit.writeln("Map<String, dynamic> fromJson(String path) {");
+        cubit.writeln("Map<String, dynamic> json(String path) {");
         cubit.writeln(
             " return jsonDecode(File('test/expected/\$path.json').readAsStringSync());");
         cubit.writeln("}");
-        FileManager.save('$path/$fileName', cubit.toString());
+        FileManager.save(
+          '$path/$fileName',
+          cubit.toString(),
+          allowUpdates: true,
+        );
       }
     }
 

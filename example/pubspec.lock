@@ -140,11 +140,9 @@ packages:
   clean_architecture_generator:
     dependency: "direct dev"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "919392edba3b5d79f8b10391edb68bbf96539e05"
-      url: "https://github.com/ibrahimnashat/clean_architecture_generator.git"
-    source: git
+      path: ".."
+      relative: true
+    source: path
     version: "0.1.5"
   clock:
     dependency: transitive
@@ -908,5 +906,5 @@ packages:
     source: hosted
     version: "3.1.2"
 sdks:
-  dart: ">=3.0.3 <4.0.0"
+  dart: ">=3.0.6 <4.0.0"
   flutter: ">=3.3.0"

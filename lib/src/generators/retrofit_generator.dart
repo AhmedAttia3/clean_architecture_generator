@@ -80,7 +80,9 @@ class RetrofitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
           final request = names.requestType(method.name);
           bool hasRequest = false;
           for (var param in method.requestParameters) {
-            if (param.type == ParamType.Query || param.type == ParamType.Path) {
+            if (param.type == ParamType.Query ||
+                param.type == ParamType.Header ||
+                param.type == ParamType.Path) {
               clientServices.writeln(
                   "         @${param.type.name}('${param.key}') ${param.isRequired ? "required ${param.dataType.name}" : "${param.dataType.name}?"}  ${param.name},");
             } else {

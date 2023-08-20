@@ -119,7 +119,9 @@ class RemoteDataSourceGenerator
         remoteDataSourceImpl
             .writeln('apiCall: $clientServiceName.${method.name}(');
         for (var param in method.requestParameters) {
-          if (param.type == ParamType.Path || param.type == ParamType.Query) {
+          if (param.type == ParamType.Path ||
+              param.type == ParamType.Header ||
+              param.type == ParamType.Query) {
             remoteDataSourceImpl
                 .writeln('${param.name}:request.${param.name},');
           }

@@ -23,9 +23,10 @@ class EntitiesGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
   ) {
     final currentPath = FileManager.getDirectories(buildStep.inputId.path);
     final path = "$currentPath/domain/entities";
+
     final visitor = ModelVisitor();
     element.visitChildren(visitor);
-    final dir = Directory("$currentPath/models");
+    final dir = Directory("$currentPath/jsons");
     if (dir.existsSync()) {
       final files = dir.listSync();
       for (var file in files) {
@@ -103,7 +104,11 @@ class EntitiesGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
 
       _model = "$_model\n${model.toString()}";
 
-      FileManager.save('$path/$filename', _model);
+      FileManager.save(
+        '$path/$filename',
+        _model,
+        allowUpdates: true,
+      );
     }
   }
 }

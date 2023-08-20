@@ -147,7 +147,7 @@ class CubitTestGenerator
           '{}',
           extension: 'json',
         );
-        final decode = "fromJson('expected_$model')";
+        final decode = "json('expected_$model')";
         if (returnType.contains('List')) {
           cubit.writeln("data: List.generate(");
           cubit.writeln("2,");
@@ -176,6 +176,20 @@ class CubitTestGenerator
       cubit.writeln("   });");
       cubit.writeln(" group('$cubitType CUBIT', () {");
       if (method.isPaging) {
+        final items = method.parameters.where((item) {
+          return !item.name.contains("limit") && !item.name.contains("pag");
+        });
+
+        for (var param in items.toList()) {
+          final index0 =
+              method.functionSets.indexWhere((item) => item.name == param.name);
+          final index1 =
+              method.emitSets.indexWhere((item) => item.name == param.name);
+          if (index0 == -1 && index1 == -1) {
+            method.functionSets.add(param);
+          }
+          method.parameters.removeWhere((item) => item.name == param.name);
+        }
         cubit.writeln("     blocTest<$cubitType, FlowState>(");
         cubit.writeln("       '$methodName failure METHOD',");
         cubit.writeln("       build: () => cubit,");
@@ -193,10 +207,21 @@ class CubitTestGenerator
         }
         cubit.writeln(
             "             .thenAnswer((realInvocation) async => Left(failure));");
+        for (var fun in method.emitSets) {
+          cubit.writeln(
+              "         cubit.set${names.firstUpper(fun.name)}(${methodFormat.initData(fun.type, fun.name)});");
+        }
+        for (var fun in method.functionSets) {
+          cubit.writeln(
+              "         cubit.set${names.firstUpper(fun.name)}(${methodFormat.initData(fun.type, fun.name)});");
+        }
         cubit.writeln(
             "         cubit.execute(${methodFormat.parametersWithValues(parameters)});");
         cubit.writeln("       },");
         cubit.writeln("       expect: () => <FlowState>[");
+        if (method.emitSets.isNotEmpty) {
+          cubit.writeln("         ContentState(),");
+        }
         cubit.writeln("         ErrorState(");
         cubit.writeln("           type: StateRendererType.toastError,");
         cubit.writeln("           message: failure.message,");
@@ -222,9 +247,24 @@ class CubitTestGenerator
             "             .thenAnswer((realInvocation) async => Right(response));");
         cubit.writeln("         cubit.init();");
         cubit.writeln(
+            "         ///${parameters.map((e) => e.name).toList().toString()}");
+
+        for (var fun in method.emitSets) {
+          cubit.writeln(
+              "         cubit.set${names.firstUpper(fun.name)}(${methodFormat.initData(fun.type, fun.name)});");
+        }
+        for (var fun in method.functionSets) {
+          cubit.writeln(
+              "         cubit.set${names.firstUpper(fun.name)}(${methodFormat.initData(fun.type, fun.name)});");
+        }
+        cubit.writeln(
             "         cubit.execute(${methodFormat.parametersWithValues(parameters)});");
         cubit.writeln("       },");
-        cubit.writeln("       expect: () => <FlowState>[],");
+        cubit.writeln("       expect: () => <FlowState>[");
+        if (method.emitSets.isNotEmpty) {
+          cubit.writeln("         ContentState(),");
+        }
+        cubit.writeln("       ],");
         cubit.writeln("     );");
       } else {
         if (hasTextControllers) {
@@ -404,12 +444,16 @@ class CubitTestGenerator
       cubit.writeln(" }");
 
       cubit.writeln("///[FromJson]");
-      cubit.writeln("Map<String, dynamic> fromJson(String path) {");
+      cubit.writeln("Map<String, dynamic> json(String path) {");
       cubit.writeln(
           " return jsonDecode(File('test/expected/\$path.json').readAsStringSync());");
       cubit.writeln("}");
 
-      FileManager.save('$path/$fileName', cubit.toString());
+      FileManager.save(
+        '$path/$fileName',
+        cubit.toString(),
+        allowUpdates: true,
+      );
     }
 
     return '';

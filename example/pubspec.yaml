@@ -57,7 +57,7 @@ dev_dependencies:
   injectable_generator: ^2.1.6
   retrofit_generator: ^7.0.8
   clean_architecture_generator:
-    git: https://github.com/ibrahimnashat/clean_architecture_generator.git
+    path: ../
 
 dependency_overrides:
   analyzer:
