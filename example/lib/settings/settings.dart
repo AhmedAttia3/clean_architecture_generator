@@ -1,6 +1,6 @@
 import 'package:clean_architecture_generator/clean_architecture_generator.dart';
 
-@TDDCleanArchitecture
+@CleanArchitecture
 class Settings implements CleanArchitectureSetUp {
   @override
   List<CleanMethod> methods() {
