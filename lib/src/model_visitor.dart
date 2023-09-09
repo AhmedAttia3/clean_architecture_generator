@@ -27,9 +27,11 @@ class ModelVisitor extends GeneralizingElementVisitor<void> {
 
   @override
   visitMethodElement(MethodElement element) {
-    final path = element.location.toString();
-    // element.declaration.source.toString().replaceAll("/example/", "");
-    final methods = getCleanMethods('lib/features/settings/settings.dart');
+    final path = element.declaration.source
+        .toString()
+        .replaceAll("/example/", "")
+        .split('/lib/')[1];
+    final methods = getCleanMethods('lib/$path');
     for (var method in methods) {
       useCases.add(
         UseCaseModel(
