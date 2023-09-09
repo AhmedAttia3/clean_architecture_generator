@@ -27,8 +27,8 @@ class ModelVisitor extends GeneralizingElementVisitor<void> {
 
   @override
   visitMethodElement(MethodElement element) {
-    final path =
-        element.declaration.source.toString().replaceAll("/example/", "");
+    final path = element.location.toString();
+    // element.declaration.source.toString().replaceAll("/example/", "");
     final methods = getCleanMethods(path);
     for (var method in methods) {
       useCases.add(
@@ -63,57 +63,60 @@ class ModelVisitor extends GeneralizingElementVisitor<void> {
   }
 
   List<CleanMethodModel> getCleanMethods(String path) {
-    final file = File(path).readAsLinesSync();
+    final file = File(path);
+    if (file.existsSync()) {
+      final data = file.readAsLinesSync();
+      String items = removeComments(data)
+          .replaceAll(";", "#")
+          .replaceAll("\n", "")
+          .replaceAll(RegExp('\\s+'), "")
+          .trim()
+          .replaceAll("methods(){return", "!");
+      items = items
+          .substring(items.indexOf('!') + 2, items.lastIndexOf('#') - 1)
+          .replaceAll('const', "");
 
-    String items = removeComments(file)
-        .replaceAll(";", "#")
-        .replaceAll("\n", "")
-        .replaceAll(RegExp('\\s+'), "")
-        .trim()
-        .replaceAll("methods(){return", "!");
-    items = items
-        .substring(items.indexOf('!') + 2, items.lastIndexOf('#') - 1)
-        .replaceAll('const', "");
+      final cleans = items.split("CleanMethod");
+      cleans.removeWhere((item) => item.isEmpty);
+      List<CleanMethodModel> methods = [];
+      for (var method in cleans) {
+        method = method
+            .replaceAll('Param(', '{"')
+            .replaceAll('MethodType.', '"')
+            .replaceAll('RequestType.', '"')
+            .replaceAll('ParamType.', '"')
+            .replaceAll('ParamProp.', '"')
+            .replaceAll('ParamDataType.', '"')
+            .replaceAll('(', '{"')
+            .replaceAll(')', '"}')
+            .replaceAll(':', '":')
+            .replaceAll(',', ',"')
+            .replaceAll("'", '"')
+            .replaceAll(",", '",')
+            .replaceAll(',"}","', '},')
+            .replaceAll('""', '"')
+            .replaceAll(',]"},', ']}')
+            .replaceAll('}]', '"}]')
+            .replaceAll(',"}', '}')
+            .replaceAll('"},', '}')
+            .replaceAll('"},', '}')
+            .replaceAll('"}","', '"},')
+            .replaceAll('}{', '"},{')
+            .replaceAll('},]', '}]')
+            .replaceAll(']"},', ']}')
+            .replaceAll(']"}', ']}')
+            .replaceAll(',""}', '}')
+            .replaceAll('""}', '"}')
+            .replaceAll('true"', 'true')
+            .replaceAll('false"', 'false');
 
-    final cleans = items.split("CleanMethod");
-    cleans.removeWhere((item) => item.isEmpty);
-    List<CleanMethodModel> methods = [];
-    for (var method in cleans) {
-      method = method
-          .replaceAll('Param(', '{"')
-          .replaceAll('MethodType.', '"')
-          .replaceAll('RequestType.', '"')
-          .replaceAll('ParamType.', '"')
-          .replaceAll('ParamProp.', '"')
-          .replaceAll('ParamDataType.', '"')
-          .replaceAll('(', '{"')
-          .replaceAll(')', '"}')
-          .replaceAll(':', '":')
-          .replaceAll(',', ',"')
-          .replaceAll("'", '"')
-          .replaceAll(",", '",')
-          .replaceAll(',"}","', '},')
-          .replaceAll('""', '"')
-          .replaceAll(',]"},', ']}')
-          .replaceAll('}]', '"}]')
-          .replaceAll(',"}', '}')
-          .replaceAll('"},', '}')
-          .replaceAll('"},', '}')
-          .replaceAll('"}","', '"},')
-          .replaceAll('}{', '"},{')
-          .replaceAll('},]', '}]')
-          .replaceAll(']"},', ']}')
-          .replaceAll(']"}', ']}')
-          .replaceAll(',""}', '}')
-          .replaceAll('""}', '"}')
-          .replaceAll('true"', 'true')
-          .replaceAll('false"', 'false');
+        final data = jsonDecode(method);
+        methods.add(CleanMethodModel.fromJson(data));
+      }
 
-      final data = jsonDecode(method);
-      methods.add(CleanMethodModel.fromJson(data));
+      return methods;
     }
-
-    return methods;
+    return [];
   }
 
   String removeComments(List<String> lines) {
