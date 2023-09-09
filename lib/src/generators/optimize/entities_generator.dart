@@ -43,10 +43,8 @@ class EntitiesGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
   }
 
   String modelType(String filename) {
-    if (!filename.toLowerCase().contains("model")) {
-      filename = names.firstUpper(
-          "${filename.replaceFirst("model", "").replaceFirst(".json", "")}Entity");
-    }
+    filename = names.firstUpper(
+        "${filename.replaceFirst("model", "").replaceFirst(".json", "")}Entity");
 
     return filename;
   }

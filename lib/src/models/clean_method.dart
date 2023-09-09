@@ -1,4 +1,4 @@
-enum MethodType { POST, GET, DELETE, PATCH, HEADER, POST_MULTI_PART }
+enum MethodType { POST, GET, PUT, DELETE, PATCH, HEADER, POST_MULTI_PART }
 
 enum RequestType { Fields, Body }
 

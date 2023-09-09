@@ -1,0 +1,37 @@
+{
+  "id": 1,
+  "name": "القاهرة",
+  "isFavourite": false,
+  "availableResults": [
+    {
+      "id": 1,
+      "year": "2023",
+      "status": "النتيجه ظهرت",
+      "isSearchableByName": true,
+      "isSearchableBySittingNumber": true,
+      "term": "الترم الأول",
+      "termId": 1,
+      "state": "completed"
+    },
+    {
+      "id": 2,
+      "year": "2023",
+      "status": "النتيجه ظهرت",
+      "isSearchableByName": true,
+      "isSearchableBySittingNumber": true,
+      "term": "الترم الثاني",
+      "termId": 2,
+      "state": "completed"
+    },
+    {
+      "id": 3,
+      "year": "2023",
+      "status": "النتيجه ظهرت",
+      "isSearchableByName": true,
+      "isSearchableBySittingNumber": true,
+      "term": "الدور الثاني",
+      "termId": 3,
+      "state": "completed"
+    }
+  ]
+}
