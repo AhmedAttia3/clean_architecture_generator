@@ -30,7 +30,7 @@ class EntitiesGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     if (dir.existsSync()) {
       final files = dir.listSync();
       for (var file in files) {
-        String filename = file.path.split('\\').last;
+        String filename = file.path.split('\\').last.split('/').last;
         if (filename.contains(".json")) {
           filename = modelType(filename);
           Map<String, dynamic> data =
