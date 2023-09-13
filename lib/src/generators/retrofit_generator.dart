@@ -42,7 +42,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
       Imports.create(
         libs: [
           "import 'package:dio/dio.dart';\n",
-          "import 'package:dart/io.dart';\n",
+          "import 'dart:io';\n",
           "import 'package:retrofit/retrofit.dart';\n",
           "part '${names.camelCaseToUnderscore(fileName)}.g.dart';\n"
         ],
@@ -57,8 +57,11 @@ class RetrofitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
 
     for (var method in visitor.useCases) {
       if (method.methodType == MethodType.POST_MULTI_PART) {
-        clientServices.writeln("     @MultiPart()')");
+        clientServices.writeln("     @MultiPart()");
         clientServices.writeln("     @POST('${method.endPoint}')");
+      } else if (method.methodType == MethodType.PUT_MULTI_PART) {
+        clientServices.writeln("     @MultiPart()");
+        clientServices.writeln("     @PUT('${method.endPoint}')");
       } else {
         clientServices
             .writeln("     @${method.methodType.name}('${method.endPoint}')");
@@ -66,10 +69,11 @@ class RetrofitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
       if (method.requestParameters.isNotEmpty) {
         clientServices.writeln("     ${method.type} ${method.name}({");
         if (method.requestType == RequestType.Fields) {
-          if (method.methodType == MethodType.POST_MULTI_PART) {
+          if (method.methodType == MethodType.POST_MULTI_PART ||
+              method.methodType == MethodType.PUT_MULTI_PART) {
             for (var param in method.requestParameters) {
               clientServices.writeln(
-                  "         @Part(name: ${param.dataType == ParamDataType.List ? "${param.key}[]" : "${param.key}"}) ${param.isRequired ? "required ${param.dataType.name}" : "${param.dataType.name}?"}  ${param.name},");
+                  "         @Part(name: ${param.dataType == ParamDataType.List || param.dataType == ParamDataType.listFile ? '${param.key}[]' : '${param.key}'}) ${param.isRequired ? "required ${param.dataType == ParamDataType.listFile ? 'List<File>' : param.dataType.name}" : "${param.dataType == ParamDataType.listFile ? 'List<File>' : param.dataType.name}?"}  ${param.name},");
             }
           } else {
             for (var param in method.requestParameters) {

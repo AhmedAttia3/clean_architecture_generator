@@ -1,4 +1,13 @@
-enum MethodType { POST, GET, PUT, DELETE, PATCH, HEADER, POST_MULTI_PART }
+enum MethodType {
+  POST,
+  GET,
+  PUT,
+  DELETE,
+  PATCH,
+  HEADER,
+  POST_MULTI_PART,
+  PUT_MULTI_PART
+}
 
 enum RequestType { Fields, Body }
 
@@ -6,7 +15,7 @@ enum ParamType { Field, Query, Path, Header }
 
 enum ParamProp { none, Set, EmitSet, TextController }
 
-enum ParamDataType { String, int, double, num, List, File }
+enum ParamDataType { String, int, double, num, List, File, listFile }
 
 class CleanMethod {
   final String name;

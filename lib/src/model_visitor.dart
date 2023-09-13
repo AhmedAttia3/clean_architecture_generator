@@ -41,19 +41,19 @@ class ModelVisitor extends GeneralizingElementVisitor<void> {
           endPoint: method.endPoint,
           requestParameters: method.parameters,
           parameters: method.parameters
-              .map((e) => CommendType(name: e.name, type: e.dataType.name))
+              .map((e) => CommendType(name: e.name, type: dataType(e.dataType)))
               .toList(),
           functionSets: method.parameters
               .where((e) => e.prop == ParamProp.Set)
-              .map((e) => CommendType(name: e.name, type: e.dataType.name))
+              .map((e) => CommendType(name: e.name, type: dataType(e.dataType)))
               .toList(),
           textControllers: method.parameters
               .where((e) => e.prop == ParamProp.TextController)
-              .map((e) => CommendType(name: e.name, type: e.dataType.name))
+              .map((e) => CommendType(name: e.name, type: dataType(e.dataType)))
               .toList(),
           emitSets: method.parameters
               .where((e) => e.prop == ParamProp.EmitSet)
-              .map((e) => CommendType(name: e.name, type: e.dataType.name))
+              .map((e) => CommendType(name: e.name, type: dataType(e.dataType)))
               .toList(),
           isCache: method.isCache,
           isPaging: method.isPaging,
@@ -63,6 +63,13 @@ class ModelVisitor extends GeneralizingElementVisitor<void> {
       );
     }
     return null;
+  }
+
+  String dataType(ParamDataType type) {
+    if (type == ParamDataType.listFile) {
+      return 'List<File>';
+    }
+    return type.name;
   }
 
   List<CleanMethodModel> getCleanMethods(String path) {
