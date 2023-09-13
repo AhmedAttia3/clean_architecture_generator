@@ -18,37 +18,6 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     final visitor = ModelVisitor();
     element.visitChildren(visitor);
 
-    ///[kPrint]
-    final kPrint = StringBuffer();
-    kPrint.writeln(Imports.create(
-      libs: [
-        "import 'dart:convert';",
-        "import 'dart:developer';",
-        "import 'package:flutter/foundation.dart';",
-      ],
-    ));
-    kPrint.writeln('///[kPrint]');
-    kPrint.writeln('///[Implementation]');
-    kPrint.writeln("void kPrint(dynamic data) {");
-    kPrint.writeln("if (kDebugMode) {");
-    kPrint.writeln("_pr(data.toString());");
-    kPrint.writeln("} else if (data is Map) {");
-    kPrint.writeln("_pr(jsonEncode(data));");
-    kPrint.writeln("} else {");
-    kPrint.writeln("_pr(data.toString());");
-    kPrint.writeln("}");
-    kPrint.writeln("}\n\n");
-    kPrint.writeln("void _pr(String data) {");
-    kPrint.writeln("if (data.length > 500) {");
-    kPrint.writeln("log(data);");
-    kPrint.writeln("} else {");
-    kPrint.writeln("print(data);");
-    kPrint.writeln("}");
-    kPrint.writeln("log(StackTrace.current.toString().split('\\n')[2]);");
-    kPrint.writeln("}");
-
-    FileManager.searchAndAddFile('$path/print', kPrint.toString());
-
     ///[Network]
     final network = StringBuffer();
     network.writeln(Imports.create(
@@ -87,7 +56,7 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     ///[SafeApi]
     final safeApi = StringBuffer();
     safeApi.writeln(Imports.create(
-      imports: ['print', 'network'],
+      imports: ['network'],
       libs: [
         "import 'dart:developer';\n",
         "import 'package:eitherx/eitherx.dart';\n",

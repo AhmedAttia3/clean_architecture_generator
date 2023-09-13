@@ -42,6 +42,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
       Imports.create(
         libs: [
           "import 'package:dio/dio.dart';\n",
+          "import 'package:dart/io.dart';\n",
           "import 'package:retrofit/retrofit.dart';\n",
           "part '${names.camelCaseToUnderscore(fileName)}.g.dart';\n"
         ],

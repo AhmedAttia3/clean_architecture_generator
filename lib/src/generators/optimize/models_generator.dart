@@ -42,8 +42,8 @@ class ModelsGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
   }
 
   String modelType(String filename) {
-    filename = names.firstUpper(
-        "${filename.replaceFirst("model", "").replaceFirst(".json", "")}Model");
+    filename = names.underscoreToCamelCase(names.firstUpper(
+        "${filename.replaceFirst("model", "").replaceFirst(".json", "")}Model"));
 
     return filename;
   }
