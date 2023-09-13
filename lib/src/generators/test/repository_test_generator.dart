@@ -65,8 +65,10 @@ class RepositoryTestGenerator
         '${repositoryType}Impl',
         repositoryType,
         'base_response',
-        'Failure',
         ...imports,
+      ],
+      libs: [
+        "import 'package:mwidgets/mwidgets.dart';",
       ],
       isTest: true,
     ));
@@ -79,7 +81,8 @@ class RepositoryTestGenerator
     repository.writeln('late $remoteDataSourceType dataSource;');
     repository.writeln('late $repositoryType repository;');
     repository.writeln('late Failure failure;');
-    repository.writeln('late $localDataSourceType $localDataSourceName;');
+    if (hasCache)
+      repository.writeln('late $localDataSourceType $localDataSourceName;');
 
     for (var method in visitor.useCases) {
       final methodName = method.name;

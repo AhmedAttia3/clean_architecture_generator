@@ -1,11 +1,9 @@
 import 'package:eitherx/eitherx.dart';
-import 'package:example/core/base_response.dart';
-import 'package:example/core/failure.dart';
+import 'package:mwidgets/mwidgets.dart';
+import 'package:example/core/base/base_response.dart';
 import 'package:injectable/injectable.dart';
-import 'package:example/core/base_use_case.dart';
-import 'dart:convert';import 'package:example/core/safe_request_handler.dart';
-import 'package:example/core/fold.dart';
-import 'package:example/home/domain/repository/home_repository.dart';
+import 'package:example/core/base/base_use_case.dart';
+import 'dart:convert';import 'package:example/home/domain/repository/home_repository.dart';
 import 'package:example/home/domain/repository/home_repository.dart';
 import 'package:example/home/data/data-sources/home_remote_data_source.dart';
 import 'package:example/home/domain/entities/governorate_entity.dart';
@@ -14,7 +12,7 @@ import 'package:example/home/domain/entities/result_entity.dart';
 import 'package:example/home/data/models/result_model.dart';
 import 'package:example/home/domain/entities/device_settings_entity.dart';
 import 'package:example/home/data/models/device_settings_model.dart';
-import 'package:example/core/base_response.dart';
+import 'package:example/core/base/base_response.dart';
 
 ///[HomeRepositoryImplement]
 ///[Implementation]

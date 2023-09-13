@@ -53,7 +53,11 @@ class CacheCubitGenerator
 
         ///[Imports]
         getCacheCubit.writeln(Imports.create(
-          imports: [requestType, cacheUseCaseType, ...imports],
+          imports: [
+            requestType,
+            cacheUseCaseType,
+            ...imports,
+          ],
           isCubit: true,
         ));
         getCacheCubit.writeln('@injectable');

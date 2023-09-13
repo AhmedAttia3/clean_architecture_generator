@@ -44,7 +44,10 @@ class RemoteDataSourceGenerator
     ///[Imports]
     remoteDataSource.writeln(
       Imports.create(
-        imports: imports,
+        imports: [
+          "safe_request_handler",
+          ...imports,
+        ],
       ),
     );
 
@@ -79,6 +82,7 @@ class RemoteDataSourceGenerator
         clientServiceType,
         remoteDataSourceType,
         ...imports,
+        "safe_request_handler",
         'base_response',
       ],
       hasCache: hasCache,

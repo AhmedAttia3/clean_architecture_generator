@@ -32,20 +32,15 @@ class Imports {
   }) {
     final names = Names();
     String data = "import 'package:eitherx/eitherx.dart';\n";
+    data += "import 'package:mwidgets/mwidgets.dart';\n";
     final baseResponse = importName('base_response.dart');
     if (baseResponse != null) data += baseResponse;
-    final failure = importName('failure.dart');
-    if (failure != null) data += failure;
     if (isTest) {
       data += "import 'dart:io';\n";
       data += "import 'dart:convert';\n";
       data += "import 'package:flutter_test/flutter_test.dart';\n";
       data += "import 'package:mockito/mockito.dart';\n";
       data += "import 'package:mockito/annotations.dart';\n";
-      final fold = importName('fold.dart');
-      if (fold != null) data += fold;
-      final safeRequest = importName('safe_request_handler.dart');
-      if (safeRequest != null) data += safeRequest;
     } else {
       data += "import 'package:injectable/injectable.dart';\n";
     }
@@ -54,12 +49,7 @@ class Imports {
     if (isCubit) {
       data += "import 'package:flutter/material.dart';\n";
       data += "import 'package:flutter_bloc/flutter_bloc.dart';\n";
-      final states = importName('states.dart');
-      if (states != null) data += states;
-      final fold = importName('fold.dart');
-      if (fold != null) data += fold;
-      final stateRenderer = importName('state_renderer.dart');
-      if (stateRenderer != null) data += stateRenderer;
+      data += "import 'package:request_builder/request_builder.dart';\n";
     }
     if (isPaging) {
       data += "import 'package:flutter_pagewise/flutter_pagewise.dart';\n";
@@ -69,10 +59,6 @@ class Imports {
     }
     if (isRepo) {
       data += "import 'dart:convert';";
-      final safeRequest = importName('safe_request_handler.dart');
-      if (safeRequest != null) data += safeRequest;
-      final fold = importName('fold.dart');
-      if (fold != null) data += fold;
     }
     if (isLocalDataSource) {
       data += "import 'dart:convert';\n";

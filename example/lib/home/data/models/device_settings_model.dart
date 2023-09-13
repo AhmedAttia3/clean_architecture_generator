@@ -1,8 +1,6 @@
 import 'package:eitherx/eitherx.dart';
-import 'package:example/core/base_response.dart';
-import 'package:example/core/failure.dart';
+import 'package:mwidgets/mwidgets.dart';
 import 'package:injectable/injectable.dart';
-import 'package:example/core/base_use_case.dart';
 import 'package:example/home/domain/entities/device_settings_entity.dart';
 import 'package:json_annotation/json_annotation.dart';
 part 'device_settings_model.g.dart';

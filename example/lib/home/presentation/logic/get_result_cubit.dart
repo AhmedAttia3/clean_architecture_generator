@@ -1,13 +1,11 @@
 import 'package:eitherx/eitherx.dart';
-import 'package:example/core/base_response.dart';
-import 'package:example/core/failure.dart';
+import 'package:mwidgets/mwidgets.dart';
+import 'package:example/core/base/base_response.dart';
 import 'package:injectable/injectable.dart';
-import 'package:example/core/base_use_case.dart';
+import 'package:example/core/base/base_use_case.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:example/core/states.dart';
-import 'package:example/core/fold.dart';
-import 'package:example/core/state_renderer.dart';
+import 'package:request_builder/request_builder.dart';
 import 'package:example/home/domain/use-cases/get_result_use_case.dart';
 import 'package:example/home/domain/requests/get_result_request.dart';
 import 'package:example/home/domain/entities/governorate_entity.dart';
@@ -22,7 +20,7 @@ final GetResultUseCase _getResultUseCase;
 final GetResultRequest request;
 GetResultCubit(this._getResultUseCase,
 this.request,
-) : super(ContentState());
+) : super(const ContentState());
 
 ResultEntity? result;
 
@@ -32,30 +30,21 @@ request.countryId = countryId;
 request.termId = termId;
 request.studentName = studentName;
 request.sittingNumber = sittingNumber;
-emit(LoadingState(type: StateRendererType.popUpLoading));
+emit(const LoadingState(type: LoadingRendererType.popup));
 final res = await _getResultUseCase.execute(
 request : request,
 );
 res.left((failure) {
-emit(ErrorState(
-type: StateRendererType.toastError,
-message: failure.message,
-));
+emit(ErrorState(type: ErrorRendererType.toast,message: failure.message,));
 });
 res.right((data) {
 if (data.success) {
 if(data.data != null){
 result = data.data!;
 }
-emit(SuccessState(
-message: data.message,
-type: StateRendererType.contentState,
-));
+emit(SuccessState(type: SuccessRendererType.content,message: data.message,));
 } else {
-emit(ErrorState(
-message: data.message,
-type: StateRendererType.toastError,
-));
+emit(ErrorState(type: ErrorRendererType.toast,message: data.message,));
 }
 });
 }

@@ -1,8 +1,9 @@
 import 'package:eitherx/eitherx.dart';
-import 'package:example/core/base_response.dart';
-import 'package:example/core/failure.dart';
+import 'package:mwidgets/mwidgets.dart';
+import 'package:example/core/base/base_response.dart';
 import 'package:injectable/injectable.dart';
-import 'package:example/core/base_use_case.dart';
+import 'package:example/core/base/base_use_case.dart';
+import 'package:example/core/base/safe_request_handler.dart';
 import 'package:example/home/data/models/governorate_model.dart';
 import 'package:example/home/data/models/result_model.dart';
 import 'package:example/home/data/models/device_settings_model.dart';

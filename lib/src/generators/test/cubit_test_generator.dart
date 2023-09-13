@@ -72,9 +72,6 @@ class CubitTestGenerator
             useCaseType,
             requestType,
             "base_response",
-            "state_renderer",
-            "states",
-            "failure",
             ...imports,
           ],
           libs: [
@@ -86,6 +83,8 @@ class CubitTestGenerator
             "import 'package:flutter_test/flutter_test.dart';",
             "import 'package:mockito/annotations.dart';",
             "import 'package:mockito/mockito.dart';",
+            "import 'package:request_builder/request_builder.dart';",
+            "import 'package:mwidgets/mwidgets.dart';",
             "import '$fileName.mocks.dart';",
           ],
         ),
