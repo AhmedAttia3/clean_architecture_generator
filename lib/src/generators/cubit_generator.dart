@@ -425,8 +425,10 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         return ' = [];';
       case 'num':
         return ' = 0;';
+      case 'List<File>':
+        return ' = const [];';
       default:
-        return "\n";
+        return ";\n";
     }
   }
 }

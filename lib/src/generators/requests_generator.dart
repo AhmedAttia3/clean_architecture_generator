@@ -56,8 +56,12 @@ class RequestsGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
       }
       request.writeln('$requestType({');
       for (var pram in method.parameters) {
-        request.writeln(
-            'this.${pram.name}=${methodFormat.initData(pram.type.toString(), pram.name)},');
+        if (pram.type == 'File') {
+          request.writeln('this.${pram.name},');
+        } else {
+          request.writeln(
+              'this.${pram.name} = ${methodFormat.initData(pram.type.toString(), pram.name)},');
+        }
       }
       request.writeln('});\n');
 
