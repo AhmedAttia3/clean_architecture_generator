@@ -1,20 +1,20 @@
 const flowState = 'FlowState';
 
-const loadingState = 'LoadingState(type: StateRendererType.fullScreenLoading)';
+const loadingState = 'const LoadingState(type: LoadingRendererType.popup)';
 
-const contentState = 'ContentState()';
+const contentState = 'const ContentState()';
 
 const successState =
-    'SuccessState(message: data.message,type: StateRendererType.contentState,)';
+    'SuccessState(message: data.message,type: SuccessRendererType.content,)';
 
 const errorState =
-    'ErrorState(type: StateRendererType.toastError,message: data.message,)';
+    'ErrorState(type: ErrorRendererType.toast,message: data.message,)';
 
 const errorFailureState =
-    'ErrorState(type: StateRendererType.toastError,message: failure.message,)';
+    'ErrorState(type: ErrorRendererType.toast,message: failure.message,)';
 
 const successStateTest =
-    'SuccessState(message: "message",type: StateRendererType.contentState,)';
+    'SuccessState(message: "message",type: SuccessRendererType.content,)';
 
 const errorStateTest =
-    'ErrorState(type: StateRendererType.toastError,message: "message",)';
+    'ErrorState(type: ErrorRendererType.toast,message: "message",)';
