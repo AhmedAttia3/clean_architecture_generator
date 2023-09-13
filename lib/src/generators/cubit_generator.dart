@@ -4,6 +4,7 @@ import 'package:clean_architecture_generator/formatter/method_format.dart';
 import 'package:clean_architecture_generator/formatter/names.dart';
 import 'package:clean_architecture_generator/src/annotations.dart';
 import 'package:clean_architecture_generator/src/file_manager.dart';
+import 'package:clean_architecture_generator/src/generators/cubit_states.dart';
 import 'package:clean_architecture_generator/src/imports_file.dart';
 import 'package:source_gen/source_gen.dart';
 
@@ -59,7 +60,7 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
       cubit.writeln('///[$cubitType]');
       cubit.writeln('///[Implementation]');
       cubit.writeln('@injectable');
-      cubit.writeln('class $cubitType extends Cubit<FlowState> {');
+      cubit.writeln('class $cubitType extends Cubit<$flowState> {');
       cubit.writeln('final $useCaseType _${names.firstLower(useCaseType)};');
       if (hasParams) cubit.writeln('final $requestType request;');
       if (method.isPaging) {
@@ -83,7 +84,7 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
           cubit.writeln('this.${controller.name},');
         }
         if (hasParams) cubit.writeln('this.request,');
-        cubit.writeln(') : super(ContentState());');
+        cubit.writeln(') : super($contentState);');
         cubit.writeln('void init() {');
         cubit.writeln(
             'pagewiseController = PagewiseLoadController<$baseModelType>(');
@@ -206,10 +207,7 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         }
         cubit.writeln(');');
         cubit.writeln('res.left((failure) {');
-        cubit.writeln('emit(ErrorState(');
-        cubit.writeln('type: StateRendererType.toastError,');
-        cubit.writeln('message: failure.message,');
-        cubit.writeln('));');
+        cubit.writeln('emit($errorFailureState);');
         cubit.writeln('});');
         cubit.writeln('res.right((data) {');
         if (hasData) {
@@ -229,7 +227,7 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
           cubit.writeln(
               'void set${names.firstUpper(function.name)}(${function.type} value){');
           cubit.writeln('${function.name} = value;');
-          cubit.writeln('emit(ContentState());');
+          cubit.writeln('emit($contentState);');
           cubit.writeln('}');
         }
 
@@ -261,7 +259,7 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         for (var controller in method.textControllers) {
           cubit.writeln('this.${controller.name},');
         }
-        cubit.writeln(') : super(ContentState());\n');
+        cubit.writeln(') : super($contentState);\n');
 
         ///[initialize var for data when cubit is get request]
         if (hasData) {
@@ -334,8 +332,7 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
           }
         }
 
-        cubit.writeln(
-            'emit(LoadingState(type: StateRendererType.popUpLoading));');
+        cubit.writeln('emit($loadingState);');
         cubit.writeln(
             'final res = await _${names.firstLower(useCaseType)}.execute(');
 
@@ -368,10 +365,7 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
 
         cubit.writeln(');');
         cubit.writeln('res.left((failure) {');
-        cubit.writeln('emit(ErrorState(');
-        cubit.writeln('type: StateRendererType.toastError,');
-        cubit.writeln('message: failure.message,');
-        cubit.writeln('));');
+        cubit.writeln('emit($errorFailureState);');
         cubit.writeln('});');
         cubit.writeln('res.right((data) {');
         cubit.writeln('if (data.success) {');
@@ -380,15 +374,9 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
           cubit.writeln('$varName = data.data!;');
           cubit.writeln('}');
         }
-        cubit.writeln('emit(SuccessState(');
-        cubit.writeln('message: data.message,');
-        cubit.writeln('type: StateRendererType.contentState,');
-        cubit.writeln('));');
+        cubit.writeln('emit($successState);');
         cubit.writeln('} else {');
-        cubit.writeln('emit(ErrorState(');
-        cubit.writeln('message: data.message,');
-        cubit.writeln('type: StateRendererType.toastError,');
-        cubit.writeln('));');
+        cubit.writeln('emit($errorState);');
         cubit.writeln('}');
         cubit.writeln('});');
         cubit.writeln('}');
@@ -400,7 +388,7 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
           cubit.writeln(
               'void set${names.firstUpper(function.name)}(${function.type} value){');
           cubit.writeln('${function.name} = value;');
-          cubit.writeln('emit(ContentState());');
+          cubit.writeln('emit($contentState);');
           cubit.writeln('}');
         }
 

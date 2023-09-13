@@ -3,6 +3,7 @@ import 'package:build/build.dart';
 import 'package:clean_architecture_generator/clean_architecture_generator.dart';
 import 'package:clean_architecture_generator/formatter/method_format.dart';
 import 'package:clean_architecture_generator/formatter/names.dart';
+import 'package:clean_architecture_generator/src/generators/cubit_states.dart';
 import 'package:clean_architecture_generator/src/imports_file.dart';
 import 'package:clean_architecture_generator/src/models/usecase_model.dart';
 import 'package:source_gen/source_gen.dart';
@@ -190,7 +191,7 @@ class CubitTestGenerator
           }
           method.parameters.removeWhere((item) => item.name == param.name);
         }
-        cubit.writeln("     blocTest<$cubitType, FlowState>(");
+        cubit.writeln("     blocTest<$cubitType, $flowState>(");
         cubit.writeln("       '$methodName failure METHOD',");
         cubit.writeln("       build: () => cubit,");
         cubit.writeln("       act: (cubit) {");
@@ -218,17 +219,14 @@ class CubitTestGenerator
         cubit.writeln(
             "         cubit.execute(${methodFormat.parametersWithValues(parameters)});");
         cubit.writeln("       },");
-        cubit.writeln("       expect: () => <FlowState>[");
+        cubit.writeln("       expect: () => <$flowState>[");
         if (method.emitSets.isNotEmpty) {
-          cubit.writeln("         ContentState(),");
+          cubit.writeln("         $contentState,");
         }
-        cubit.writeln("         ErrorState(");
-        cubit.writeln("           type: StateRendererType.toastError,");
-        cubit.writeln("           message: failure.message,");
-        cubit.writeln("         )");
+        cubit.writeln("         $errorFailureState,");
         cubit.writeln("       ],");
         cubit.writeln("     );");
-        cubit.writeln("     blocTest<$cubitType, FlowState>(");
+        cubit.writeln("     blocTest<$cubitType, $flowState>(");
         cubit.writeln("       '$methodName success METHOD',");
         cubit.writeln("       build: () => cubit,");
         cubit.writeln("       act: (cubit) {");
@@ -260,15 +258,15 @@ class CubitTestGenerator
         cubit.writeln(
             "         cubit.execute(${methodFormat.parametersWithValues(parameters)});");
         cubit.writeln("       },");
-        cubit.writeln("       expect: () => <FlowState>[");
+        cubit.writeln("       expect: () => <$flowState>[");
         if (method.emitSets.isNotEmpty) {
-          cubit.writeln("         ContentState(),");
+          cubit.writeln("         $contentState,");
         }
         cubit.writeln("       ],");
         cubit.writeln("     );");
       } else {
         if (hasTextControllers) {
-          cubit.writeln("     blocTest<$cubitType, FlowState>(");
+          cubit.writeln("     blocTest<$cubitType, $flowState>(");
           cubit.writeln("       '$methodName validation error METHOD',");
           cubit.writeln("       build: () => cubit,");
           cubit.writeln("       act: (cubit) {");
@@ -279,24 +277,24 @@ class CubitTestGenerator
           cubit.writeln(
               "         cubit.execute(${methodFormat.parametersWithValues(parameters)});");
           cubit.writeln("       },");
-          cubit.writeln("       expect: () => <FlowState>[],");
+          cubit.writeln("       expect: () => <$flowState>[],");
           cubit.writeln("     );\n");
         }
         for (var fun in method.emitSets) {
-          cubit.writeln("     blocTest<$cubitType, FlowState>(");
+          cubit.writeln("     blocTest<$cubitType, $flowState>(");
           cubit.writeln("       'set${names.firstUpper(fun.name)}',");
           cubit.writeln("       build: () => cubit,");
           cubit.writeln("       act: (cubit) {");
           cubit.writeln(
               "         cubit.set${names.firstUpper(fun.name)}(${methodFormat.initData(fun.type, fun.name)});");
           cubit.writeln("       },");
-          cubit.writeln("       expect: () => <FlowState>[");
-          cubit.writeln("         ContentState(),");
+          cubit.writeln("       expect: () => <$flowState>[");
+          cubit.writeln("         $contentState,");
           cubit.writeln("       ],");
           cubit.writeln("     );\n");
         }
 
-        cubit.writeln("     blocTest<$cubitType, FlowState>(");
+        cubit.writeln("     blocTest<$cubitType, $flowState>(");
         cubit.writeln("       '$methodName success true status METHOD',");
         cubit.writeln("       build: () => cubit,");
         cubit.writeln("       act: (cubit) {");
@@ -333,17 +331,15 @@ class CubitTestGenerator
         cubit.writeln(
             "         cubit.execute(${methodFormat.parametersWithValues(parameters)});");
         cubit.writeln("       },");
-        cubit.writeln("       expect: () => <FlowState>[");
+        cubit.writeln("       expect: () => <$flowState>[");
         if (method.emitSets.isNotEmpty) {
-          cubit.writeln("         ContentState(),");
+          cubit.writeln("         $contentState,");
         }
-        cubit.writeln(
-            "         LoadingState(type: StateRendererType.popUpLoading),");
-        cubit.writeln(
-            "         SuccessState(message: 'message', type: StateRendererType.contentState)");
+        cubit.writeln("         $loadingState,");
+        cubit.writeln("         $successStateTest,");
         cubit.writeln("       ],");
         cubit.writeln("     );");
-        cubit.writeln("     blocTest<$cubitType, FlowState>(");
+        cubit.writeln("     blocTest<$cubitType, $flowState>(");
         cubit.writeln("       '$methodName success false status METHOD',");
         cubit.writeln("       build: () => cubit,");
         cubit.writeln("       act: (cubit) {");
@@ -380,17 +376,15 @@ class CubitTestGenerator
         cubit.writeln(
             "         cubit.execute(${methodFormat.parametersWithValues(parameters)});");
         cubit.writeln("       },");
-        cubit.writeln("       expect: () => <FlowState>[");
+        cubit.writeln("       expect: () => <$flowState>[");
         if (method.emitSets.isNotEmpty) {
-          cubit.writeln("         ContentState(),");
+          cubit.writeln("         $contentState,");
         }
-        cubit.writeln(
-            "         LoadingState(type: StateRendererType.popUpLoading),");
-        cubit.writeln(
-            "         ErrorState(type: StateRendererType.toastError, message: 'message')");
+        cubit.writeln("         $loadingState,");
+        cubit.writeln("         $errorStateTest,");
         cubit.writeln("       ],");
         cubit.writeln("     );\n");
-        cubit.writeln("   blocTest<$cubitType, FlowState>(");
+        cubit.writeln("   blocTest<$cubitType, $flowState>(");
         cubit.writeln("     '$methodName failure METHOD',");
         cubit.writeln("     build: () => cubit,");
         cubit.writeln("     act: (cubit) {");
@@ -428,19 +422,16 @@ class CubitTestGenerator
         cubit.writeln(
             "       cubit.execute(${methodFormat.parametersWithValues(parameters)});");
         cubit.writeln("     },");
-        cubit.writeln("     expect: () => <FlowState>[");
+        cubit.writeln("     expect: () => <$flowState>[");
         if (method.emitSets.isNotEmpty) {
-          cubit.writeln("         ContentState(),");
+          cubit.writeln("         $contentState,");
         }
-        cubit.writeln(
-            "       LoadingState(type: StateRendererType.popUpLoading),");
-        cubit.writeln(
-            "       ErrorState(type: StateRendererType.toastError, message: failure.message)");
+        cubit.writeln("       $loadingState,");
+        cubit.writeln("       $errorFailureState,");
         cubit.writeln("     ],");
         cubit.writeln("   );");
       }
       cubit.writeln("   });");
-
       cubit.writeln(" }");
 
       cubit.writeln("///[FromJson]");

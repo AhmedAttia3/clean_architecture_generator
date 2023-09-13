@@ -4,6 +4,7 @@ import 'package:clean_architecture_generator/formatter/method_format.dart';
 import 'package:clean_architecture_generator/formatter/names.dart';
 import 'package:clean_architecture_generator/src/annotations.dart';
 import 'package:clean_architecture_generator/src/file_manager.dart';
+import 'package:clean_architecture_generator/src/generators/cubit_states.dart';
 import 'package:clean_architecture_generator/src/imports_file.dart';
 import 'package:source_gen/source_gen.dart';
 
@@ -57,7 +58,7 @@ class CacheCubitGenerator
         ));
         getCacheCubit.writeln('@injectable');
         getCacheCubit
-            .writeln('class $cacheCubitType extends Cubit<FlowState> {');
+            .writeln('class $cacheCubitType extends Cubit<$flowState> {');
         getCacheCubit.writeln('final $cacheUseCaseType _$cacheUseCaseName;');
         if (responseType.contains('List')) {
           getCacheCubit.writeln('$responseType $varName = [];');
@@ -67,18 +68,14 @@ class CacheCubitGenerator
         getCacheCubit.writeln(
             '$cacheCubitType(this._$cacheUseCaseName) : super(ContentState());');
         getCacheCubit.writeln('void execute() {');
-        getCacheCubit.writeln(
-            'emit(LoadingState(type: StateRendererType.fullScreenLoading));');
+        getCacheCubit.writeln('emit($loadingState);');
         getCacheCubit.writeln('final res =  _$cacheUseCaseName.execute();');
         getCacheCubit.writeln('res.right((data) {');
         getCacheCubit.writeln('$varName = data;');
-        getCacheCubit.writeln('emit(ContentState());');
+        getCacheCubit.writeln('emit($contentState);');
         getCacheCubit.writeln('});');
         getCacheCubit.writeln('res.left((failure) {');
-        getCacheCubit.writeln('emit(ErrorState(');
-        getCacheCubit.writeln('type: StateRendererType.toastError,');
-        getCacheCubit.writeln('message: failure.message,');
-        getCacheCubit.writeln('));');
+        getCacheCubit.writeln('emit($errorFailureState);');
         getCacheCubit.writeln('});');
         getCacheCubit.writeln('}');
         getCacheCubit.writeln('}');

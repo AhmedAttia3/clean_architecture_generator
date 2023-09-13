@@ -3,6 +3,7 @@ import 'package:build/build.dart';
 import 'package:clean_architecture_generator/formatter/method_format.dart';
 import 'package:clean_architecture_generator/formatter/names.dart';
 import 'package:clean_architecture_generator/src/annotations.dart';
+import 'package:clean_architecture_generator/src/generators/cubit_states.dart';
 import 'package:clean_architecture_generator/src/imports_file.dart';
 import 'package:source_gen/source_gen.dart';
 
@@ -110,7 +111,7 @@ class CacheCubitTestGenerator
         cubit.writeln("     cubit = $cubitType($useCaseName);");
         cubit.writeln("   });");
         cubit.writeln(" group('$cubitType CUBIT', () {");
-        cubit.writeln("     blocTest<$cubitType, FlowState>(");
+        cubit.writeln("     blocTest<$cubitType, $flowState>(");
         cubit.writeln("       '$methodName failure METHOD',");
         cubit.writeln("       build: () => cubit,");
         cubit.writeln("       act: (cubit) {");
@@ -119,16 +120,12 @@ class CacheCubitTestGenerator
             "             .thenAnswer((realInvocation) => Left(failure));");
         cubit.writeln("         cubit.execute();");
         cubit.writeln("       },");
-        cubit.writeln("       expect: () => <FlowState>[");
-        cubit.writeln(
-            "         LoadingState(type: StateRendererType.fullScreenLoading),");
-        cubit.writeln("         ErrorState(");
-        cubit.writeln("           type: StateRendererType.toastError,");
-        cubit.writeln("           message: failure.message,");
-        cubit.writeln("         )");
+        cubit.writeln("       expect: () => <$flowState>[");
+        cubit.writeln("         $loadingState,");
+        cubit.writeln("         $errorFailureState,");
         cubit.writeln("       ],");
         cubit.writeln("     );");
-        cubit.writeln("     blocTest<$cubitType, FlowState>(");
+        cubit.writeln("     blocTest<$cubitType, $flowState>(");
         cubit.writeln("       '$methodName success METHOD',");
         cubit.writeln("       build: () => cubit,");
         cubit.writeln("       act: (cubit) {");
@@ -137,10 +134,9 @@ class CacheCubitTestGenerator
             "             .thenAnswer((realInvocation) => Right(response));");
         cubit.writeln("         cubit.execute();");
         cubit.writeln("       },");
-        cubit.writeln("       expect: () => <FlowState>[");
-        cubit.writeln(
-            "         LoadingState(type: StateRendererType.fullScreenLoading),");
-        cubit.writeln("       ContentState(),");
+        cubit.writeln("       expect: () => <$flowState>[");
+        cubit.writeln("         $loadingState,");
+        cubit.writeln("         $contentState,");
         cubit.writeln("       ],");
         cubit.writeln("     );");
 
