@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:clean_architecture_generator/src/models/usecase_model.dart';
 
 class MethodFormat {
@@ -84,9 +82,7 @@ class MethodFormat {
     } else if (type == 'num') {
       return 0.0;
     } else if (type.contains("List")) {
-      return const [];
-    } else if (type.contains("File")) {
-      return File('');
+      return "const []";
     }
   }
 }

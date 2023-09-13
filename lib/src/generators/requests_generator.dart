@@ -48,7 +48,11 @@ class RequestsGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
       request.writeln('@JsonSerializable()');
       request.writeln('class $requestType {');
       for (var pram in method.parameters) {
-        request.writeln('${pram.type} ${pram.name};');
+        if (pram.type == 'File') {
+          request.writeln('${pram.type}? ${pram.name};');
+        } else {
+          request.writeln('${pram.type} ${pram.name};');
+        }
       }
       request.writeln('$requestType({');
       for (var pram in method.parameters) {
