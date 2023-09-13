@@ -31,7 +31,8 @@ class Imports {
     bool isUseCase = false,
   }) {
     final names = Names();
-    String data = "import 'package:eitherx/eitherx.dart';\n";
+    String data = "import 'dart:io';\n";
+    data += "import 'package:eitherx/eitherx.dart';\n";
     data += "import 'package:mwidgets/mwidgets.dart';\n";
     final baseResponse = importName('base_response.dart');
     if (baseResponse != null) data += baseResponse;
