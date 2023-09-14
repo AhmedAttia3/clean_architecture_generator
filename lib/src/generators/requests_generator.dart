@@ -31,6 +31,13 @@ class RequestsGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
       }
       final request = StringBuffer();
       final requestType = names.requestType(method.name);
+      bool hasFile = false;
+      for (var pram in method.parameters) {
+        if (pram.type.contains('File')) {
+          hasFile = true;
+          break;
+        }
+      }
 
       ///[Imports]
       request.writeln(
@@ -38,7 +45,9 @@ class RequestsGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
           libs: [
             "import 'package:json_annotation/json_annotation.dart';\n",
             "import 'package:injectable/injectable.dart';\n",
-            "part '${names.camelCaseToUnderscore(requestType)}.g.dart';\n"
+            hasFile
+                ? "part '${names.camelCaseToUnderscore(requestType)}.g.dart';\n"
+                : "",
           ],
         ),
       );
@@ -47,14 +56,10 @@ class RequestsGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
       request.writeln('@injectable');
       request.writeln('@JsonSerializable()');
       request.writeln('class $requestType {');
-      bool hasFile = false;
       for (var pram in method.parameters) {
         if (pram.type == 'File') {
           request.writeln('${pram.type}? ${pram.name};');
         } else {
-          if (pram.type.contains('File')) {
-            hasFile = true;
-          }
           request.writeln('${pram.type} ${pram.name};');
         }
       }
