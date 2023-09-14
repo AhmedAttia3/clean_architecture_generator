@@ -45,7 +45,7 @@ class RequestsGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
           libs: [
             "import 'package:json_annotation/json_annotation.dart';\n",
             "import 'package:injectable/injectable.dart';\n",
-            hasFile
+            !hasFile
                 ? "part '${names.camelCaseToUnderscore(requestType)}.g.dart';\n"
                 : "",
           ],
