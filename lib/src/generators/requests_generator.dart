@@ -47,10 +47,14 @@ class RequestsGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
       request.writeln('@injectable');
       request.writeln('@JsonSerializable()');
       request.writeln('class $requestType {');
+      bool hasFile = false;
       for (var pram in method.parameters) {
         if (pram.type == 'File') {
           request.writeln('${pram.type}? ${pram.name};');
         } else {
+          if (pram.type.contains('File')) {
+            hasFile = true;
+          }
           request.writeln('${pram.type} ${pram.name};');
         }
       }
@@ -64,11 +68,12 @@ class RequestsGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         }
       }
       request.writeln('});\n');
-
-      request.writeln(
-          'factory $requestType.fromJson(Map<String, dynamic> json) => _\$${requestType}FromJson(json);');
-      request.writeln(
-          'Map<String, dynamic> toJson() => _\$${requestType}ToJson(this);');
+      if (!hasFile) {
+        request.writeln(
+            'factory $requestType.fromJson(Map<String, dynamic> json) => _\$${requestType}FromJson(json);');
+        request.writeln(
+            'Map<String, dynamic> toJson() => _\$${requestType}ToJson(this);');
+      }
       request.writeln('}\n');
 
       FileManager.save(
