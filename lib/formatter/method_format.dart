@@ -7,7 +7,7 @@ class MethodFormat {
     String data = '{';
     for (var para in parameters) {
       data +=
-          '${para.isRequired ? "required" : ""} ${para.type.toString()} ${para.name.toString()},';
+          '${para.isRequired ? "required ${para.type.toString()}" : "${para.type.toString()}?"}  ${para.name.toString()},';
     }
     if (data == '{') {
       return '';
