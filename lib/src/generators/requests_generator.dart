@@ -59,7 +59,7 @@ class RequestsGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
       }
       request.writeln('class $requestType {');
       for (var pram in method.parameters) {
-        if (pram.type == 'File') {
+        if (pram.type == 'File?') {
           request.writeln('${pram.type} ${pram.name};');
         } else {
           request.writeln(
@@ -68,7 +68,7 @@ class RequestsGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
       }
       request.writeln('$requestType({');
       for (var pram in method.parameters) {
-        if (pram.type == 'File') {
+        if (pram.type == 'File?') {
           request.writeln('this.${pram.name},');
         } else {
           request.writeln(
