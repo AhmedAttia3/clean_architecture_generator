@@ -68,7 +68,7 @@ class RequestsGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
           request.writeln('this.${pram.name},');
         } else {
           request.writeln(
-              'this.${pram.name} ${pram.isRequired ? "= ${methodFormat.initData(pram.type.toString(), pram.name)}," : ""} ');
+              'this.${pram.name} ${pram.isRequired ? "= ${methodFormat.initData(pram.type.toString(), pram.name)}," : ","} ');
         }
       }
       request.writeln('});\n');

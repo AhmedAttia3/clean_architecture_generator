@@ -6,7 +6,8 @@ class MethodFormat {
   String parameters(List<CommendType> parameters) {
     String data = '{';
     for (var para in parameters) {
-      data += 'required ${para.type.toString()} ${para.name.toString()},';
+      data +=
+          '${para.isRequired ? "required" : ""} ${para.type.toString()} ${para.name.toString()},';
     }
     if (data == '{') {
       return '';
