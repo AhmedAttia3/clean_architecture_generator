@@ -272,7 +272,8 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
 
         ///[initialize variable for set emit function]
         for (var function in method.emitSets) {
-          cubit.write('${function.type} ${function.name}');
+          cubit.write(
+              '${function.isRequired ? "${function.type}" : "${function.type}?"} ${function.name}');
           cubit.write(initVaType(function.type));
           method.parameters
               .removeWhere((element) => function.name == element.name);
@@ -280,7 +281,8 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
 
         ///[initialize variable for set function]
         for (var function in method.functionSets) {
-          cubit.write('${function.type} ${function.name}');
+          cubit.write(
+              '${function.isRequired ? "${function.type}" : "${function.type}?"} ${function.name}');
           cubit.write(initVaType(function.type));
           method.parameters
               .removeWhere((element) => function.name == element.name);
@@ -395,7 +397,7 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         ///[create set function]
         for (var function in method.functionSets) {
           cubit.writeln(
-              'void set${names.firstUpper(function.name)}(${function.type} value){');
+              'void set${names.firstUpper(function.name)}(${function.isRequired ? "${function.type}" : "${function.type}?"} value){');
           cubit.writeln('${function.name} = value;');
           cubit.writeln('}');
         }
