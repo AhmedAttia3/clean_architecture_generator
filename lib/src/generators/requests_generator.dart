@@ -54,13 +54,16 @@ class RequestsGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
       request.writeln('///[$requestType]');
       request.writeln('///[Implementation]');
       request.writeln('@injectable');
-      request.writeln('@JsonSerializable()');
+      if (!hasFile) {
+        request.writeln('@JsonSerializable()');
+      }
       request.writeln('class $requestType {');
       for (var pram in method.parameters) {
         if (pram.type == 'File') {
           request.writeln('${pram.type}? ${pram.name};');
         } else {
-          request.writeln('${pram.type} ${pram.name};');
+          request.writeln(
+              '${pram.type}${pram.isRequired ? "" : "?"} ${pram.name};');
         }
       }
       request.writeln('$requestType({');
@@ -69,7 +72,7 @@ class RequestsGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
           request.writeln('this.${pram.name},');
         } else {
           request.writeln(
-              'this.${pram.name} = ${methodFormat.initData(pram.type.toString(), pram.name)},');
+              'this.${pram.name} ${pram.isRequired ? "= ${methodFormat.initData(pram.type.toString(), pram.name)}," : ""} ');
         }
       }
       request.writeln('});\n');

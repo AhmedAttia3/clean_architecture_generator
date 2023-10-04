@@ -42,9 +42,11 @@ class UseCaseModel {
 class CommendType {
   final String type;
   final String name;
+  final bool isRequired;
 
   const CommendType({
     required this.name,
     required this.type,
+    this.isRequired = true,
   });
 }

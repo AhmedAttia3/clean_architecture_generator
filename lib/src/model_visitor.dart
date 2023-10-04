@@ -41,19 +41,31 @@ class ModelVisitor extends GeneralizingElementVisitor<void> {
           endPoint: method.endPoint,
           requestParameters: method.parameters,
           parameters: method.parameters
-              .map((e) => CommendType(name: e.name, type: dataType(e.dataType)))
+              .map((e) => CommendType(
+                  name: e.name,
+                  type: dataType(e.dataType),
+                  isRequired: e.isRequired))
               .toList(),
           functionSets: method.parameters
               .where((e) => e.prop == ParamProp.Set)
-              .map((e) => CommendType(name: e.name, type: dataType(e.dataType)))
+              .map((e) => CommendType(
+                  name: e.name,
+                  type: dataType(e.dataType),
+                  isRequired: e.isRequired))
               .toList(),
           textControllers: method.parameters
               .where((e) => e.prop == ParamProp.TextController)
-              .map((e) => CommendType(name: e.name, type: dataType(e.dataType)))
+              .map((e) => CommendType(
+                  name: e.name,
+                  type: dataType(e.dataType),
+                  isRequired: e.isRequired))
               .toList(),
           emitSets: method.parameters
               .where((e) => e.prop == ParamProp.EmitSet)
-              .map((e) => CommendType(name: e.name, type: dataType(e.dataType)))
+              .map((e) => CommendType(
+                  name: e.name,
+                  type: dataType(e.dataType),
+                  isRequired: e.isRequired))
               .toList(),
           isCache: method.isCache,
           isPaging: method.isPaging,
