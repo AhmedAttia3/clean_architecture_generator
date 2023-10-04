@@ -81,7 +81,7 @@ class ModelVisitor extends GeneralizingElementVisitor<void> {
     if (type == ParamDataType.listFile) {
       return 'List<File>';
     } else if (type == ParamDataType.File) {
-      return 'File?';
+      return 'File';
     }
     return type.name;
   }
