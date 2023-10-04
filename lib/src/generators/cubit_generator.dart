@@ -308,15 +308,15 @@ class CubitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
           for (var controller in method.textControllers) {
             if (method.hasRequest) {
               cubit.writeln('request.${controller.name} =');
-            }
-            if (controller.type == 'int') {
-              cubit.writeln('int.parse(${controller.name}.text);');
-            } else if (controller.type == 'double') {
-              cubit.writeln('double.parse(${controller.name}.text);');
-            } else if (controller.type == 'num') {
-              cubit.writeln('num.parse(${controller.name}.text);');
-            } else {
-              cubit.writeln('${controller.name}.text;');
+              if (controller.type == 'int') {
+                cubit.writeln('int.parse(${controller.name}.text);');
+              } else if (controller.type == 'double') {
+                cubit.writeln('double.parse(${controller.name}.text);');
+              } else if (controller.type == 'num') {
+                cubit.writeln('num.parse(${controller.name}.text);');
+              } else {
+                cubit.writeln('${controller.name}.text;');
+              }
             }
           }
         }
