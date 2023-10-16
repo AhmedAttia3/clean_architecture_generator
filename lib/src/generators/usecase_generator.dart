@@ -62,7 +62,7 @@ class UseCaseGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
       useCase.writeln('///[Implementation]');
       useCase.writeln('@injectable');
       useCase.writeln(
-          'class $useCaseType implements BaseUseCase<Future<Either<Failure, $returnType>>,$requestType>{');
+          'class $useCaseType implements BaseUseCase<$requestType,Future<Either<Failure, $returnType>>>{');
       useCase.writeln('final $repositoryType repository;');
       useCase.writeln('const $useCaseType(');
       useCase.writeln('this.repository,');

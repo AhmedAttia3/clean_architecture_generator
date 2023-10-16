@@ -47,8 +47,8 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     baseUseCase.writeln("import 'package:eitherx/eitherx.dart';");
     baseUseCase.writeln('///[BaseUseCase]');
     baseUseCase.writeln('///[Implementation]');
-    baseUseCase.writeln("abstract class BaseUseCase<RES, POS> {");
-    baseUseCase.writeln("RES execute({POS? request});");
+    baseUseCase.writeln("abstract class BaseUseCase<In, Out> {");
+    baseUseCase.writeln("Out execute({In? request});");
     baseUseCase.writeln("}");
 
     FileManager.searchAndAddFile('$path/base_use_case', baseUseCase.toString());
