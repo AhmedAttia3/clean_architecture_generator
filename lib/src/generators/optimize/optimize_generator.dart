@@ -40,7 +40,7 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         "Future<bool> get isConnected => internetConnectionChecker.hasConnection;");
     network.writeln("}");
 
-    FileManager.searchAndAddFile('$path/network', network.toString());
+    FileManager.save('$path/network', network.toString());
 
     ///[BaseUseCase]
     final baseUseCase = StringBuffer();
@@ -51,7 +51,15 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     baseUseCase.writeln("Out execute({In? request});");
     baseUseCase.writeln("}");
 
-    FileManager.searchAndAddFile('$path/base_use_case', baseUseCase.toString());
+    FileManager.save('$path/base_use_case', baseUseCase.toString());
+
+    ///[NoParams]
+    final noParams = StringBuffer();
+    noParams.writeln('///[NoParams]');
+    noParams.writeln('///[Implementation]');
+    noParams.writeln("class NoParams {}");
+
+    FileManager.save('$path/no_params', noParams.toString());
 
     ///[SafeApi]
     final safeApi = StringBuffer();
@@ -88,8 +96,7 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     safeApi.writeln('}');
     safeApi.writeln('}');
 
-    FileManager.searchAndAddFile(
-        '$path/safe_request_handler', safeApi.toString());
+    FileManager.save('$path/safe_request_handler', safeApi.toString());
 
     ///[BaseResponse]
     final baseResponse = StringBuffer();
@@ -113,7 +120,7 @@ class OptimizeGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
     baseResponse.writeln("_\$BaseResponseFromJson(json, fromJsonT);");
     baseResponse.writeln("}\n\n");
 
-    FileManager.searchAndAddFile('$path/BaseResponse', baseResponse.toString());
+    FileManager.save('$path/BaseResponse', baseResponse.toString());
 
     return '';
   }

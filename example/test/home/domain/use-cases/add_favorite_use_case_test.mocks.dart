@@ -78,9 +78,9 @@ class MockHomeRepository extends _i1.Mock implements _i3.HomeRepository {
   _i4.Future<_i2.Either<_i5.Failure, _i6.BaseResponse<_i8.ResultEntity?>>>
       getResult({
     required int? countryId,
-    required int? termId,
-    required String? studentName,
-    required String? sittingNumber,
+    int? termId,
+    String? studentName,
+    String? sittingNumber,
   }) =>
           (super.noSuchMethod(
             Invocation.method(

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:eitherx/eitherx.dart';
 import 'package:mwidgets/mwidgets.dart';
 import 'package:example/core/base/base_response.dart';
+import 'package:example/core/base/no_params.dart';
 import 'package:injectable/injectable.dart';
 import 'package:example/core/base/base_use_case.dart';
 import 'dart:convert';import 'package:example/home/domain/repository/home_repository.dart';
@@ -30,17 +31,17 @@ return await homeRemoteDataSource.getGovernorates();
 }
 
 @override
-Future<Either<Failure, BaseResponse<ResultEntity?>>> getResult({required int countryId,required int termId,required String studentName,required String sittingNumber, })async {
+Future<Either<Failure, BaseResponse<ResultEntity?>>> getResult({required int  countryId,int?  termId,String?  studentName,String?  sittingNumber, })async {
 return await homeRemoteDataSource.getResult(countryId: countryId,termId: termId,studentName: studentName,sittingNumber: sittingNumber,);
 }
 
 @override
-Future<Either<Failure, BaseResponse<int>>> addFavorite({required int countryId, })async {
+Future<Either<Failure, BaseResponse<int>>> addFavorite({required int  countryId, })async {
 return await homeRemoteDataSource.addFavorite(countryId: countryId,);
 }
 
 @override
-Future<Either<Failure, BaseResponse<DeviceSettingsEntity?>>> updateUser({required int firebaseToken, })async {
+Future<Either<Failure, BaseResponse<DeviceSettingsEntity?>>> updateUser({required int  firebaseToken, })async {
 return await homeRemoteDataSource.updateUser(firebaseToken: firebaseToken,);
 }
 
