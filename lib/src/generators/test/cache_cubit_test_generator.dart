@@ -150,7 +150,6 @@ class CacheCubitTestGenerator
         FileManager.save(
           '$path/$fileName',
           cubit.toString(),
-          allowUpdates: true,
         );
       }
     }
