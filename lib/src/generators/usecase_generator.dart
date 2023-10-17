@@ -44,7 +44,7 @@ class UseCaseGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
       final requestType = noParams
           ? method.parameters.isNotEmpty
               ? "${method.parameters.first.type}"
-              : 'Void'
+              : 'NoParams'
           : names.requestType(method.name);
       final methodName = names.firstLower(method.name);
       useCase.writeln('///[Implementation]');

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:eitherx/eitherx.dart';
 import 'package:mwidgets/mwidgets.dart';
 import 'package:example/core/base/base_response.dart';
+import 'package:example/core/base/no_params.dart';
 import 'package:injectable/injectable.dart';
 import 'package:example/core/base/base_use_case.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,7 @@ AddFavoriteCubit(this._addFavoriteUseCase,
 int? addFavorite;
 
 
-Future<void> execute({required int countryId, }) async {
+Future<void> execute({required int  countryId, }) async {
 emit(const LoadingState(type: LoadingRendererType.popup));
 final res = await _addFavoriteUseCase.execute(
 request : countryId,

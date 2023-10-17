@@ -1,8 +1,7 @@
+import 'dart:io';
 import 'package:eitherx/eitherx.dart';
 import 'package:mwidgets/mwidgets.dart';
-import 'package:example/core/base/base_response.dart';
 import 'package:injectable/injectable.dart';
-import 'package:example/core/base/base_use_case.dart';
 import 'package:example/home/data/models/available_results_model.dart';
 import 'package:example/home/domain/entities/governorate_entity.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -20,7 +19,7 @@ final String name;
 @JsonKey(name: "isFavourite",defaultValue: false)
 final bool isFavourite;
 @override
-@JsonKey(name: "availableResults",defaultValue: [])
+@JsonKey(name: "availableResults",defaultValue: const [])
 final List<AvailableResultsModel> availableResults;
 const GovernorateModel({
 required this.id,

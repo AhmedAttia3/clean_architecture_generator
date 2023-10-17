@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:eitherx/eitherx.dart';
 import 'package:mwidgets/mwidgets.dart';
 import 'package:example/core/base/base_response.dart';
+import 'package:example/core/base/no_params.dart';
 import 'package:injectable/injectable.dart';
 import 'package:example/core/base/base_use_case.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +27,7 @@ this.request,
 ResultEntity? result;
 
 
-Future<void> execute({required int countryId,required int termId,required String studentName,required String sittingNumber, }) async {
+Future<void> execute({required int  countryId,int?  termId,String?  studentName,String?  sittingNumber, }) async {
 request.countryId = countryId;
 request.termId = termId;
 request.studentName = studentName;

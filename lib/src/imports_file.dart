@@ -35,7 +35,9 @@ class Imports {
     data += "import 'package:eitherx/eitherx.dart';\n";
     data += "import 'package:mwidgets/mwidgets.dart';\n";
     final baseResponse = importName('base_response.dart');
+    final noParams = importName('no_params.dart');
     if (baseResponse != null) data += baseResponse;
+    if (noParams != null) data += noParams;
     if (isTest) {
       data += "import 'dart:io';\n";
       data += "import 'dart:convert';\n";

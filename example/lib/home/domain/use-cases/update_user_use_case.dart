@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:eitherx/eitherx.dart';
 import 'package:mwidgets/mwidgets.dart';
 import 'package:example/core/base/base_response.dart';
+import 'package:example/core/base/no_params.dart';
 import 'package:injectable/injectable.dart';
 import 'package:example/core/base/base_use_case.dart';
 import 'dart:ffi';
@@ -14,7 +15,7 @@ import 'package:example/home/domain/entities/device_settings_entity.dart';
 ///[UpdateUserUseCase]
 ///[Implementation]
 @injectable
-class UpdateUserUseCase implements BaseUseCase<Future<Either<Failure, BaseResponse<DeviceSettingsEntity?>>>,int>{
+class UpdateUserUseCase implements BaseUseCase<int,Future<Either<Failure, BaseResponse<DeviceSettingsEntity?>>>>{
 final HomeRepository repository;
 const UpdateUserUseCase(
 this.repository,

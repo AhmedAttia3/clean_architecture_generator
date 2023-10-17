@@ -4,10 +4,10 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i5;
-import 'dart:ffi' as _i9;
 
 import 'package:eitherx/eitherx.dart' as _i3;
 import 'package:example/core/base/base_response.dart' as _i7;
+import 'package:example/core/base/no_params.dart' as _i9;
 import 'package:example/home/domain/entities/governorate_entity.dart' as _i8;
 import 'package:example/home/domain/repository/home_repository.dart' as _i2;
 import 'package:example/home/domain/use-cases/get_governorates_use_case.dart'
@@ -69,7 +69,7 @@ class MockGetGovernoratesUseCase extends _i1.Mock
       .Future<
           _i3
           .Either<_i6.Failure, _i7.BaseResponse<List<_i8.GovernorateEntity>?>>>
-      execute({_i9.Void? request}) => (super.noSuchMethod(
+      execute({_i9.NoParams? request}) => (super.noSuchMethod(
             Invocation.method(
               #execute,
               [],
