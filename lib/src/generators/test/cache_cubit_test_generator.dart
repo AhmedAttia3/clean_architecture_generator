@@ -65,6 +65,7 @@ class CacheCubitTestGenerator
               "import 'package:flutter_test/flutter_test.dart';",
               "import 'package:mockito/annotations.dart';",
               "import 'package:mockito/mockito.dart';",
+              "import 'package:request_builder/request_builder.dart';",
               "import '$fileName.mocks.dart';",
             ],
           ),

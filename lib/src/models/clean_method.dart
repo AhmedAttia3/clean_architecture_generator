@@ -15,7 +15,7 @@ enum ParamType { Field, Query, Path, Header }
 
 enum ParamProp { none, Set, EmitSet, TextController }
 
-enum ParamDataType { String, int, double, num, List, File, listFile }
+enum ParamDataType { String, int, double, num, List, File, listFile, bool }
 
 class CleanMethod {
   final String name;
@@ -28,9 +28,9 @@ class CleanMethod {
 
   const CleanMethod({
     required this.name,
-    required this.endPoint,
+    this.endPoint = '',
     required this.response,
-    required this.parameters,
+    this.parameters = const [],
     this.methodType = MethodType.POST,
     this.requestType = RequestType.Fields,
     this.isCache = false,
@@ -68,8 +68,8 @@ class CleanMethodModel extends CleanMethod {
 
     return CleanMethodModel(
       response: map['response'],
-      name: map['name'],
-      endPoint: map['endPoint'],
+      name: map['name'] ?? "",
+      endPoint: map['endPoint'] ?? "",
       isPaging: map['isPaging'] ?? false,
       isCache: map['isCache'] ?? false,
       methodType: methodType,

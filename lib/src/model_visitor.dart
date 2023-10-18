@@ -13,6 +13,7 @@ class ModelVisitor extends GeneralizingElementVisitor<void> {
   String remoteDataSource = '';
   String localDataSource = '';
   String repository = '';
+  bool isCacheOnly = false;
   List<UseCaseModel> useCases = [];
 
   @override
@@ -33,6 +34,12 @@ class ModelVisitor extends GeneralizingElementVisitor<void> {
         .split('lib/');
     final path = 'lib/${paths.length == 2 ? paths[1] : paths[0]}';
     final methods = getCleanMethods(path);
+
+    ///[cache only]
+    final items =
+        methods.where((item) => item.isCache && item.endPoint.isEmpty);
+    isCacheOnly = items.length == methods.length;
+
     for (var method in methods) {
       useCases.add(
         UseCaseModel(
@@ -131,7 +138,8 @@ class ModelVisitor extends GeneralizingElementVisitor<void> {
           .replaceAll(',""}', '}')
           .replaceAll('""}', '"}')
           .replaceAll('true"', 'true')
-          .replaceAll('false"', 'false');
+          .replaceAll('false"', 'false')
+          .replaceAll('},', '}');
 
       final data = jsonDecode(method);
       methods.add(CleanMethodModel.fromJson(data));

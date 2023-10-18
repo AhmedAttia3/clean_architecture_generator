@@ -28,12 +28,15 @@ class RepositoryGenerator
     final implRepoPath = "$path/data/repository";
 
     final repository = StringBuffer();
-    final remoteDataSourceName = names.firstLower(visitor.remoteDataSource);
+    String remoteDataSourceName = '';
+    String remoteDataSourceType = '';
+    if (!visitor.isCacheOnly)
+      remoteDataSourceName = names.firstLower(visitor.remoteDataSource);
 
     final localDataSourceType = visitor.localDataSource;
     final localDataSourceName =
         names.localDataSourceName(visitor.localDataSource);
-    final remoteDataSourceType = visitor.remoteDataSource;
+    if (!visitor.isCacheOnly) remoteDataSourceType = visitor.remoteDataSource;
     final repositoryType = visitor.repository;
     final repositoryImplementType = names.ImplType(repositoryType);
 
@@ -67,13 +70,15 @@ class RepositoryGenerator
       final responseTypeEntity = methodFormat.responseType(typeEntity);
       final type = methodFormat.returnType(method.type);
       final responseType = methodFormat.responseType(type);
-      if (method.requestType == RequestType.Fields || !method.hasRequest) {
-        repository.writeln(
-            'Future<Either<Failure, $typeEntity>> $methodName(${methodFormat.parameters(method.parameters)});');
-      } else {
-        final request = names.requestType(method.name);
-        repository.writeln(
-            'Future<Either<Failure, $typeEntity>> $methodName({required $request request,});');
+      if (!visitor.isCacheOnly) {
+        if (method.requestType == RequestType.Fields || !method.hasRequest) {
+          repository.writeln(
+              'Future<Either<Failure, $typeEntity>> $methodName(${methodFormat.parameters(method.parameters)});');
+        } else {
+          final request = names.requestType(method.name);
+          repository.writeln(
+              'Future<Either<Failure, $typeEntity>> $methodName({required $request request,});');
+        }
       }
 
       ///[cache save or get]
@@ -102,7 +107,7 @@ class RepositoryGenerator
       imports: [
         repositoryType,
         repositoryType,
-        remoteDataSourceType,
+        visitor.isCacheOnly ? "" : remoteDataSourceType,
         localDataSourceType,
         ...imports,
         'base_response'
@@ -115,8 +120,9 @@ class RepositoryGenerator
     repositoryImpl.writeln('@Injectable(as:$repositoryType)');
     repositoryImpl
         .writeln('class $repositoryImplementType implements $repositoryType {');
-    repositoryImpl
-        .writeln('final $remoteDataSourceType $remoteDataSourceName;');
+    if (!visitor.isCacheOnly)
+      repositoryImpl
+          .writeln('final $remoteDataSourceType $remoteDataSourceName;');
 
     ///[add cache]
     if (hasCache) {
@@ -124,7 +130,8 @@ class RepositoryGenerator
           .writeln('final $localDataSourceType $localDataSourceName;');
     }
     repositoryImpl.writeln('const $repositoryImplementType(');
-    repositoryImpl.writeln('this.$remoteDataSourceName,');
+    if (!visitor.isCacheOnly)
+      repositoryImpl.writeln('this.$remoteDataSourceName,');
 
     ///[add cache]
     if (hasCache) {
@@ -140,45 +147,47 @@ class RepositoryGenerator
 
       final type = methodFormat.returnType(method.type);
       final responseType = methodFormat.responseType(type);
+      if (!visitor.isCacheOnly) {
+        repositoryImpl.writeln('@override');
+        if (method.requestType == RequestType.Fields || !method.hasRequest) {
+          repositoryImpl.writeln(
+              'Future<Either<Failure, $typeEntity>> $methodName(${methodFormat.parameters(method.parameters)})async {');
+          if (method.isCache) {
+            final cacheMethodName = names.cacheName(method.name);
 
-      repositoryImpl.writeln('@override');
-      if (method.requestType == RequestType.Fields || !method.hasRequest) {
-        repositoryImpl.writeln(
-            'Future<Either<Failure, $typeEntity>> $methodName(${methodFormat.parameters(method.parameters)})async {');
-        if (method.isCache) {
-          final cacheMethodName = names.cacheName(method.name);
-          repositoryImpl.writeln(
-              'final res = await $remoteDataSourceName.${method.name}(${methodFormat.passingParameters(method.parameters)});');
-          repositoryImpl.writeln('await res.right((data) async {');
-          repositoryImpl.writeln('if (data.success) {');
-          repositoryImpl.writeln(
-              '$localDataSourceName.$cacheMethodName(data: data.data!);');
-          repositoryImpl.writeln(' }});');
-          repositoryImpl.writeln('return res;');
+            repositoryImpl.writeln(
+                'final res = await $remoteDataSourceName.${method.name}(${methodFormat.passingParameters(method.parameters)});');
+            repositoryImpl.writeln('await res.right((data) async {');
+            repositoryImpl.writeln('if (data.success) {');
+            repositoryImpl.writeln(
+                '$localDataSourceName.$cacheMethodName(data: data.data!);');
+            repositoryImpl.writeln(' }});');
+            repositoryImpl.writeln('return res;');
+          } else {
+            repositoryImpl.writeln(
+                'return await $remoteDataSourceName.${method.name}(${methodFormat.passingParameters(method.parameters)});');
+          }
+          repositoryImpl.writeln('}\n');
         } else {
+          final request = names.requestType(method.name);
           repositoryImpl.writeln(
-              'return await $remoteDataSourceName.${method.name}(${methodFormat.passingParameters(method.parameters)});');
+              'Future<Either<Failure, $typeEntity>> $methodName({required $request request,})async {');
+          if (method.isCache) {
+            final cacheMethodName = names.cacheName(method.name);
+            repositoryImpl.writeln(
+                'final res =  await $remoteDataSourceName.${method.name}(request: request,);');
+            repositoryImpl.writeln('await res.right((data) async {');
+            repositoryImpl.writeln('if (data.success) {');
+            repositoryImpl.writeln(
+                '$localDataSourceName.$cacheMethodName(data: data.data!);');
+            repositoryImpl.writeln(' }});');
+            repositoryImpl.writeln('return res;');
+          } else {
+            repositoryImpl.writeln(
+                'return await $remoteDataSourceName.${method.name}(request: request,);');
+          }
+          repositoryImpl.writeln('}\n');
         }
-        repositoryImpl.writeln('}\n');
-      } else {
-        final request = names.requestType(method.name);
-        repositoryImpl.writeln(
-            'Future<Either<Failure, $typeEntity>> $methodName({required $request request,})async {');
-        if (method.isCache) {
-          final cacheMethodName = names.cacheName(method.name);
-          repositoryImpl.writeln(
-              'final res =  await $remoteDataSourceName.${method.name}(request: request,);');
-          repositoryImpl.writeln('await res.right((data) async {');
-          repositoryImpl.writeln('if (data.success) {');
-          repositoryImpl.writeln(
-              '$localDataSourceName.$cacheMethodName(data: data.data!);');
-          repositoryImpl.writeln(' }});');
-          repositoryImpl.writeln('return res;');
-        } else {
-          repositoryImpl.writeln(
-              'return await $remoteDataSourceName.${method.name}(request: request,);');
-        }
-        repositoryImpl.writeln('}\n');
       }
 
       ///[cache save or get implement]
@@ -210,6 +219,6 @@ class RepositoryGenerator
       allowUpdates: true,
     );
     repository.writeln(repositoryImpl);
-    return repository.toString();
+    return '';
   }
 }
