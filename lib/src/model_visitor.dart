@@ -110,7 +110,8 @@ class ModelVisitor extends GeneralizingElementVisitor<void> {
             .replaceAll(',""}', '}')
             .replaceAll('""}', '"}')
             .replaceAll('true"', 'true')
-            .replaceAll('false"', 'false');
+            .replaceAll('false"', 'false')
+            .replaceAll('}{', '},{');
 
         final data = jsonDecode(method);
         methods.add(CleanMethodModel.fromJson(data));
