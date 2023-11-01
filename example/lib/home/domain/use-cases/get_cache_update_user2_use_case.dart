@@ -9,22 +9,22 @@ import 'dart:ffi';
 import 'package:example/home/domain/repository/home_repository.dart';
 import 'package:example/home/domain/entities/device_settings_entity.dart';
 import 'package:example/home/data/models/device_settings_model.dart';
+import 'package:example/home/domain/entities/device_settings_entity.dart';
+import 'package:example/home/data/models/device_settings_model.dart';
 
-///[GetCacheUpdateUserUseCase]
+///[GetCacheUpdateUser2UseCase]
 ///[Implementation]
 @injectable
-class GetCacheUpdateUserUseCase implements BaseUseCase<Void?, Either<Failure, DeviceSettingsEntity>>{
+class GetCacheUpdateUser2UseCase implements BaseUseCase<Void?, Either<Failure, DeviceSettingsEntity>>{
 final HomeRepository repository;
-const GetCacheUpdateUserUseCase(
+const GetCacheUpdateUser2UseCase(
 this.repository,
 );
 
 @override
 Either<Failure, DeviceSettingsEntity> execute({Void? request,}) {
-return repository.getCacheUpdateUser();
+return repository.getCacheUpdateUser2();
 }
 
-
-
-//[]
 }
+

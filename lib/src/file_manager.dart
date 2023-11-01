@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:clean_architecture_generator/formatter/names.dart';
+import 'package:clean_architecture_generator/src/check_update.dart';
 import 'package:clean_architecture_generator/src/imports_file.dart';
 
 class FileManager {
@@ -12,6 +13,7 @@ class FileManager {
     String content, {
     String extension = 'dart',
     bool allowUpdates = false,
+    List<String> methods = const [],
   }) {
     _saveOrUpdate(
       fileName,
@@ -107,6 +109,7 @@ class FileManager {
     String content, {
     bool allowUpdates = false,
     String extension = 'dart',
+    List<String> methods = const [],
   }) {
     String? import = search(path);
     if (import == null) {
@@ -118,7 +121,14 @@ class FileManager {
       );
     } else {
       final file = File(import);
-      if (allowUpdates) file.writeAsStringSync(content);
+      if (allowUpdates) {
+        content = CheckUpdate.fileContent(
+          content: content,
+          path: import,
+          methods: methods,
+        );
+        file.writeAsStringSync(content);
+      }
     }
   }
 }

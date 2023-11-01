@@ -26,6 +26,7 @@ class RepositoryGenerator
     final path = FileManager.getDirectories(buildStep.inputId.path);
     final abstractRepoPath = "$path/domain/repository";
     final implRepoPath = "$path/data/repository";
+    List<String> methods = [];
 
     final repository = StringBuffer();
     String remoteDataSourceName = '';
@@ -39,7 +40,7 @@ class RepositoryGenerator
     if (!visitor.isCacheOnly) remoteDataSourceType = visitor.remoteDataSource;
     final repositoryType = visitor.repository;
     final repositoryImplementType = names.ImplType(repositoryType);
-
+    final repoPath = '$abstractRepoPath/$repositoryType';
     List<String> imports = [];
     for (var method in visitor.useCases) {
       final returnTypeEntity = methodFormat.returnTypeEntity(method.type);
@@ -79,6 +80,7 @@ class RepositoryGenerator
           repository.writeln(
               'Future<Either<Failure, $typeEntity>> $methodName({required $request request,});');
         }
+        methods.add(methodName);
       }
 
       ///[cache save or get]
@@ -90,14 +92,18 @@ class RepositoryGenerator
             'Future<Either<Failure, Unit>> $cacheMethodName({required $responseType data,});');
         repository.writeln(
             'Either<Failure, $responseTypeEntity> $getCacheMethodName();');
+
+        methods.add(cacheMethodName);
+        methods.add(getCacheMethodName);
       }
     }
     repository.writeln('}\n');
 
     FileManager.save(
-      '$abstractRepoPath/$repositoryType',
+      repoPath,
       repository.toString(),
       allowUpdates: true,
+      methods: methods,
     );
 
     final repositoryImpl = StringBuffer();
