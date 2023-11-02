@@ -6,14 +6,133 @@ class Home implements CleanArchitectureSetUp {
   List<CleanMethod> methods() {
     return [
       const CleanMethod(
-        name: 'updateUser',
-        response: "DeviceSettingsModel",
-        isCache: true,
+        name: 'addComment',
+        endPoint: 'sendCode',
+        response: 'BaseResponse<DeviceSettingsModel?>',
+        methodType: MethodType.POST,
+        parameters: [
+          Param(
+            key: 'story_id',
+            name: 'storyId',
+            type: ParamType.Field,
+          ),
+          Param(
+            name: 'content',
+            type: ParamType.Field,
+            prop: ParamProp.TextController,
+          ),
+        ],
       ),
       const CleanMethod(
-        name: 'updateUser2',
-        response: "DeviceSettingsModel",
+        name: 'addComment2',
+        endPoint: 'sendCode',
+        response: 'BaseResponse<DeviceSettingsModel?>',
+        methodType: MethodType.POST,
+        parameters: [
+          Param(
+            key: 'story_id',
+            name: 'storyId',
+            type: ParamType.Field,
+          ),
+          Param(
+            name: 'content',
+            type: ParamType.Field,
+            prop: ParamProp.TextController,
+          ),
+        ],
+      ),
+      const CleanMethod(
+        name: 'addComment3',
+        endPoint: 'sendCode',
+        response: 'BaseResponse<DeviceSettingsModel?>',
+        methodType: MethodType.POST,
+        parameters: [
+          Param(
+            key: 'story_id',
+            name: 'storyId',
+            type: ParamType.Field,
+          ),
+          Param(
+            name: 'content',
+            type: ParamType.Field,
+            prop: ParamProp.TextController,
+          ),
+        ],
+      ),
+      const CleanMethod(
+        name: 'addComment4',
+        endPoint: 'sendCode',
+        response: 'BaseResponse<DeviceSettingsModel?>',
+        methodType: MethodType.POST,
+        parameters: [
+          Param(
+            key: 'story_id',
+            name: 'storyId',
+            type: ParamType.Field,
+          ),
+          Param(
+            name: 'content',
+            type: ParamType.Field,
+            prop: ParamProp.TextController,
+          ),
+        ],
+      ),
+      const CleanMethod(
+        name: 'addComment5',
+        endPoint: 'sendCode',
         isCache: true,
+        response: 'BaseResponse<DeviceSettingsModel?>',
+        methodType: MethodType.POST,
+        parameters: [
+          Param(
+            key: 'story_id',
+            name: 'storyId',
+            type: ParamType.Field,
+          ),
+          Param(
+            name: 'content',
+            type: ParamType.Field,
+            prop: ParamProp.TextController,
+          ),
+        ],
+      ),
+      const CleanMethod(
+        name: 'addComment6',
+        endPoint: 'sendCode',
+        isCache: true,
+        response: 'BaseResponse<DeviceSettingsModel?>',
+        methodType: MethodType.POST,
+        parameters: [
+          Param(
+            key: 'story_id',
+            name: 'storyId',
+            type: ParamType.Field,
+          ),
+          Param(
+            name: 'content',
+            type: ParamType.Field,
+            prop: ParamProp.TextController,
+          ),
+        ],
+      ),
+      const CleanMethod(
+        name: 'addComment7',
+        endPoint: 'sendCode',
+        isCache: true,
+        response: 'BaseResponse<DeviceSettingsModel?>',
+        methodType: MethodType.POST,
+        parameters: [
+          Param(
+            key: 'story_id',
+            name: 'storyId',
+            type: ParamType.Field,
+          ),
+          Param(
+            name: 'content',
+            type: ParamType.Field,
+            prop: ParamProp.TextController,
+          ),
+        ],
       ),
     ];
   }

@@ -21,6 +21,7 @@ class RemoteDataSourceGenerator
     element.visitChildren(visitor);
 
     if (!visitor.isCacheOnly) {
+      List<String> methods = [];
       final methodFormat = MethodFormat();
       final basePath = FileManager.getDirectories(buildStep.inputId.path);
       final path = "$basePath/data/data-sources";
@@ -67,6 +68,7 @@ class RemoteDataSourceGenerator
           remoteDataSource.writeln(
               'Future<Either<Failure, $type>> $methodName({required $request request,});');
         }
+        methods.add(methodName);
       }
       remoteDataSource.writeln('}\n');
 
@@ -74,6 +76,7 @@ class RemoteDataSourceGenerator
         '$path/$remoteDataSourceType',
         remoteDataSource.toString(),
         allowUpdates: true,
+        methods: methods,
       );
 
       final remoteDataSourceImpl = StringBuffer();
@@ -142,6 +145,7 @@ class RemoteDataSourceGenerator
         '$path/${remoteDataSourceType}Impl',
         remoteDataSourceImpl.toString(),
         allowUpdates: true,
+        methods: methods,
       );
     }
     return "";

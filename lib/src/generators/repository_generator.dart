@@ -223,6 +223,7 @@ class RepositoryGenerator
       '$implRepoPath/${repositoryType}Impl',
       repositoryImpl.toString(),
       allowUpdates: true,
+      methods: methods,
     );
     repository.writeln(repositoryImpl);
     return '';

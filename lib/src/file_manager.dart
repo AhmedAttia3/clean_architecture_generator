@@ -20,6 +20,7 @@ class FileManager {
       content,
       allowUpdates: allowUpdates,
       extension: extension,
+      methods: methods,
     );
   }
 

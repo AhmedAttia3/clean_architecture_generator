@@ -26,6 +26,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
       final methodFormat = MethodFormat();
       final fileName = visitor.clientService;
       final clientServices = StringBuffer();
+      List<String> methods = [];
 
       List<String> imports = [];
       for (var method in visitor.useCases) {
@@ -57,6 +58,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
       clientServices.writeln(" _$fileName;");
 
       for (var method in visitor.useCases) {
+        methods.add(method.name);
         if (method.methodType == MethodType.POST_MULTI_PART) {
           clientServices.writeln("     @MultiPart()");
           clientServices.writeln("     @POST('${method.endPoint}')");
@@ -112,6 +114,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         '$path/$fileName',
         clientServices.toString(),
         allowUpdates: true,
+        methods: methods,
       );
     }
     return "";
