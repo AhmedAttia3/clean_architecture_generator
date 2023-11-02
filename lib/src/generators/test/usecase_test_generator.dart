@@ -94,7 +94,8 @@ class UseCaseTestGenerator
             varType == 'Map' ||
             varType == 'bool') {
           usecase.writeln("data: ${methodFormat.initData(varType, 'name')},);");
-        } else if (type.contains('BaseResponse<dynamic>')) {
+        } else if (type.contains('BaseResponse<dynamic>') ||
+            type == 'BaseResponse') {
           usecase.writeln("data: null,);");
         } else {
           final model = names.camelCaseToUnderscore(names.ModelType(type));

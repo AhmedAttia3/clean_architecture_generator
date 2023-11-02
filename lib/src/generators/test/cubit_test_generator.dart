@@ -142,7 +142,8 @@ class CubitTestGenerator
             modelRuntimeType == 'bool') {
           cubit.writeln(
               "data: ${methodFormat.initData(modelRuntimeType, 'name')},);");
-        } else if (returnType.contains('BaseResponse<dynamic>')) {
+        } else if (returnType.contains('BaseResponse<dynamic>') ||
+            returnType == 'BaseResponse') {
           cubit.writeln("data: null,);");
         } else {
           final model =
