@@ -1,21 +1,24 @@
-import 'dart:io';
 import 'package:eitherx/eitherx.dart';
-import 'package:mwidgets/mwidgets.dart';
-import 'package:example/core/base/base_response.dart';
-import 'package:example/core/base/no_params.dart';
-import 'package:injectable/injectable.dart';
-import 'package:example/core/base/base_use_case.dart';
-import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:example/home/data/models/device_settings_model.dart';
+import 'package:mwidgets/mwidgets.dart';
 
 ///[Implementation]
 abstract class HomeLocalDataSource {
-Future<Either<Failure, Unit>> cacheUpdateUser({required DeviceSettingsModel data,});
-Either<Failure, DeviceSettingsModel> getCacheUpdateUser();
+  Future<Either<Failure, Unit>> cacheAddComment5({
+    required DeviceSettingsModel data,
+  });
 
-Future<Either<Failure, Unit>> cacheUpdateUser2({required DeviceSettingsModel data,});
-Either<Failure, DeviceSettingsModel> getCacheUpdateUser2();
+  Either<Failure, DeviceSettingsModel> getCacheAddComment5();
 
-//[]
+  Future<Either<Failure, Unit>> cacheAddComment6({
+    required DeviceSettingsModel data,
+  });
+
+  Either<Failure, DeviceSettingsModel> getCacheAddComment6();
+
+  Future<Either<Failure, Unit>> cacheAddComment7({
+    required DeviceSettingsModel data,
+  });
+
+  Either<Failure, DeviceSettingsModel> getCacheAddComment7();
 }
