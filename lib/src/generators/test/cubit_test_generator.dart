@@ -130,6 +130,7 @@ class CubitTestGenerator
               "     request = $requestType(${methodFormat.parametersWithValues(method.parameters)});");
           request = "request : request";
         }
+        final model = names.camelCaseToUnderscore(names.ModelType(returnType));
         cubit.writeln("///[${names.firstUpper(methodName)}]");
         cubit.writeln('response = $returnType(');
         cubit.writeln("message: 'message',");
@@ -143,11 +144,9 @@ class CubitTestGenerator
           cubit.writeln(
               "data: ${methodFormat.initData(modelRuntimeType, 'name')},);");
         } else if (returnType.contains('BaseResponse<dynamic>') ||
-            returnType == 'BaseResponse') {
+            model == 'BaseResponse') {
           cubit.writeln("data: null,);");
         } else {
-          final model =
-              names.camelCaseToUnderscore(names.ModelType(returnType));
           FileManager.save(
             "test/expected/expected_$model",
             '{}',
