@@ -38,7 +38,7 @@ class CacheCubitTestGenerator
         final methodName = names.getCacheName(method.name);
         final useCaseName = names.useCaseName(methodName);
         final useCaseType = names.useCaseType(methodName);
-        final cubitType = names.cubitType(methodName);
+        final cubitType = names.cubitType(names.getCacheName(method.cubitName));
         final fileName = "${names.camelCaseToUnderscore(cubitType)}_test";
         final returnType = methodFormat.returnType(method.type);
         final responseType = methodFormat.responseType(returnType);

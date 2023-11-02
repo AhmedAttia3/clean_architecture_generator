@@ -43,6 +43,7 @@ class ModelVisitor extends GeneralizingElementVisitor<void> {
     for (var method in methods) {
       useCases.add(
         UseCaseModel(
+          cubitName: method.cubitName,
           type: "Future<${method.response}>",
           name: method.name,
           endPoint: method.endPoint,

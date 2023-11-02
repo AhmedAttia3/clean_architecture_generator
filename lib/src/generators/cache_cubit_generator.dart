@@ -45,7 +45,7 @@ class CacheCubitGenerator
       ///[get cache]
       if (method.isCache) {
         final getCacheCubit = StringBuffer();
-        final cacheCubitType = names.getCacheCubitType(method.name);
+        final cacheCubitType = names.getCacheCubitType(method.cubitName);
         final cacheUseCaseName =
             names.useCaseName(names.getCacheName(method.name));
         final cacheUseCaseType =

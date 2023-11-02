@@ -25,9 +25,11 @@ class CleanMethod {
   final RequestType requestType;
   final List<Param> parameters;
   final bool isPaging, isCache;
+  final String cubitName;
 
   const CleanMethod({
     required this.name,
+    required this.cubitName,
     this.endPoint = '',
     required this.response,
     this.parameters = const [],
@@ -40,6 +42,7 @@ class CleanMethod {
 
 class CleanMethodModel extends CleanMethod {
   CleanMethodModel({
+    required super.cubitName,
     required super.name,
     required super.endPoint,
     required super.response,
@@ -69,6 +72,7 @@ class CleanMethodModel extends CleanMethod {
     return CleanMethodModel(
       response: map['response'],
       name: map['name'] ?? "",
+      cubitName: map['cubitName'] ?? "",
       endPoint: map['endPoint'] ?? "",
       isPaging: map['isPaging'] ?? false,
       isCache: map['isCache'] ?? false,

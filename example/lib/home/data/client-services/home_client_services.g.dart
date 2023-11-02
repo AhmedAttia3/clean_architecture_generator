@@ -20,15 +20,15 @@ class _HomeClientServices implements HomeClientServices {
 
   @override
   Future<BaseResponse<DeviceSettingsModel?>> addComment({
-    required String storyId,
-    required String content,
+    required String storyId1,
+    required String content1,
   }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = {
-      'story_id': storyId,
-      'content': content,
+      'story_id': storyId1,
+      'content1': content1,
     };
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<BaseResponse<DeviceSettingsModel>>(Options(
@@ -58,15 +58,15 @@ class _HomeClientServices implements HomeClientServices {
 
   @override
   Future<BaseResponse<DeviceSettingsModel?>> addComment2({
-    required String storyId,
-    required String content,
+    required String storyId2,
+    required String content2,
   }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = {
-      'story_id': storyId,
-      'content': content,
+      'story_id': storyId2,
+      'content2': content2,
     };
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<BaseResponse<DeviceSettingsModel>>(Options(
@@ -210,15 +210,15 @@ class _HomeClientServices implements HomeClientServices {
 
   @override
   Future<BaseResponse<DeviceSettingsModel?>> addComment6({
-    required String storyId,
-    required String content,
+    required String storyId1,
+    required String content1,
   }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = {
-      'story_id': storyId,
-      'content': content,
+      'story_id': storyId1,
+      'content1': content1,
     };
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<BaseResponse<DeviceSettingsModel>>(Options(
@@ -248,15 +248,53 @@ class _HomeClientServices implements HomeClientServices {
 
   @override
   Future<BaseResponse<DeviceSettingsModel?>> addComment7({
-    required String storyId,
-    required String content,
+    required String storyId2,
+    required String content2,
   }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = {
-      'story_id': storyId,
-      'content': content,
+      'story_id': storyId2,
+      'content2': content2,
+    };
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<BaseResponse<DeviceSettingsModel>>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              'sendCode',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    final value = BaseResponse<DeviceSettingsModel?>.fromJson(
+      _result.data!,
+      (json) => json == null
+          ? null
+          : DeviceSettingsModel.fromJson(json as Map<String, dynamic>),
+    );
+    return value;
+  }
+
+  @override
+  Future<BaseResponse<DeviceSettingsModel?>> addComment8({
+    required String storyId3,
+    required String content3,
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = {
+      'story_id': storyId3,
+      'content3': content3,
     };
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<BaseResponse<DeviceSettingsModel>>(Options(

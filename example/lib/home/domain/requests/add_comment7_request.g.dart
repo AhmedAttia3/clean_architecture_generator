@@ -8,12 +8,12 @@ part of 'add_comment7_request.dart';
 
 AddComment7Request _$AddComment7RequestFromJson(Map<String, dynamic> json) =>
     AddComment7Request(
-      storyId: json['storyId'] as String? ?? "storyId",
-      content: json['content'] as String? ?? "content",
+      storyId2: json['storyId2'] as String? ?? "storyId2",
+      content2: json['content2'] as String? ?? "content2",
     );
 
 Map<String, dynamic> _$AddComment7RequestToJson(AddComment7Request instance) =>
     <String, dynamic>{
-      'storyId': instance.storyId,
-      'content': instance.content,
+      'storyId2': instance.storyId2,
+      'content2': instance.content2,
     };
