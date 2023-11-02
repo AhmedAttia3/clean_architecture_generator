@@ -84,6 +84,8 @@ class MethodFormat {
       return 0.0;
     } else if (type.contains("List")) {
       return "const []";
+    } else if (type == "File") {
+      return "File('')";
     }
   }
 }

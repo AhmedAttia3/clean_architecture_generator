@@ -148,7 +148,7 @@ class RepositoryTestGenerator
           repository
               .writeln("data: ${methodFormat.initData(varType, 'name')},);");
         } else if (type.contains('BaseResponse<dynamic>') ||
-            type == 'BaseResponse<dynamic>') {
+            type == 'BaseResponse') {
           repository.writeln("data: null,);");
         } else {
           final model = names.camelCaseToUnderscore(names.ModelType(type));
