@@ -15,7 +15,7 @@ enum ParamType { Field, Query, Path, Header }
 
 enum ParamProp { none, Set, EmitSet, TextController }
 
-enum ParamDataType { String, int, double, num, List, File, listFile }
+enum ParamDataType { String, int, double, num, List, File, listFile, bool }
 
 class CleanMethod {
   final String name;
