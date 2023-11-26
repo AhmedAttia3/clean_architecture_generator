@@ -80,7 +80,7 @@ class RetrofitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
                     param.dataType == ParamDataType.listFile ||
                     param.dataType == ParamDataType.listDouble;
                 clientServices.writeln(
-                    "         @Part(name: '${isList ? '${param.key}[]' : '${param.key}'}') ${param.isRequired ? "required" : ""} ${methodFormat.dataType(param.dataType)} ${param.name},");
+                    "         @Part(name: '${isList ? '${param.key}[]' : '${param.key}'}') ${param.isRequired ? "required" : ""} ${methodFormat.dataType(param.dataType)} ${param.isRequired ? "" : "?"} ${param.name},");
               }
             } else {
               for (var param in method.requestParameters) {
