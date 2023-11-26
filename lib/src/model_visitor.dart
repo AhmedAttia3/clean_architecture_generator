@@ -86,7 +86,13 @@ class ModelVisitor extends GeneralizingElementVisitor<void> {
   }
 
   String dataType(ParamDataType type) {
-    if (type == ParamDataType.listFile) {
+    if (type == ParamDataType.listDouble) {
+      return 'List<double>';
+    } else if (type == ParamDataType.listInt) {
+      return 'List<int>';
+    } else if (type == ParamDataType.listString) {
+      return 'List<String>';
+    } else if (type == ParamDataType.listFile) {
       return 'List<File>';
     } else if (type == ParamDataType.File) {
       return 'File';

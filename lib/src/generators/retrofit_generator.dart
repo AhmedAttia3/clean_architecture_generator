@@ -75,8 +75,12 @@ class RetrofitGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
             if (method.methodType == MethodType.POST_MULTI_PART ||
                 method.methodType == MethodType.PUT_MULTI_PART) {
               for (var param in method.requestParameters) {
+                final isList = param.dataType == ParamDataType.listInt ||
+                    param.dataType == ParamDataType.listString ||
+                    param.dataType == ParamDataType.listFile ||
+                    param.dataType == ParamDataType.listDouble;
                 clientServices.writeln(
-                    "         @Part(name: '${param.dataType == ParamDataType.List || param.dataType == ParamDataType.listFile ? '${param.key}[]' : '${param.key}'}') ${param.isRequired ? "required ${param.dataType == ParamDataType.listFile ? 'List<File>' : param.dataType.name}" : "${param.dataType == ParamDataType.listFile ? 'List<File>' : param.dataType.name}?"}  ${param.name},");
+                    "         @Part(name: '${isList ? '${param.key}[]' : '${param.key}'}') ${param.isRequired ? "required ${param.dataType == ParamDataType.listFile ? 'List<File>' : param.dataType.name}" : "${param.dataType == ParamDataType.listFile ? 'List<File>' : param.dataType.name}?"}  ${param.name},");
               }
             } else {
               for (var param in method.requestParameters) {
