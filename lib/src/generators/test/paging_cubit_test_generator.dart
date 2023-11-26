@@ -270,6 +270,14 @@ class PagingCubitTestGenerator
           }
           cubit.writeln("       ],");
           cubit.writeln("     );");
+          cubit.writeln("   });");
+          cubit.writeln(" }");
+
+          cubit.writeln("///[FromJson]");
+          cubit.writeln("Map<String, dynamic> json(String path) {");
+          cubit.writeln(
+              " return jsonDecode(File('test/expected/\$path.json').readAsStringSync());");
+          cubit.writeln("}");
           FileManager.save(
             '$path/$fileName',
             cubit.toString(),

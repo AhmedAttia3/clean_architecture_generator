@@ -127,15 +127,21 @@ class RemoteDataSourceGenerator
 
           remoteDataSourceImpl
               .writeln('apiCall: $clientServiceName.${method.name}(');
+          bool haveRequest = false;
           for (var param in method.requestParameters) {
             if (param.type == ParamType.Path ||
                 param.type == ParamType.Header ||
                 param.type == ParamType.Query) {
               remoteDataSourceImpl
                   .writeln('${param.name}:request.${param.name},');
+              haveRequest = false;
+            } else {
+              haveRequest = true;
             }
           }
-          remoteDataSourceImpl.writeln('request: request,),);');
+          haveRequest = haveRequest && method.requestParameters.length > 1;
+          if (haveRequest) remoteDataSourceImpl.writeln('request: request,');
+          remoteDataSourceImpl.writeln('),);');
           remoteDataSourceImpl.writeln('}\n');
         }
       }
