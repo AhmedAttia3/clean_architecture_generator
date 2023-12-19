@@ -11,13 +11,13 @@ environment:
 
 
 dependencies:
-  analyzer: ^6.0.0
+  analyzer: ^6.3.0
 
 
 dev_dependencies:
   build: ^2.4.1
-  source_gen: ^1.4.0
-  build_runner: ^2.4.6
+  source_gen: ^1.5.0
+  build_runner: ^2.4.7
 
 
 
