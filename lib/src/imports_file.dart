@@ -74,7 +74,7 @@ class Imports {
       if (path.isEmpty) continue;
       final res = names.camelCaseToUnderscore(path);
       final import = importName('$res.dart');
-      if (import != null) data += import;
+      if (import != null && !data.contains(import)) data += import;
     }
     for (var path in libs) {
       if (path.isEmpty) continue;
@@ -96,6 +96,8 @@ class Imports {
     final index = files.indexWhere((item) {
       final path = item
           .split('\\')
+          .last
+          .split('/')
           .last
           .replaceAll("_", "")
           .replaceAll("\\n", "")
