@@ -12,10 +12,6 @@ import 'package:example/core/base/base_use_case.dart';
 import 'package:example/home/data/data-sources/home_local_data_source.dart';
 import 'package:example/home/data/data-sources/home_local_data_source_impl.dart';
 import 'package:example/home/data/models/device_settings_model.dart';
-import 'package:example/home/data/models/device_settings_model.dart';
-import 'package:example/home/data/models/device_settings_model.dart';
-import 'package:example/home/data/models/device_settings_model.dart';
-import 'package:example/home/data/models/device_settings_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'home_local_data_source_test.mocks.dart';

@@ -12,14 +12,6 @@ import 'package:example/core/base/base_use_case.dart';
 import 'package:example/home/domain/use-cases/cache_add_comment5_use_case.dart';
 import 'package:example/home/domain/repository/home_repository.dart';
 import 'package:example/home/data/models/device_settings_model.dart';
-import 'package:example/home/data/models/device_settings_model.dart';
-import 'package:example/home/data/models/device_settings_model.dart';
-import 'package:example/home/data/models/device_settings_model.dart';
-import 'package:example/home/data/models/device_settings_model.dart';
-import 'package:example/home/data/models/device_settings_model.dart';
-import 'package:example/home/data/models/device_settings_model.dart';
-import 'package:example/home/data/models/device_settings_model.dart';
-import 'package:example/core/base/base_response.dart';
 
 import 'cache_add_comment5_use_case_test.mocks.dart';
 @GenerateNiceMocks([

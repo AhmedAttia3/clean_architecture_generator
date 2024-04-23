@@ -14,20 +14,12 @@ import 'package:example/home/domain/repository/home_repository.dart';
 import 'package:example/home/domain/requests/add_comment_request.dart';
 import 'package:example/home/data/models/device_settings_model.dart';
 import 'package:example/home/domain/requests/add_comment2_request.dart';
-import 'package:example/home/data/models/device_settings_model.dart';
 import 'package:example/home/domain/requests/add_comment3_request.dart';
-import 'package:example/home/data/models/device_settings_model.dart';
 import 'package:example/home/domain/requests/add_comment4_request.dart';
-import 'package:example/home/data/models/device_settings_model.dart';
 import 'package:example/home/domain/requests/add_comment5_request.dart';
-import 'package:example/home/data/models/device_settings_model.dart';
 import 'package:example/home/domain/requests/add_comment6_request.dart';
-import 'package:example/home/data/models/device_settings_model.dart';
 import 'package:example/home/domain/requests/add_comment7_request.dart';
-import 'package:example/home/data/models/device_settings_model.dart';
 import 'package:example/home/domain/requests/add_comment8_request.dart';
-import 'package:example/home/data/models/device_settings_model.dart';
-import 'package:example/core/base/base_response.dart';
 
 import 'add_comment5_use_case_test.mocks.dart';
 @GenerateNiceMocks([
