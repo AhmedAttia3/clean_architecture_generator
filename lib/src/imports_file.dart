@@ -163,7 +163,11 @@ class Imports {
     final filePath = '${projectDir.path}/pubspec.yaml';
     final file = File(filePath);
     if (file.existsSync()) {
-      final content = file.readAsStringSync().split('\n')[0];
+      final content = file
+          .readAsStringSync()
+          .split('\n')[0]
+          .replaceAll('\n', '')
+          .replaceAll('name: ', '');
       return content;
     }
     final parent = projectDir.absolute.uri.path.split('/');
