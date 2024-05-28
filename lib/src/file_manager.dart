@@ -16,9 +16,6 @@ class FileManager {
     bool allowUpdates = false,
     List<String> methods = const [],
   }) {
-    if (extension == 'dart') {
-      content = content.formatDartCode();
-    }
     _saveOrUpdate(
       fileName,
       content,
@@ -73,7 +70,7 @@ class FileManager {
 
     final file = File(path);
     if (!file.existsSync() || allowUpdates) {
-      file.writeAsStringSync(content);
+      file.writeAsStringSync(content.formatDartCode());
     }
   }
 
@@ -120,7 +117,7 @@ class FileManager {
     if (import == null) {
       createDirAndFile(
         path,
-        content,
+        content.formatDartCode(),
         allowUpdates: allowUpdates,
         extension: extension,
       );
@@ -132,7 +129,7 @@ class FileManager {
           path: import,
           methods: methods,
         );
-        file.writeAsStringSync(content);
+        file.writeAsStringSync(content.formatDartCode());
       }
     }
   }
