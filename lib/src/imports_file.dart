@@ -3,21 +3,21 @@ import 'dart:io';
 import 'package:clean_architecture_generator/formatter/names.dart';
 
 class Imports {
-  static String file(String fileName) {
-    final projectDir = Directory.current;
-    final filePath = '${projectDir.path}/$fileName';
-    final file = File(filePath);
-    if (file.existsSync()) {
-      final content = file
-          .readAsStringSync()
-          .split('part')[0]
-          .replaceFirst("import 'package:annotations/annotations.dart';", '')
-          .replaceFirst("import 'package:dio/dio.dart';", '')
-          .replaceFirst("import 'package:retrofit/http.dart';", '');
-      return content;
-    }
-    throw Exception('File not exist');
-  }
+  // static String file(String fileName) {
+  //   final projectDir = Directory.current;
+  //   final filePath = '${projectDir.path}/$fileName';
+  //   final file = File(filePath);
+  //   if (file.existsSync()) {
+  //     final content = file
+  //         .readAsStringSync()
+  //         .split('part')[0]
+  //         .replaceFirst("import 'package:annotations/annotations.dart';", '')
+  //         .replaceFirst("import 'package:dio/dio.dart';", '')
+  //         .replaceFirst("import 'package:retrofit/http.dart';", '');
+  //     return content;
+  //   }
+  //   throw Exception('File not exist');
+  // }
 
   static String create({
     List<String> imports = const [],
@@ -160,6 +160,12 @@ class Imports {
 
   static String get parent {
     final projectDir = Directory.current;
+    final filePath = '${projectDir.path}/pubspec.yaml';
+    final file = File(filePath);
+    if (file.existsSync()) {
+      final content = file.readAsStringSync().split('\n')[0];
+      return content;
+    }
     final parent = projectDir.absolute.uri.path.split('/');
     return parent.elementAt(parent.length - 2).replaceFirst('lib', '');
   }
