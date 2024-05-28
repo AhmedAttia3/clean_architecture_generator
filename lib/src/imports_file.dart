@@ -166,8 +166,8 @@ class Imports {
       final content = file
           .readAsStringSync()
           .split('\n')[0]
-          .replaceAll('\n', '')
-          .replaceAll('name: ', '');
+          .replaceAll('name: ', '')
+          .replaceAll('\n', '');
       return content;
     }
     final parent = projectDir.absolute.uri.path.split('/');
