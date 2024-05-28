@@ -8,7 +8,7 @@ class CheckUpdate {
   }) {
     String lastContent = File(path).readAsStringSync();
     String oldContent = cropContent(lastContent);
-    final constructor = extractClassImportsCode(content);
+    final constructor = extractClassImportsCode(content, lastContent);
     content = cropContent(content);
 
     final diff = StringBuffer();
@@ -85,17 +85,27 @@ class CheckUpdate {
     );
   }
 
-  static Method extractClassImportsCode(String content) {
-    final buffer = StringBuffer();
+  static Method extractClassImportsCode(String content, String lastContent) {
+    final bufferImports = StringBuffer();
     final lines = content.split('\n');
+    final oldLines = lastContent.split('\n');
     for (var line in lines) {
-      buffer.writeln(line);
+      bufferImports.writeln(line);
       if (line.contains(');')) {
         break;
       }
     }
 
-    final code = buffer.toString();
+    for (var line in oldLines) {
+      if (line.contains('class')) {
+        break;
+      } else if (!bufferImports.toString().contains(line) &&
+          line.contains('import')) {
+        bufferImports.writeln(line);
+      }
+    }
+
+    final code = bufferImports.toString();
 
     return Method(
       code: code,
