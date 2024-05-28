@@ -87,6 +87,7 @@ class CheckUpdate {
 
   static Method extractClassImportsCode(String content, String lastContent) {
     final bufferImports = StringBuffer();
+    final oldBufferImports = StringBuffer();
     final lines = content.split('\n');
     final oldLines = lastContent.split('\n');
     for (var line in lines) {
@@ -99,13 +100,13 @@ class CheckUpdate {
     for (var line in oldLines) {
       if (line.contains('class')) {
         break;
-      } else if (!bufferImports.toString().contains(line) &&
-          line.contains('import')) {
-        bufferImports.writeln(line);
+      } else if (!lines.contains(line) && line.contains('import')) {
+        oldBufferImports.writeln(line);
       }
     }
 
-    final code = bufferImports.toString();
+    oldBufferImports.writeln(bufferImports.toString());
+    final code = oldBufferImports.toString();
 
     return Method(
       code: code,
