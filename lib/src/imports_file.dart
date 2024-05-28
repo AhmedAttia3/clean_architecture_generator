@@ -163,14 +163,15 @@ class Imports {
     final filePath = '${projectDir.path}/pubspec.yaml';
     final file = File(filePath);
     if (file.existsSync()) {
-      final content = file
-          .readAsStringSync()
-          .split('\n')[0]
-          .replaceAll('name: ', '')
-          .replaceAll('\n', '');
-      return content;
+      return getNameFromContent(file.readAsStringSync());
     }
     final parent = projectDir.absolute.uri.path.split('/');
     return parent.elementAt(parent.length - 2).replaceFirst('lib', '');
+  }
+
+  static String getNameFromContent(String content) {
+    final nameRegExp = RegExp(r'^name:\s*(.*)', multiLine: true);
+    final match = nameRegExp.firstMatch(content);
+    return match != null ? match.group(1) ?? '' : '';
   }
 }
