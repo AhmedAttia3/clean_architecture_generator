@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:clean_architecture_generator/formatter/names.dart';
 import 'package:clean_architecture_generator/src/check_update.dart';
 import 'package:clean_architecture_generator/src/imports_file.dart';
+import 'package:clean_architecture_generator/src/utilities/functions.dart';
 
 class FileManager {
   static Names names = Names();
@@ -15,6 +16,9 @@ class FileManager {
     bool allowUpdates = false,
     List<String> methods = const [],
   }) {
+    if (extension == 'dart') {
+      content = content.formatDartCode();
+    }
     _saveOrUpdate(
       fileName,
       content,
