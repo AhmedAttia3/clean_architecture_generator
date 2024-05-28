@@ -100,7 +100,8 @@ class CheckUpdate {
     for (var line in oldLines) {
       if (line.contains('class')) {
         break;
-      } else if (!lines.contains(line) && line.contains('import')) {
+      } else if (!lines.contains(line.replaceAll('\n', '')) &&
+          line.contains('import')) {
         oldBufferImports.writeln(line);
       }
     }
