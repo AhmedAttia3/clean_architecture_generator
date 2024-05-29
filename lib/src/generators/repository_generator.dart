@@ -47,7 +47,7 @@ class RepositoryGenerator
       final returnType = methodFormat.returnType(method.type);
       final type = methodFormat.baseModelType(returnType);
       final typeEntity = methodFormat.baseModelType(returnTypeEntity);
-      if (method.requestType == RequestType.Body) {
+      if (method.requestType == RequestType.Body || method.hasRequest) {
         final request = names.requestType(method.name);
         imports.add(request);
       }
@@ -58,7 +58,10 @@ class RepositoryGenerator
     ///[Imports]
     repository.writeln(
       Imports.create(
-        imports: imports,
+        imports: [
+          "no_params",
+          ...imports,
+        ],
       ),
     );
 
@@ -116,7 +119,8 @@ class RepositoryGenerator
         visitor.isCacheOnly ? "" : remoteDataSourceType,
         localDataSourceType,
         ...imports,
-        'base_response'
+        'base_response',
+        "no_params",
       ],
       hasCache: hasCache,
       isRepo: true,

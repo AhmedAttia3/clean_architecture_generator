@@ -37,7 +37,7 @@ class RemoteDataSourceGenerator
       for (var method in visitor.useCases) {
         final returnType = methodFormat.returnType(method.type);
         final type = methodFormat.baseModelType(returnType);
-        if (method.requestType == RequestType.Body) {
+        if (method.requestType == RequestType.Body || method.hasRequest) {
           final request = names.requestType(method.name);
           imports.add(request);
         }
@@ -49,6 +49,7 @@ class RemoteDataSourceGenerator
         Imports.create(
           imports: [
             "safe_request_handler",
+            "no_params",
             ...imports,
           ],
         ),
@@ -89,6 +90,7 @@ class RemoteDataSourceGenerator
           ...imports,
           "safe_request_handler",
           'base_response',
+          "no_params",
         ],
         hasCache: hasCache,
         isRepo: true,
@@ -129,7 +131,7 @@ class RemoteDataSourceGenerator
             remoteDataSourceImpl
                 .writeln('apiCall: $clientServiceName.${method.name}');
             remoteDataSourceImpl.writeln(
-                '(${methodFormat.requestParameters(method.parameters)});');
+                '(${methodFormat.requestParameters(method.parameters)}));');
             remoteDataSourceImpl.writeln('}\n');
           } else {
             remoteDataSourceImpl
