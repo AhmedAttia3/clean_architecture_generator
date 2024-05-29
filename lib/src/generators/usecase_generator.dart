@@ -73,14 +73,15 @@ class UseCaseGenerator extends GeneratorForAnnotation<ArchitectureAnnotation> {
         useCase.writeln(
             'Future<Either<Failure, $returnType>> execute({$requestType? request,}) async {');
         useCase.writeln('return await repository.$methodName');
-        if (method.requestType == RequestType.Fields && !method.hasRequest) {
+        if (method.parameters.length == 1) {
+          useCase.writeln('(${method.parameters.first.name} : request!);');
+        } else if (method.requestType == RequestType.Fields &&
+            !method.hasRequest) {
           useCase.writeln(
               '(${methodFormat.requestParameters(method.parameters)});');
         } else if (method.requestType == RequestType.Body ||
             method.hasRequest) {
           useCase.writeln('(request : request!);');
-        } else if (method.parameters.length == 1) {
-          useCase.writeln('(${method.parameters.first.name} : request!);');
         } else {
           useCase.writeln('();');
         }
