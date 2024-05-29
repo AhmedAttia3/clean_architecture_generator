@@ -72,7 +72,7 @@ class RepositoryGenerator
       final type = methodFormat.returnType(method.type);
       final responseType = methodFormat.responseType(type);
       if (!visitor.isCacheOnly) {
-        if (method.requestType == RequestType.Fields || !method.hasRequest) {
+        if (method.requestType == RequestType.Fields && !method.hasRequest) {
           repository.writeln(
               'Future<Either<Failure, $typeEntity>> $methodName(${methodFormat.parameters(method.parameters)});');
         } else {
@@ -155,7 +155,7 @@ class RepositoryGenerator
       final responseType = methodFormat.responseType(type);
       if (!visitor.isCacheOnly) {
         repositoryImpl.writeln('@override');
-        if (method.requestType == RequestType.Fields || !method.hasRequest) {
+        if (method.requestType == RequestType.Fields && !method.hasRequest) {
           repositoryImpl.writeln(
               'Future<Either<Failure, $typeEntity>> $methodName(${methodFormat.parameters(method.parameters)})async {');
           if (method.isCache) {

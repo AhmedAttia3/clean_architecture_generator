@@ -60,7 +60,7 @@ class RemoteDataSourceGenerator
       for (var method in visitor.useCases) {
         final methodName = names.firstLower(method.name);
         final type = methodFormat.returnType(method.type);
-        if (method.requestType == RequestType.Fields || !method.hasRequest) {
+        if (method.requestType == RequestType.Fields && !method.hasRequest) {
           remoteDataSource.writeln(
               'Future<Either<Failure, $type>> $methodName(${methodFormat.parameters(method.parameters)});');
         } else {
@@ -111,7 +111,7 @@ class RemoteDataSourceGenerator
         final methodName = names.firstLower(method.name);
         final type = methodFormat.returnType(method.type);
         remoteDataSourceImpl.writeln('@override');
-        if (method.requestType == RequestType.Fields || !method.hasRequest) {
+        if (method.requestType == RequestType.Fields && !method.hasRequest) {
           remoteDataSourceImpl.writeln(
               'Future<Either<Failure, $type>> $methodName(${methodFormat.parameters(method.parameters)})async {');
           remoteDataSourceImpl.writeln('return await api<$type>(');
@@ -125,23 +125,33 @@ class RemoteDataSourceGenerator
               'Future<Either<Failure, $type>> $methodName({required $request request,})async {');
           remoteDataSourceImpl.writeln('return await api<$type>(');
 
-          remoteDataSourceImpl
-              .writeln('apiCall: $clientServiceName.${method.name}(');
-          bool haveRequest = false;
-          for (var param in method.requestParameters) {
-            if (param.type == ParamType.Path ||
-                param.type == ParamType.Header ||
-                param.type == ParamType.Query) {
-              remoteDataSourceImpl
-                  .writeln('${param.name}:request.${param.name},');
-              haveRequest = false;
-            } else {
-              haveRequest = true;
+          if (method.requestType == RequestType.Fields || !method.hasRequest) {
+            remoteDataSourceImpl
+                .writeln('apiCall: $clientServiceName.${method.name}');
+            remoteDataSourceImpl.writeln(
+                '(${methodFormat.requestParameters(method.parameters)});');
+            remoteDataSourceImpl.writeln('}\n');
+          } else {
+            remoteDataSourceImpl
+                .writeln('apiCall: $clientServiceName.${method.name}(');
+            bool haveRequest = false;
+            for (var param in method.requestParameters) {
+              if (param.type == ParamType.Path ||
+                  param.type == ParamType.Header ||
+                  param.type == ParamType.Query) {
+                remoteDataSourceImpl
+                    .writeln('${param.name}:request.${param.name},');
+
+                haveRequest = false;
+              } else {
+                haveRequest = true;
+              }
             }
+            haveRequest = haveRequest && method.requestParameters.length > 1;
+            if (haveRequest) remoteDataSourceImpl.writeln('request: request,');
+            remoteDataSourceImpl.writeln('),);');
           }
-          haveRequest = haveRequest && method.requestParameters.length > 1;
-          if (haveRequest) remoteDataSourceImpl.writeln('request: request,');
-          remoteDataSourceImpl.writeln('),);');
+
           remoteDataSourceImpl.writeln('}\n');
         }
       }
