@@ -131,8 +131,7 @@ class RemoteDataSourceGenerator
             remoteDataSourceImpl
                 .writeln('apiCall: $clientServiceName.${method.name}');
             remoteDataSourceImpl.writeln(
-                '(${methodFormat.requestParameters(method.parameters)}));');
-            remoteDataSourceImpl.writeln('}\n');
+                '(${methodFormat.requestParameters(method.parameters)}),);');
           } else {
             remoteDataSourceImpl
                 .writeln('apiCall: $clientServiceName.${method.name}(');
